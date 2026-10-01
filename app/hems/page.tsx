@@ -31,6 +31,8 @@ export default function HemsPage() {
         { name: "HEMS", href: PATH },
       ]}
       eyebrow="HEMS"
+      heroImage={images.batApp}
+      tip={{ title: "入れる意味があるか", body: <>HEMSは必須ではありません。<strong className="marker">制御したい機器が対応しているか</strong>を確認し、意味があるときだけご提案します。</>, image: images.poseTrust }}
       title={<>HEMS<span className="block text-[0.7em] text-ink-2">つくる・ためる・使うを、見える化して制御する</span></>}
       lead="HEMS（Home Energy Management System）は、太陽光の発電量、蓄電池の残量、家の消費電力をひとつの画面で確認し、機器を制御する仕組みです。太陽光・蓄電池を導入した効果を「見える」ようにすることで、使い方の改善につながります。"
       conclusion={`HEMSは必須の設備ではありませんが、太陽光・蓄電池の効果を確認し、使い方を調整するための「計器盤」として役立ちます。葛飾区では${hems.name}が${hems.amount}、太陽光との併設加算が${addon.amount}の助成対象です（${hems.lastVerified.replace(/-/g, "/")} 時点）。東京都の蓄電池助成では、DR実証参加時にエネルギーマネジメント機器の有無で加算が変わります。`}
@@ -44,7 +46,7 @@ export default function HemsPage() {
         {
           id: "what",
           heading: "HEMSでできること",
-          image: { src: images.consultationDesk.src, alt: images.consultationDesk.alt },
+          image: images.consultationDesk,
           body: (
             <>
               <ul>
@@ -59,6 +61,7 @@ export default function HemsPage() {
         {
           id: "with",
           heading: "太陽光・蓄電池・V2Hとの関係",
+          image: images.batHomeAppliances,
           body: (
             <>
               <p>HEMSの価値は、組み合わせる設備が多いほど大きくなります。太陽光だけの家では「発電量と消費のバランスを見る」用途が中心ですが、蓄電池やV2H、エコキュートがある家では「いつ、どこに電気を回すか」を制御する役割が加わります。</p>
@@ -70,6 +73,7 @@ export default function HemsPage() {
         {
           id: "katsushika",
           heading: "葛飾区の助成",
+          image: images.iconGHouseYenLeaf,
           body: (
             <>
               <p>葛飾区の「かつしかエコ助成金」では、HEMSが{hems.amount}、太陽光発電システムとHEMSを併せて導入する場合の併設加算が{addon.amount}です。併設加算は両方を同時に申請することが条件です。</p>
@@ -80,6 +84,7 @@ export default function HemsPage() {
         {
           id: "choose",
           heading: "導入を検討するときのポイント",
+          image: images.iconGClipboardHouse,
           body: (
             <>
               <ol>

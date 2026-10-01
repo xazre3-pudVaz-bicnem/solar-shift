@@ -46,15 +46,15 @@ export default function AreaIndexPage() {
           ]}
         />
 
-        <section className="mt-12" aria-labelledby="primary-h">
-          <h2 id="primary-h" className="text-[22px] font-bold text-navy-900">主要対応エリア</h2>
+        <section className="cv-block mt-12" aria-labelledby="primary-h">
+          <h2 id="primary-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">主要対応エリア</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {primaryAreas.map((a) => <AreaCard key={a.slug} area={a} />)}
           </div>
         </section>
 
-        <section className="mt-12" aria-labelledby="secondary-h">
-          <h2 id="secondary-h" className="text-[22px] font-bold text-navy-900">周辺対応エリア</h2>
+        <section className="cv-block mt-12" aria-labelledby="secondary-h">
+          <h2 id="secondary-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">周辺対応エリア</h2>
           <p className="mt-2 text-[14px] text-ink-2">葛飾区に隣接する地域です。各区の助成制度の確認を含めてご相談いただけます。</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {secondaryAreas.map((a) => <AreaCard key={a.slug} area={a} />)}
@@ -62,8 +62,8 @@ export default function AreaIndexPage() {
         </section>
 
         {plannedAreas.length > 0 && (
-          <section className="mt-12" aria-labelledby="planned-h">
-            <h2 id="planned-h" className="text-[22px] font-bold text-navy-900">対応を検討中のエリア</h2>
+          <section className="cv-block mt-12" aria-labelledby="planned-h">
+            <h2 id="planned-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">対応を検討中のエリア</h2>
             <p className="mt-2 text-[14px] text-ink-2">対応可能かどうかを個別に確認しています。お問い合わせの際にご住所のエリアをお知らせください。</p>
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {plannedAreas.map((a) => <AreaCard key={a.slug} area={a} />)}
@@ -75,8 +75,8 @@ export default function AreaIndexPage() {
           検索対策のために地域名だけを置き換えたページを量産することはしません。各エリアのページには、その自治体の補助金制度、住宅事情、公式情報へのリンク、災害リスク、地域特化のFAQを揃え、独自の価値があるものだけを公開します。
         </Callout>
 
-        <section className="mt-14" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="text-[22px] font-bold text-navy-900">対応エリアについてよくある質問</h2>
+        <section className="cv-block mt-14" aria-labelledby="faq-h">
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">対応エリアについてよくある質問</h2>
           <FaqSection items={faqsByIds(["service-area", "install-survey", "service-sales"])} withSchema className="mt-5" />
         </section>
 

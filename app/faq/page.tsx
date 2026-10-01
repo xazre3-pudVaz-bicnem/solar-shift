@@ -1,3 +1,4 @@
+import { OpenChatButton } from "@/components/chat/OpenChatButton";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -43,19 +44,25 @@ export default function FaqPage() {
       <Container className="py-10 sm:py-14">
         <nav aria-label="カテゴリ" className="flex flex-wrap gap-2">
           {ORDER.map((c) => (
-            <a key={c} href={`#${c}`} className="border border-line bg-white px-3 py-1.5 text-[13px] font-bold text-navy-900 hover:border-navy-900">
+            <a key={c} href={`#${c}`} className="rounded-full border border-line bg-white px-4 py-1.5 text-[13px] font-bold text-navy-900 hover:border-orange-400 hover:bg-cream">
               {faqCategoryLabel[c]}
             </a>
           ))}
         </nav>
+        <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl bg-green-50 px-4 py-3 text-[14px] leading-[1.7] text-ink">
+          <span>探している質問が見つからないときは、チャットでも質問できます（自動応答）。</span>
+          <OpenChatButton className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-green-600 px-4 py-1 text-[13px] font-bold text-white hover:bg-green-700">
+            チャットで質問する
+          </OpenChatButton>
+        </p>
         <div className="mt-10 space-y-14">
           {ORDER.map((c) => {
             const items = faqs.filter((f) => f.category === c);
             if (items.length === 0) return null;
             return (
-              <section key={c} id={c} aria-labelledby={`${c}-h`} className="scroll-mt-24">
-                <h2 id={`${c}-h`} className="text-[22px] font-bold text-navy-900 sm:text-[26px]">{faqCategoryLabel[c]}</h2>
-                <FaqSection items={items} className="mt-5" />
+              <section key={c} id={c} aria-labelledby={`${c}-h`} className="cv-block scroll-mt-24">
+                <h2 id={`${c}-h`} className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900 sm:text-[26px]">{faqCategoryLabel[c]}</h2>
+                <FaqSection items={items} className="mt-5" moreLink={false} />
               </section>
             );
           })}

@@ -19,6 +19,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, articleSchema } from "@/lib/schema";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
+import { StaffTip } from "@/components/ui/StaffTip";
 
 const PATH = "/subsidy/national";
 
@@ -64,18 +65,22 @@ export default function NationalSubsidyPage() {
           ]}
         />
 
+        <StaffTip className="mx-auto mt-8 max-w-3xl" title="考え方のコツ" image={images.poseThink} tone="orange">
+          国の補助金は<strong className="marker">「申請できれば上乗せ」</strong>と考え、いま受付中の区・都の制度を軸に計画するのがおすすめです。
+        </StaffTip>
+
         <Callout tone="info" title="国の補助金は「今、申請できるか」で考える" className="mt-10">
           国の補助金は公募期間が短く、予算に達すると締め切られます。検討のタイミングで受付が終わっていることも多いため、国の制度を前提に資金計画を組むのではなく、「申請できれば上乗せ」と位置づけ、区・都の制度を軸に考えることをおすすめします。
         </Callout>
 
         <div className="mt-14 space-y-16">
           {nationalPrograms.map((p) => (
-            <SubsidyProgramSection key={p.id} program={p} />
+            <SubsidyProgramSection key={p.id} program={p} className="cv-block cv-tall" />
           ))}
         </div>
 
-        <section className="mt-16" aria-labelledby="local">
-          <h2 id="local" className="text-[24px] font-bold text-navy-900">今申請できる制度：葛飾区・東京都</h2>
+        <section className="cv-block mt-16" aria-labelledby="local">
+          <h2 id="local" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">今申請できる制度：葛飾区・東京都</h2>
           <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
             国の制度が受付終了中でも、葛飾区の「かつしかエコ助成金」と東京都（クール・ネット東京）の家庭向け助成は{date}時点で受付中です。葛飾区の制度は工事着工4週間前までの事前協議が原則必要です。
           </p>
@@ -85,8 +90,8 @@ export default function NationalSubsidyPage() {
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="faq">
-          <h2 id="faq" className="text-[24px] font-bold text-navy-900">国の補助金についてよくある質問</h2>
+        <section className="cv-block mt-16" aria-labelledby="faq">
+          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">国の補助金についてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-6" />
         </section>
 
@@ -101,7 +106,7 @@ export default function NationalSubsidyPage() {
             { href: "/v2h", label: "V2Hについて" },
             { href: "/simulation", label: "補助金シミュレーター" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 hover:border-navy-900">
+            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
               {l.label} →
             </Link>
           ))}
@@ -113,7 +118,7 @@ export default function NationalSubsidyPage() {
         body="国の制度は公募状況が変わります。区と都の制度で計画を組み、国の公募が始まったら上乗せを検討する進め方をご提案します。相談・見積もりは無料です。"
       />
 
-      <JsonLd data={graph(articleSchema({ path: PATH, title: "国の太陽光・蓄電池関連補助制度の現状（2026年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate }))} />
+      <JsonLd data={graph(articleSchema({ path: PATH, title: "国の太陽光・蓄電池関連補助制度の現状（2026年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate, section: "補助金", sources: nationalPrograms.map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
     </>
   );
 }

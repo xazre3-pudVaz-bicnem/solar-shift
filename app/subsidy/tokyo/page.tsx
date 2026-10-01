@@ -1,3 +1,4 @@
+import { TableScroll } from "@/components/ui/TableScroll";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
@@ -21,15 +22,18 @@ import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
+import { BigNumbers } from "@/components/subsidy/BigNumbers";
+import { StaffTip } from "@/components/ui/StaffTip";
+import { reveal } from "@/lib/reveal";
 
 const PATH = "/subsidy/tokyo";
 const S = tokyoSolarProgram;
 const B = tokyoBatteryProgram;
 
 export const metadata: Metadata = buildMetadata({
-  title: "東京都の太陽光・蓄電池補助金2026｜既存15万円/kW・蓄電池10万円/kWhの条件",
+  title: "東京都の太陽光・蓄電池補助金2026｜15万円/kW・10万円/kWhの条件",
   description:
-    "東京都（クール・ネット東京）の令和8年度 家庭向け太陽光・蓄電池助成を解説。既存住宅3.75kW以下15万円/kW上限45万円、新築3.6kW以下12万円/kW、蓄電池10万円/kWh原則上限120万円、2026年10月以降のSII登録要件。2026年10月1日時点。",
+    "東京都（クール・ネット東京）の令和8年度 家庭向け太陽光・蓄電池助成。既存3.75kW以下15万円/kW上限45万円、新築3.6kW以下12万円/kW、蓄電池10万円/kWh、2026年10月からのSII登録要件。2026年10月1日時点。",
   path: PATH,
   keywords: ["東京都 太陽光 補助金", "東京 太陽光 補助金", "東京都 蓄電池 補助金", "クール・ネット東京 太陽光", "東京都 太陽光 助成 2026"],
   type: "article",
@@ -81,24 +85,43 @@ export default function TokyoSubsidyPage() {
           ]}
         />
 
-        <section className="mt-14" aria-labelledby="solar-ex">
-          <h2 id="solar-ex" className="text-[24px] font-bold text-navy-900">太陽光：容量別の想定助成額（既存・新築）</h2>
+        <section className="cv-block mt-12" aria-labelledby="numbers">
+          <h2 id="numbers" className="text-center text-[24px] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+            東京都の助成は<span className="marker">この3つ</span>が柱
+            <span className="mt-1 block text-[14px] font-bold text-ink-2">{S.fiscalYear}・{formatDateJa(S.lastVerified)}時点</span>
+          </h2>
+          <BigNumbers
+            className="mt-8"
+            tone="green"
+            items={[
+              { subsidy: ex, label: "太陽光（既存住宅）", icon: images.iconGSunPanelLeaf },
+              { subsidy: nw, label: "太陽光（新築住宅）", icon: images.iconGHouseYenLeaf },
+              { subsidy: bt, label: "蓄電池", icon: images.iconGHouseBattery2 },
+            ]}
+          />
+          <StaffTip className="mx-auto mt-8 max-w-3xl" title="2026年10月から変わった点" image={images.poseIdea} tone="orange">
+            蓄電池は、2026年10月1日以降に事前申込をする場合、<strong className="marker">SII登録機器に限る</strong>という要件が加わりました。機種を決める前に、型番が登録済みかを確認しましょう。
+          </StaffTip>
+        </section>
+
+        <section className="cv-block mt-14" aria-labelledby="solar-ex">
+          <h2 id="solar-ex" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">太陽光：容量別の想定助成額（既存・新築）</h2>
           <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
             容量区分の単価は容量全体に適用されます。たとえば既存住宅の4kWは「4kW × 12万円」で、3.75kWまでを15万円で計算するわけではありません。この表は制度のルールをそのまま計算した概算です。
           </p>
-          <div className="mt-6 overflow-x-auto">
+          <TableScroll className="mt-6" label="太陽光：容量別の想定助成額" hintBelow="sm">
             <table className="w-full min-w-[36rem] border-collapse text-[14px]">
               <thead>
-                <tr className="bg-navy-900 text-left text-white">
-                  <th className="border border-navy-800 px-3 py-2.5">容量</th>
-                  <th className="border border-navy-800 px-3 py-2.5">既存住宅の想定額</th>
-                  <th className="border border-navy-800 px-3 py-2.5">新築住宅の想定額</th>
+                <tr className="bg-green-600 text-left text-white">
+                  <th className="border border-green-700 px-3 py-2.5">容量</th>
+                  <th className="border border-green-700 px-3 py-2.5">既存住宅の想定額</th>
+                  <th className="border border-green-700 px-3 py-2.5">新築住宅の想定額</th>
                 </tr>
               </thead>
               <tbody>
                 {solarExamples.map((e, i) => (
                   <tr key={e.kw} className={i % 2 ? "bg-paper-2" : "bg-white"}>
-                    <th scope="row" className="border border-line px-3 py-2.5 text-left font-bold text-navy-900">{e.kw}kW</th>
+                    <th scope="row" className="border border-line bg-cream/70 px-3 py-2.5 text-left font-bold text-navy-900">{e.kw}kW</th>
                     <td className="border border-line px-3 py-2.5">
                       <span className="font-bold text-navy-900">{e.existing.amount?.toLocaleString("ja-JP")}円</span>
                       <span className="ml-2 block text-[12px] text-ink-3 sm:inline">{e.existing.formula}</span>
@@ -111,28 +134,28 @@ export default function TokyoSubsidyPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableScroll>
           <p className="mt-3 text-[13px] text-ink-3">助成対象経費（税抜）が上限になります。機能性PV認定による上乗せ、リフォーム瑕疵保険加入時の加算、陸屋根の架台・防水工事への追加助成は含んでいません。</p>
         </section>
 
-        <section className="mt-16" aria-labelledby="battery-ex">
-          <h2 id="battery-ex" className="text-[24px] font-bold text-navy-900">蓄電池：容量別の想定助成額</h2>
+        <section className="cv-block mt-16" aria-labelledby="battery-ex">
+          <h2 id="battery-ex" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">蓄電池：容量別の想定助成額</h2>
           <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
             蓄電容量 × 10万円で計算します。DR実証に参加しない場合は原則上限120万円/戸で、助成対象経費（税抜）が上限です。実際の費用がこれを下回る場合は費用が上限になります。
           </p>
-          <div className="mt-6 overflow-x-auto">
+          <TableScroll className="mt-6" label="蓄電池：容量別の想定助成額" hintBelow="sm">
             <table className="w-full min-w-[30rem] border-collapse text-[14px]">
               <thead>
-                <tr className="bg-navy-900 text-left text-white">
-                  <th className="border border-navy-800 px-3 py-2.5">蓄電容量</th>
-                  <th className="border border-navy-800 px-3 py-2.5">計算式</th>
-                  <th className="border border-navy-800 px-3 py-2.5">想定額（DR不参加）</th>
+                <tr className="bg-green-600 text-left text-white">
+                  <th className="border border-green-700 px-3 py-2.5">蓄電容量</th>
+                  <th className="border border-green-700 px-3 py-2.5">計算式</th>
+                  <th className="border border-green-700 px-3 py-2.5">想定額（DR不参加）</th>
                 </tr>
               </thead>
               <tbody>
                 {batteryExamples.map((e, i) => (
                   <tr key={e.kwh} className={i % 2 ? "bg-paper-2" : "bg-white"}>
-                    <th scope="row" className="border border-line px-3 py-2.5 text-left font-bold text-navy-900">{e.kwh}kWh</th>
+                    <th scope="row" className="border border-line bg-cream/70 px-3 py-2.5 text-left font-bold text-navy-900">{e.kwh}kWh</th>
                     <td className="border border-line px-3 py-2.5 text-[13px] text-ink-2">{e.line.formula}</td>
                     <td className="border border-line px-3 py-2.5 font-bold text-navy-900">
                       {e.line.amount?.toLocaleString("ja-JP")}円{e.line.capped && <span className="ml-1 text-[11px] font-normal text-ink-3">（上限適用）</span>}
@@ -141,28 +164,28 @@ export default function TokyoSubsidyPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableScroll>
           <Callout tone="warn" title="2026年10月1日以降の事前申込は、SII登録機器に限定" className="mt-6">
             東京都の公式案内には「令和8年10月1日以降に事前申込をする場合においては、補助対象機器としてSIIが登録している機器に限る」と記載されています。検討中の蓄電池が登録済みかどうか、型番でメーカー・施工店に確認し、SIIの登録一覧でも確かめてから事前申込を行ってください。
           </Callout>
         </section>
 
-        <section className="mt-16" aria-labelledby="solar-detail">
-          <h2 id="solar-detail" className="text-[24px] font-bold text-navy-900">太陽光：制度の詳細</h2>
+        <section className="cv-block cv-tall mt-16" aria-labelledby="solar-detail">
+          <h2 id="solar-detail" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">太陽光：制度の詳細</h2>
           <div className="mt-6">
             <SubsidyProgramSection program={S} headingLevel="h3" />
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="battery-detail">
-          <h2 id="battery-detail" className="text-[24px] font-bold text-navy-900">蓄電池：制度の詳細</h2>
+        <section className="cv-block cv-tall mt-16" aria-labelledby="battery-detail">
+          <h2 id="battery-detail" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">蓄電池：制度の詳細</h2>
           <div className="mt-6">
             <SubsidyProgramSection program={B} headingLevel="h3" />
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="with-katsushika">
-          <h2 id="with-katsushika" className="text-[24px] font-bold text-navy-900">葛飾区の助成との関係</h2>
+        <section className="cv-block mt-16" aria-labelledby="with-katsushika">
+          <h2 id="with-katsushika" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">葛飾区の助成との関係</h2>
           <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
             東京都の案内は「都および公社の他の同種の助成金との重複受給は不可」としており、区市町村の制度との併用可否には触れていません。葛飾区の公式案内にも他制度との併用に関する明記はありません。両方を検討する場合は、申請前に区の窓口とクール・ネット東京にご自宅の条件で確認してください。
           </p>
@@ -172,8 +195,8 @@ export default function TokyoSubsidyPage() {
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="faq">
-          <h2 id="faq" className="text-[24px] font-bold text-navy-900">東京都の補助金についてよくある質問</h2>
+        <section className="cv-block mt-16" aria-labelledby="faq">
+          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">東京都の補助金についてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-6" />
         </section>
 
@@ -195,7 +218,7 @@ export default function TokyoSubsidyPage() {
             { href: "/guide/battery-cost", label: "蓄電池の費用の考え方" },
             { href: "/subsidy/national", label: "国の補助制度" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 hover:border-navy-900">
+            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
               {l.label} →
             </Link>
           ))}
@@ -213,7 +236,7 @@ export default function TokyoSubsidyPage() {
         body="東京都の助成は機器の登録要件と事前申込のタイミングが重要です。葛飾区の制度とあわせて、申請スケジュールを組み立てます。相談・見積もりは無料です。"
       />
 
-      <JsonLd data={graph(articleSchema({ path: PATH, title: "東京都の太陽光・蓄電池補助金（令和8年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: S.lastVerified }))} />
+      <JsonLd data={graph(articleSchema({ path: PATH, title: "東京都の太陽光・蓄電池補助金（令和8年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: S.lastVerified, section: "補助金", sources: [tokyoSolarProgram, tokyoBatteryProgram].map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
     </>
   );
 }

@@ -3,16 +3,15 @@ import Image from "next/image";
 /**
  * 画像差し替え用コンポーネント。
  * src があれば next/image で描画し、なければ「画像準備中」のプレースホルダーを同じ比率で出す。
- * - fit="cover"（既定）: 写真向け。枠いっぱいにトリミング。
+ * - fit="cover"（既定）: 写真向け。枠いっぱいにトリミング。角丸。
  * - fit="contain": アイコン・イラスト向け。余白を残して全体を表示（背景は白）。
- * 人物のダミー写真は使わない（施主提供のイラストのみ）。
  */
 export function ImagePlaceholder({
   src,
   alt,
   label = "画像準備中",
   ratio = "4/3",
-  sizes = "(max-width: 768px) 100vw, 50vw",
+  sizes = "(max-width: 767px) 100vw, 50vw",
   priority = false,
   className = "",
   fill = true,
@@ -40,15 +39,15 @@ export function ImagePlaceholder({
 
   if (src) {
     const bg = fit === "contain" ? "bg-white" : "bg-paper-3";
-    const border = frame ? "border border-line" : "";
+    const frameCls = frame ? "rounded-3xl shadow-card" : "rounded-2xl";
     return (
-      <div className={`relative overflow-hidden ${bg} ${border} ${ratioCls} ${className}`}>
+      <div className={`relative overflow-hidden ${bg} ${frameCls} ${ratioCls} ${className}`}>
         <Image
           src={src}
           alt={alt}
           fill={fill}
           sizes={sizes}
-          priority={priority}
+          preload={priority}
           className={fit === "contain" ? "object-contain p-3" : "object-cover"}
         />
       </div>
@@ -57,7 +56,7 @@ export function ImagePlaceholder({
 
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden border border-line bg-paper-3 ${ratioCls} ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden rounded-3xl border border-line bg-paper-3 ${ratioCls} ${className}`}
       role="img"
       aria-label={alt}
     >

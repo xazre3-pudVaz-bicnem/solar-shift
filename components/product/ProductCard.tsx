@@ -10,24 +10,22 @@ export function ProductCard({ product }: { product: Product }) {
       ? [product.ratedOutputW ? `${product.ratedOutputW}W` : null, product.efficiencyPct ? `変換効率${product.efficiencyPct}%` : null]
       : [product.capacityKwh ? `${product.capacityKwh}kWh` : null, product.loadType];
   return (
-    <article className="flex flex-col border border-line bg-white">
-      <Link href={`/products/${product.slug}`} className="block">
-        <ImagePlaceholder src={product.image} alt={product.imageAlt ?? `${product.manufacturer} ${product.name}`} ratio="4/3" label="商品画像準備中" />
-      </Link>
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-card transition-transform duration-200 hover:-translate-y-1">
+      <ImagePlaceholder src={product.image} alt={product.imageAlt ?? `${product.manufacturer} ${product.name}`} ratio="4/3" label="商品画像準備中" frame={false} className="rounded-none" />
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center gap-2">
-          <Badge tone="navy">{productCategoryLabel[product.category]}</Badge>
+          <Badge tone="green">{productCategoryLabel[product.category]}</Badge>
           {product.recommended && <Badge tone="accent">おすすめ</Badge>}
         </div>
         <p className="mt-3 text-[12px] text-ink-3">{product.manufacturer}</p>
-        <h3 className="text-[16px] font-bold text-navy-900">
-          <Link href={`/products/${product.slug}`} className="hover:text-accent-text">
+        <h3 className="text-[17px] font-bold text-navy-900">
+          <Link href={`/products/${product.slug}`} className="after:absolute after:inset-0 after:content-[''] group-hover:text-accent-text">
             {product.name}
           </Link>
         </h3>
         {product.modelNumber && <p className="text-[12px] text-ink-3">{product.modelNumber}</p>}
         <p className="mt-2 text-[13px] text-ink-2">{spec.filter(Boolean).join("・")}</p>
-        <p className="mt-auto pt-4 text-[14px] font-bold text-navy-900">{priceLabel(product)}</p>
+        <p className="mt-auto pt-4 font-heading text-[15px] font-black text-navy-900">{priceLabel(product)}</p>
       </div>
     </article>
   );

@@ -5,6 +5,7 @@ import { subsidiesByEquipment } from "@/data/subsidies";
 import { faqsByIds } from "@/data/faq";
 import { ServiceLayout } from "@/components/sections/ServiceLayout";
 import { images } from "@/data/images";
+import { FitStepChart } from "@/components/sections/FitStepChart";
 
 const PATH = "/solar";
 const DESC =
@@ -29,6 +30,8 @@ export default function SolarPage() {
         { name: "太陽光発電", href: PATH },
       ]}
       eyebrow="太陽光発電"
+      heroImage={images.houseRoofSkyWide}
+      tip={{ title: "容量の決め方", body: <>容量は「<strong className="marker">屋根に載る枚数・電気の使用量・補助金の上限</strong>」の3つから決めます。大きければ得、とは限りません。</>, image: images.poseIdea }}
       title={<>住宅用太陽光発電<span className="block text-[0.7em] text-ink-2">屋根でつくった電気を、まず自宅で使う</span></>}
       lead="太陽光発電は、屋根に載せたパネルで発電した電気を自宅で使い、余った分を電力会社に売る仕組みです。電気を「買う量」を減らすことが本来の目的で、売電は補助的な収入と考えるのが2026年度以降の基本です。"
       conclusion="住宅用太陽光発電は「自家消費が主、売電が従」で考えます。2026年度のFIT制度は最初の4年間が24円/kWh、5〜10年目が8.3円/kWhと前半に手厚い設定で、葛飾区では区の助成（6万円/kW・上限30万円）と東京都の助成（既存住宅3.75kW超は12万円/kW）が検討対象です。導入の可否は屋根の向き・面積・影・築年数で決まるため、現地調査が出発点になります。"
@@ -42,7 +45,7 @@ export default function SolarPage() {
         {
           id: "how",
           heading: "太陽光発電の仕組み：パネル・パワコン・分電盤",
-          image: { src: images.panelsCloseupSky.src, alt: images.panelsCloseupSky.alt },
+          image: images.panelsCloseupSky,
           body: (
             <>
               <p>太陽光発電システムは、屋根の<strong>太陽電池モジュール（パネル）</strong>、直流を家庭用の交流に変える<strong>パワーコンディショナ</strong>、家の各回路へ電気を分ける<strong>分電盤</strong>、発電量と売電量を測る<strong>電力量計</strong>で構成されます。</p>
@@ -54,6 +57,7 @@ export default function SolarPage() {
         {
           id: "fit",
           heading: "売電の考え方：2026年度のFIT価格",
+          figure: <FitStepChart />,
           body: (
             <>
               <p>FIT（固定価格買取制度）では、住宅用（10kW未満）の余剰電力を10年間、決められた単価で買い取ってもらえます。2026年度の単価は<strong>最初の4年間が24円/kWh、5〜10年目が8.3円/kWh</strong>です（経済産業省の公表資料、2026年10月1日時点）。</p>
@@ -65,7 +69,7 @@ export default function SolarPage() {
         {
           id: "roof",
           heading: "向いている家、確認が必要な家",
-          image: { src: images.roofPanelsFront.src, alt: images.roofPanelsFront.alt },
+          image: images.roofPanelsFront,
           body: (
             <>
               <h3>向いている条件</h3>
@@ -89,6 +93,7 @@ export default function SolarPage() {
         {
           id: "capacity",
           heading: "容量（kW）はどう決める？",
+          image: images.iconClipboardHouse,
           body: (
             <>
               <p>容量は次の3つを突き合わせて決めます。</p>
@@ -104,6 +109,7 @@ export default function SolarPage() {
         {
           id: "longterm",
           heading: "寿命・保証・メンテナンス",
+          image: images.iconPanelWrench,
           body: (
             <>
               <p>太陽光パネルは一般に20〜30年程度使われることが多く、メーカーの出力保証は25年前後が主流です。一方、パワーコンディショナは10〜15年程度で交換が必要になるのが一般的で、長期の維持費として見込んでおきます。</p>
@@ -114,6 +120,7 @@ export default function SolarPage() {
         {
           id: "katsushika",
           heading: "葛飾区で太陽光を導入するときの考え方",
+          image: images.katsushikaStreetSunset,
           body: (
             <>
               <p>葛飾区は戸建の多い住宅都市で、隣家との距離が近い敷地が多い地域です。影の影響を現地で確認し、屋根の形に合わせた配置にすることで、無理のない容量を載せられます。</p>

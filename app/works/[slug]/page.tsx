@@ -83,7 +83,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
         </section>
         {w.images.length > 1 && (
           <section className="mt-10" aria-label="施工写真">
-            <h2 className="text-[20px] font-bold text-navy-900">施工写真</h2>
+            <h2 className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">施工写真</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {w.images.slice(1).map((img) => (
                 <figure key={img.src}>

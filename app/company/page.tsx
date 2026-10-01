@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
-import { siteConfig, contactEmail } from "@/lib/site";
+import { siteConfig, contactEmail, companyMapUrl } from "@/lib/site";
 import { servedAreaNames } from "@/data/areas";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -30,7 +30,18 @@ export default function CompanyPage() {
     { term: "運営会社", description: `${c.name}（${c.nameEn}）` },
     { term: c.representativeTitle, description: c.representative },
     { term: "設立", description: c.founded },
-    { term: "所在地", description: <>{c.address.postalCode && <>〒{c.address.postalCode}<br /></>}{c.address.full}</> },
+    {
+      term: "所在地",
+      description: (
+        <>
+          {c.address.postalCode && <>〒{c.address.postalCode}<br /></>}
+          {c.address.full}
+          <a href={companyMapUrl()} target="_blank" rel="noopener noreferrer" className="ml-3 inline-block py-0.5 text-[13px] font-bold text-navy-600 underline underline-offset-4">
+            Googleマップで見る
+          </a>
+        </>
+      ),
+    },
     { term: "事業内容", description: c.businessDescription },
     ...(email ? [{ term: "メールアドレス", description: <a href={`mailto:${email}`} className="text-navy-600 underline underline-offset-4">{email}</a> }] : []),
     ...(siteConfig.contact.telDisplay ? [{ term: "電話番号", description: siteConfig.contact.telDisplay }] : []),
@@ -54,16 +65,16 @@ export default function CompanyPage() {
         <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
           <div className="space-y-6">
             <ImagePlaceholder src={images.consultationDesk.src} alt={images.consultationDesk.alt} ratio="4/3" label="会社・拠点の写真（差し替え）" />
-            <div className="border border-line bg-paper-2 p-5 text-[14px] leading-[1.8] text-ink-2">
+            <div className="rounded-3xl bg-beige p-5 text-[14px] leading-[1.8] text-ink-2">
               <p className="font-bold text-navy-900">SOLAR SHIFT の位置づけ</p>
               <p className="mt-2">{c.name}は、Webマーケティング支援を中心に事業を行ってきた会社です。SOLAR SHIFT は、本社のある葛飾区で、住宅の太陽光発電・蓄電池の導入を補助金の整理からサポートする事業として2026年に開始しました。</p>
               <p className="mt-2">新規事業のため、施工実績やお客様の声は掲載許可をいただいたものから順次公開します。確認できていない実績を掲載することはありません。</p>
             </div>
           </div>
           <div>
-            <h2 className="text-[22px] font-bold text-navy-900">会社概要</h2>
+            <h2 className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">会社概要</h2>
             <DefinitionList rows={rows} className="mt-5" />
-            <h2 className="mt-12 text-[22px] font-bold text-navy-900">SOLAR SHIFT の事業内容</h2>
+            <h2 className="mt-12 border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">SOLAR SHIFT の事業内容</h2>
             <ul className="mt-5 grid gap-2 sm:grid-cols-2">
               {[
                 "住宅用太陽光発電の提案・設置",
@@ -76,13 +87,13 @@ export default function CompanyPage() {
                 "現地調査・見積もり（無料）",
                 "導入後サポート",
               ].map((s) => (
-                <li key={s} className="flex items-center gap-2 border border-line bg-white px-4 py-2.5 text-[14px] text-ink">
+                <li key={s} className="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-[14px] font-bold text-navy-900 shadow-card">
                   <span className="h-[6px] w-[6px] shrink-0 bg-orange-500" aria-hidden="true" />
                   {s}
                 </li>
               ))}
             </ul>
-            <h2 className="mt-12 text-[22px] font-bold text-navy-900">情報の取り扱い</h2>
+            <h2 className="mt-12 border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">情報の取り扱い</h2>
             <p className="mt-4 text-[15px] leading-[1.9] text-ink-2">
               補助金・費用・売電など金銭判断に関わる情報は、自治体・国の一次情報を確認し、確認日を明記して掲載しています。記事の作成・更新の基準は
               <Link href="/editorial-policy" className="mx-1 text-navy-600 underline underline-offset-4">記事・補助金情報の編集方針</Link>
@@ -94,7 +105,7 @@ export default function CompanyPage() {
         </div>
       </Container>
       <CtaSection title="葛飾区の会社として、葛飾区の住まいに向き合います。" body="現地調査・お見積もりは無料です。訪問販売や電話営業はしていません。お問い合わせをいただいた方にだけご連絡します。" />
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "運営会社", description: DESC }))} />
+      <JsonLd data={graph(webPageSchema({ path: PATH, name: "運営会社", description: DESC, type: "AboutPage" }))} />
     </>
   );
 }

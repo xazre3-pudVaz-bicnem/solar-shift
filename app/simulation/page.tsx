@@ -13,7 +13,7 @@ import { SourceList } from "@/components/ui/SourceList";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, webPageSchema } from "@/lib/schema";
+import { graph, webApplicationSchema, webPageSchema } from "@/lib/schema";
 import { images } from "@/data/images";
 
 const PATH = "/simulation";
@@ -48,7 +48,7 @@ export default function SimulationPage() {
       <Container className="py-10 sm:py-14">
         <SubsidyCalculator infoDate={siteConfig.subsidyInfoDate} />
 
-        <div className="mt-12 border border-line bg-paper-2 p-6 text-[14px] leading-[1.9] text-ink-2">
+        <div className="mt-12 rounded-3xl bg-beige p-6 text-[14px] leading-[1.9] text-ink-2">
           <p className="text-[15px] font-bold text-navy-900">この試算の前提</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>金額は {formatDateJa(siteConfig.subsidyInfoDate)} 時点の公式情報（下記出典）をもとに、制度のルールをそのまま計算した概算です。</li>
@@ -64,8 +64,8 @@ export default function SimulationPage() {
           </p>
         </div>
 
-        <section className="mt-14" aria-labelledby="faq">
-          <h2 id="faq" className="text-[22px] font-bold text-navy-900">シミュレーターについてよくある質問</h2>
+        <section className="cv-block mt-14" aria-labelledby="faq">
+          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">シミュレーターについてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-5" />
         </section>
 
@@ -86,7 +86,12 @@ export default function SimulationPage() {
         secondary={{ href: "/subsidy/katsushika", label: "葛飾区の補助金を詳しく見る" }}
       />
 
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "太陽光・蓄電池 補助金シミュレーター", description: metadata.description as string, dateModified: siteConfig.subsidyInfoDate }))} />
+      <JsonLd
+        data={graph(
+          webPageSchema({ path: PATH, name: "太陽光・蓄電池 補助金シミュレーター", description: metadata.description as string, dateModified: siteConfig.subsidyInfoDate }),
+          webApplicationSchema({ path: PATH, name: "太陽光・蓄電池 補助金シミュレーター", description: metadata.description as string }),
+        )}
+      />
     </>
   );
 }

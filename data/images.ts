@@ -1,8 +1,11 @@
 /**
- * サイトで使う画像の登録簿。public/images/*.webp（scripts/prepare-images.cjs で生成）。
+ * サイトで使う画像の登録簿。public/images/*.webp
+ *   写真・アイコン・人物イラスト … scripts/prepare-images.mjs
+ *   ポーズ・蓄電池イラスト       … scripts/prepare-illustrations.mjs（1枚のシートから切り出し）
+ *
  * - alt は「イメージ」であることが分かる書き方にし、実在の場所・人物・施工実績を断定しない。
  * - decorative: true のものは装飾扱い（alt を空にして読み上げ対象から外す）。
- * - 差し替えるときは public/images に同名で上書きするか、ここの src を変える。
+ * - white: true のものは背景が白のまま（透過ではない）。白いカードの上でだけ使う。
  */
 
 export interface SiteImage {
@@ -11,11 +14,14 @@ export interface SiteImage {
   width: number;
   height: number;
   decorative?: boolean;
+  white?: boolean;
 }
 
 const photo = (name: string, alt: string, width = 1600, height = 900): SiteImage => ({ src: `/images/${name}.webp`, alt, width, height });
 const icon = (name: string, alt: string): SiteImage => ({ src: `/images/${name}.webp`, alt, width: 800, height: 800, decorative: true });
 const people = (name: string, alt: string, width = 1200, height = 900): SiteImage => ({ src: `/images/${name}.webp`, alt, width, height, decorative: true });
+const pose = (name: string, alt: string, width: number, height: number): SiteImage => ({ src: `/images/${name}.webp`, alt, width, height, decorative: true });
+const bat = (name: string, alt: string, size: number): SiteImage => ({ src: `/images/${name}.webp`, alt, width: size, height: size, decorative: true, white: true });
 
 export const images = {
   // ───────── 写真（イメージ）
@@ -42,7 +48,7 @@ export const images = {
   houseRoofSkyWide: photo("house-roof-sky-wide", "太陽光パネルを載せた屋根と太陽のイメージ", 1536, 1024),
   roofPanelsTree3: photo("roof-panels-tree-3", "青空と太陽光パネルの家のイメージ", 1536, 1024),
 
-  // ───────── アイコン（装飾）
+  // ───────── アイコン：オレンジ系（透過・装飾）
   iconSunPanel: icon("icon-sun-panel", "太陽と太陽光パネルのアイコン"),
   iconHouseSolar: icon("icon-house-solar", "太陽光パネルを載せた家のアイコン"),
   iconHouseBattery: icon("icon-house-battery", "太陽光パネルの家と蓄電池のアイコン"),
@@ -54,7 +60,19 @@ export const images = {
   iconClipboardHouse: icon("icon-clipboard-house", "チェックリストと太陽光パネルの家のアイコン"),
   iconHandPanel: icon("icon-hand-panel", "手のひらに載せた太陽光パネルのアイコン"),
 
-  // ───────── 人物イラスト（装飾）
+  // ───────── アイコン：グリーン系（透過・装飾）
+  iconGHouseYenLeaf: icon("icon-g-house-yen-leaf", "家と円マークと葉のアイコン"),
+  iconGHandHouseYen: icon("icon-g-hand-house-yen", "手のひらに載せた家と円マークのアイコン"),
+  iconGSunPanelLeaf: icon("icon-g-sun-panel-leaf", "太陽と太陽光パネルと葉のアイコン"),
+  iconGHouseBattery: icon("icon-g-house-battery", "家と蓄電池のアイコン"),
+  iconGBillDown: icon("icon-g-bill-down", "電気料金が下がる明細と家のアイコン"),
+  iconGHouseWrench: icon("icon-g-house-wrench", "家と工具のアイコン"),
+  iconGClipboardHouse: icon("icon-g-clipboard-house", "チェックリストと家のアイコン"),
+  iconGHouseShield: icon("icon-g-house-shield", "家と盾のアイコン"),
+  iconGHouseEv: icon("icon-g-house-ev", "家と電気自動車のアイコン"),
+  iconGHouseBattery2: icon("icon-g-house-battery-2", "家と蓄電池のアイコン"),
+
+  // ───────── 人物イラスト（透過・装飾）
   peopleCoupleTalk: people("people-couple-talk", "相談する夫婦のイラスト"),
   peopleCoupleThink: people("people-couple-think", "考え込む夫婦のイラスト"),
   peopleFamily: people("people-family", "笑顔の家族のイラスト"),
@@ -67,6 +85,39 @@ export const images = {
   peopleFamily2: people("people-family-2", "家族のイラスト"),
   peopleStaffPoint2: people("people-staff-point-2", "説明するスタッフのイラスト", 1200, 800),
   peopleStaffPoint3: people("people-staff-point-3", "説明するスタッフのイラスト", 1200, 800),
+
+  // ───────── スタッフのポーズ（透過・装飾）
+  poseIdea: pose("pose-idea", "ひらめいたスタッフのイラスト", 297, 400),
+  poseThink: pose("pose-think", "考えるスタッフのイラスト", 274, 374),
+  poseLaptop: pose("pose-laptop", "ノートパソコンを持つスタッフのイラスト", 349, 362),
+  poseFist: pose("pose-fist", "こぶしを握るスタッフのイラスト", 291, 368),
+  posePhone: pose("pose-phone", "電話をするスタッフのイラスト", 302, 376),
+  poseCalc: pose("pose-calc", "電卓を持つスタッフのイラスト", 292, 377),
+  poseChart: pose("pose-chart", "資料を持つスタッフのイラスト", 322, 382),
+  poseTrust: pose("pose-trust", "胸に手を当てるスタッフのイラスト", 271, 386),
+  poseOk: pose("pose-ok", "OKサインをするスタッフのイラスト", 305, 378),
+
+  // ───────── 蓄電池のイラスト（白背景・装飾）
+  batUnit: bat("bat-unit", "家庭用蓄電池のイラスト", 358),
+  batHouseFlow: bat("bat-house-flow", "太陽光パネルの家と蓄電池のイラスト", 408),
+  batDayNight: bat("bat-day-night", "昼にためて夜に使う蓄電池のイラスト", 381),
+  batHomeAppliances: bat("bat-home-appliances", "蓄電池から家電に電気を送る家のイラスト", 370),
+  batShield: bat("bat-shield", "蓄電池と盾のイラスト", 383),
+  batStorm: bat("bat-storm", "嵐の夜に明かりが灯る家と蓄電池のイラスト", 424),
+  batStack: bat("bat-stack", "増設した蓄電池のイラスト", 376),
+  batEco: bat("bat-eco", "蓄電池と葉のイラスト", 408),
+  batInside: bat("bat-inside", "蓄電池の内部のイラスト", 371),
+  batTemperature: bat("bat-temperature", "蓄電池と温度のイラスト", 393),
+  batOutdoor: bat("bat-outdoor", "屋外に設置した蓄電池のイラスト", 375),
+  batSolarToHome: bat("bat-solar-to-home", "太陽光から蓄電池を通って家電へ電気が流れる家のイラスト", 398),
+  batNight: bat("bat-night", "夜の家と蓄電池のイラスト", 395),
+  batCharge: bat("bat-charge", "充電された蓄電池のイラスト", 403),
+  batStorm2: bat("bat-storm-2", "停電の夜の家と蓄電池のイラスト", 444),
+  batYenDown: bat("bat-yen-down", "蓄電池と下向きの円マークのイラスト", 411),
+  batSolarHouse: bat("bat-solar-house", "太陽光パネルの家と蓄電池のイラスト", 397),
+  batEv: bat("bat-ev", "蓄電池と電気自動車のイラスト", 378),
+  batCabinet: bat("bat-cabinet", "蓄電池の筐体のイラスト", 397),
+  batApp: bat("bat-app", "蓄電池とスマートフォンのアプリ画面のイラスト", 378),
 } as const;
 
 export type ImageKey = keyof typeof images;

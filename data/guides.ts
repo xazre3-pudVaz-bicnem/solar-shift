@@ -5,8 +5,12 @@
  * （内容が全て異なるため、テンプレート化しない）。
  */
 
+import type { ImageKey } from "./images";
+
 export interface GuideEntry {
   slug: string;
+  /** 見出し横に出すイラスト（data/images.ts のキー） */
+  image: ImageKey;
   path: string;
   title: string;
   /** 一覧用の短い説明 */
@@ -21,6 +25,7 @@ export interface GuideEntry {
 export const guides: GuideEntry[] = [
   {
     slug: "solar-cost",
+    image: "poseCalc",
     path: "/guide/solar-cost",
     title: "太陽光発電の費用はいくら？内訳と葛飾区で使える補助金の考え方",
     description: "設置費用の内訳、費用が変わる要因、補助金を差し引いた考え方を整理します。",
@@ -30,6 +35,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "solar-merit-demerit",
+    image: "poseThink",
     path: "/guide/solar-merit-demerit",
     title: "太陽光発電のメリット・デメリット｜導入前に知っておくべきこと",
     description: "電気代・停電対策・売電の利点と、費用・屋根・メンテナンスの注意点を両面から解説。",
@@ -39,6 +45,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "solar-lifespan",
+    image: "iconPanelWrench",
     path: "/guide/solar-lifespan",
     title: "太陽光パネルの寿命は何年？パワコン交換と保証の見方",
     description: "パネル・パワーコンディショナ・架台それぞれの寿命の目安と、保証の読み方。",
@@ -48,6 +55,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "battery-cost",
+    image: "batYenDown",
     path: "/guide/battery-cost",
     title: "家庭用蓄電池の費用はいくら？容量別の考え方と補助金",
     description: "蓄電池の価格を決める要素、容量と費用のバランス、助成を踏まえた考え方。",
@@ -57,6 +65,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "battery-how-to-choose",
+    image: "batStack",
     path: "/guide/battery-how-to-choose",
     title: "蓄電池の選び方｜容量・全負荷/特定負荷・ハイブリッドの違い",
     description: "容量の決め方、全負荷と特定負荷、ハイブリッド型と単機能型の違いを整理。",
@@ -66,6 +75,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "blackout",
+    image: "batStorm",
     path: "/guide/blackout",
     title: "停電時に太陽光発電・蓄電池はどこまで使える？葛飾区の水害リスクと備え",
     description: "自立運転の限界、蓄電池で使える範囲、水害リスクを踏まえた設置の考え方。",
@@ -75,6 +85,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "selling-electricity",
+    image: "iconHandPanel",
     path: "/guide/selling-electricity",
     title: "太陽光の売電とは？2026年度のFIT買取価格と仕組み",
     description: "FIT制度の仕組み、2026年度の買取価格、自家消費とのバランスの考え方。",
@@ -84,6 +95,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "post-fit",
+    image: "batDayNight",
     path: "/guide/post-fit",
     title: "卒FIT後はどうする？売電継続・蓄電池・V2Hの選択肢",
     description: "FIT期間終了後の売電単価の変化と、蓄電池やV2Hで自家消費に切り替える考え方。",
@@ -93,6 +105,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "all-electric",
+    image: "batHomeAppliances",
     path: "/guide/all-electric",
     title: "オール電化と太陽光・蓄電池の相性｜電気代を抑える組み合わせ",
     description: "オール電化住宅で太陽光・蓄電池・エコキュートを組み合わせる考え方。",
@@ -102,6 +115,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "roof-conditions",
+    image: "iconHouseSolar",
     path: "/guide/roof-conditions",
     title: "太陽光パネルに向く屋根の条件｜向き・勾配・材質・築年数",
     description: "設置の可否を左右する屋根の条件と、葛飾区の住宅で多い確認ポイント。",
@@ -111,6 +125,7 @@ export const guides: GuideEntry[] = [
   },
   {
     slug: "maintenance",
+    image: "iconGHouseWrench",
     path: "/guide/maintenance",
     title: "太陽光発電のメンテナンス｜点検の頻度・費用・やるべきこと",
     description: "定期点検の内容、パワコン交換、汚れや故障のサイン、保証の使い方。",

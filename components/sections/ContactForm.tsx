@@ -54,7 +54,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
 
   if (status === "done") {
     return (
-      <div className="border border-navy-900 bg-white p-6">
+      <div className="rounded-3xl border-2 border-green-500 bg-white p-6 shadow-card">
         <p className="text-[18px] font-bold text-navy-900">お問い合わせを受け付けました</p>
         <p className="mt-2 text-[15px] leading-[1.8] text-ink-2">
           内容を確認のうえ、通常2〜3営業日以内に担当者よりご連絡します。お急ぎの場合は、メールでも受け付けています。
@@ -65,7 +65,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
 
   if (status === "unconfigured") {
     return (
-      <div className="border border-orange-100 bg-orange-50 p-6">
+      <div className="rounded-3xl border-2 border-orange-200 bg-orange-50 p-6">
         <p className="text-[16px] font-bold text-navy-900">フォーム送信は現在準備中です</p>
         <p className="mt-2 text-[15px] leading-[1.8] text-ink-2">
           お手数ですが、下記メールアドレス宛に「お名前・ご住所（市区）・ご相談内容」をお送りください。
@@ -118,7 +118,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
       </div>
 
       {error && (
-        <p role="alert" className="border-l-4 border-orange-500 bg-orange-50 px-4 py-2 text-[14px] text-accent-text">
+        <p role="alert" className="rounded-xl border-l-8 border-orange-500 bg-orange-50 px-4 py-2 text-[14px] font-bold text-accent-text">
           {error}
         </p>
       )}
@@ -132,7 +132,7 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
       <button
         type="submit"
         disabled={status === "sending"}
-        className="inline-flex h-14 w-full items-center justify-center bg-navy-900 px-8 text-base font-bold text-white hover:bg-navy-700 disabled:opacity-60 sm:w-auto"
+        className="inline-flex h-14 w-full items-center justify-center rounded-full bg-cta px-10 font-heading text-[17px] font-bold text-white shadow-pill transition-transform duration-200 hover:-translate-y-0.5 hover:bg-cta-dark disabled:opacity-60 sm:w-auto"
       >
         {status === "sending" ? "送信中…" : "この内容で送信する"}
       </button>
@@ -140,14 +140,14 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
   );
 }
 
-const inputCls = "h-12 w-full border border-line-2 bg-white px-3 text-[16px] text-ink focus:border-navy-900";
+const inputCls = "h-12 w-full rounded-xl border-2 border-line-2 bg-white px-3 text-[16px] text-ink focus:border-green-600";
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
       <span className="mb-1.5 flex items-center gap-2 text-[14px] font-bold text-navy-900">
         {label}
-        {required && <span className="bg-orange-600 px-1.5 py-[1px] text-[11px] text-white">必須</span>}
+        {required && <span className="rounded-full bg-cta px-2 py-[1px] text-[11px] font-bold text-white">必須</span>}
       </span>
       {children}
       {hint && <span className="mt-1 block text-[12px] text-ink-3">{hint}</span>}

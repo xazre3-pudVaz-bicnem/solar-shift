@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
-import { katsushikaProgram, tokyoSolarProgram, tokyoBatteryProgram, nationalPrograms, allSubsidies } from "@/data/subsidies";
+import { katsushikaProgram, tokyoSolarProgram, tokyoBatteryProgram, nationalPrograms, allSubsidies, getSubsidy } from "@/data/subsidies";
 import { faqsByIds } from "@/data/faq";
+import { images } from "@/data/images";
+import { reveal } from "@/lib/reveal";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { KeyPoints } from "@/components/ui/KeyPoints";
+import { StaffTip } from "@/components/ui/StaffTip";
 import { SubsidyTable } from "@/components/subsidy/SubsidyTable";
+import { BigNumbers } from "@/components/subsidy/BigNumbers";
+import { ApplicationTimeline } from "@/components/subsidy/ApplicationTimeline";
 import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { LastUpdated } from "@/components/ui/LastUpdated";
 import { SourceList } from "@/components/ui/SourceList";
@@ -15,12 +21,11 @@ import { Steps } from "@/components/ui/Steps";
 import { Callout } from "@/components/ui/Callout";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
-import { LinkButton, ArrowIcon } from "@/components/ui/Button";
+import { SubsidyBanner } from "@/components/sections/SubsidyBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, articleSchema } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
-import { images } from "@/data/images";
 
 const PATH = "/subsidy";
 const TITLE = "太陽光・蓄電池の補助金 2026年度｜葛飾区・東京都・国の制度まとめ";
@@ -35,13 +40,50 @@ export const metadata: Metadata = buildMetadata({
   modifiedTime: siteConfig.subsidyInfoDate,
 });
 
+const LAYERS = [
+  {
+    href: "/subsidy/katsushika",
+    label: "葛飾区",
+    pill: "bg-orange-500 text-navy-900",
+    border: "border-orange-400",
+    icon: images.iconHouseYen,
+    title: katsushikaProgram.programName,
+    body: "太陽光・蓄電池・HEMS・V2Hと併設加算。工事着工4週間前までの事前協議が原則。",
+    status: "受付中",
+    open: true,
+  },
+  {
+    href: "/subsidy/tokyo",
+    label: "東京都",
+    pill: "bg-green-600 text-white",
+    border: "border-green-400",
+    icon: images.iconGHandHouseYen,
+    title: "クール・ネット東京の家庭向け助成",
+    body: "太陽光（既存・新築で単価が違う）と蓄電池（10万円/kWh）。2026年10月以降の蓄電池はSII登録機器に限定。",
+    status: "受付中",
+    open: true,
+  },
+  {
+    href: "/subsidy/national",
+    label: "国",
+    pill: "bg-navy-900 text-white",
+    border: "border-line-2",
+    icon: images.iconClipboardHouse,
+    title: "DR補助金・CEV補助金・みらいエコ住宅",
+    body: "家庭用蓄電池とV2Hの国の補助金は受付終了中。次回公募と住宅省エネ事業の扱いを整理。",
+    status: "一部受付終了",
+    open: false,
+  },
+] as const;
+
 export default function SubsidyIndexPage() {
   const crumbs = [
     { name: "ホーム", href: "/" },
     { name: "補助金", href: PATH },
   ];
+  const s = (id: string) => getSubsidy(id)!;
   const faqItems = faqsByIds(["subsidy-combination", "subsidy-pre-consultation", "subsidy-national", "subsidy-guarantee"]);
-  const sources = Array.from(new Map(allSubsidies.map((s) => [s.sourceUrl, { name: s.sourceName, url: s.sourceUrl, verifiedAt: s.lastVerified }])).values());
+  const sources = Array.from(new Map(allSubsidies.map((x) => [x.sourceUrl, { name: x.sourceName, url: x.sourceUrl, verifiedAt: x.lastVerified }])).values());
   const posts = getPostsForPillar(["katsushika-subsidy", "tokyo-subsidy"], 3);
 
   return (
@@ -49,7 +91,12 @@ export default function SubsidyIndexPage() {
       <PageHeader
         crumbs={crumbs}
         eyebrow="補助金総合ページ"
-        title={<>太陽光・蓄電池の補助金<span className="block text-[0.7em] text-ink-2">2026年度（令和8年度）葛飾区・東京都・国</span></>}
+        title={
+          <>
+            太陽光・蓄電池の<span className="marker">補助金</span>
+            <span className="block text-[0.7em] text-ink-2">2026年度（令和8年度）葛飾区・東京都・国</span>
+          </>
+        }
         lead="太陽光発電や蓄電池の補助金は「区・都・国」の3層に分かれ、金額・条件・申請の順番がそれぞれ違います。このページでは3層の全体像を整理し、各制度の詳細ページへご案内します。"
         image={images.peopleStaffOk}
       >
@@ -67,67 +114,114 @@ export default function SubsidyIndexPage() {
           ]}
         />
 
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {[
-            { href: "/subsidy/katsushika", label: "葛飾区", title: katsushikaProgram.programName, body: "太陽光・蓄電池・HEMS・V2Hと併設加算。工事着工4週間前までの事前協議が原則。", tone: "navy" },
-            { href: "/subsidy/tokyo", label: "東京都", title: "クール・ネット東京の家庭向け助成", body: "太陽光（既存・新築で単価が違う）と蓄電池（10万円/kWh）。2026年10月以降の蓄電池はSII登録機器に限定。", tone: "navy" },
-            { href: "/subsidy/national", label: "国", title: "DR補助金・CEV補助金・みらいエコ住宅", body: "家庭用蓄電池とV2Hの国の補助金は受付終了中。次回公募と住宅省エネ事業の扱いを整理。", tone: "muted" },
-          ].map((c) => (
-            <Link key={c.href} href={c.href} className={`block border p-6 ${c.tone === "navy" ? "border-navy-900 bg-white hover:bg-navy-50" : "border-line bg-paper-2 hover:border-navy-900"}`}>
-              <p className="text-[12px] font-bold tracking-wide text-accent-text">{c.label}</p>
-              <h2 className="mt-2 text-[18px] leading-[1.5] font-bold text-navy-900">{c.title}</h2>
-              <p className="mt-2 text-[14px] leading-[1.8] text-ink-2">{c.body}</p>
-              <p className="mt-4 text-[13px] font-bold text-navy-600">詳しく見る →</p>
-            </Link>
-          ))}
-        </div>
+        {/* 3層の入口 */}
+        <section className="cv-block mt-14" aria-labelledby="layers-h">
+          <h2 id="layers-h" className="text-center text-[24px] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+            補助金は<span className="marker">3つの層</span>に分かれています
+          </h2>
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {LAYERS.map((c, i) => (
+              <div key={c.href} {...reveal(i * 110)}>
+                <Link href={c.href} className={`group relative block h-full rounded-3xl border-[3px] bg-white p-6 pt-8 shadow-card transition-transform duration-200 hover:-translate-y-1 ${c.border}`}>
+                  <span className={`absolute -top-4 left-6 rounded-full px-5 py-1.5 font-heading text-[16px] font-black shadow-sm ${c.pill}`}>{c.label}</span>
+                  <span className={`absolute top-3 right-4 rounded-full px-3 py-[2px] text-[12px] font-bold ${c.open ? "bg-green-600 text-white" : "bg-paper-3 text-ink-3"}`}>{c.status}</span>
+                  <Image src={c.icon.src} alt="" width={120} height={120} className="mx-auto h-24 w-24 transition-transform duration-300 group-hover:scale-110" />
+                  <h3 className="mt-3 text-[18px] leading-[1.5] font-black text-navy-900">{c.title}</h3>
+                  <p className="mt-2 text-[14px] leading-[1.8] text-ink-2">{c.body}</p>
+                  <p className="mt-4 font-heading text-[14px] font-bold text-navy-600">詳しく見る →</p>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+      </Container>
 
-        <section className="mt-16" aria-labelledby="all-table">
-          <h2 id="all-table" className="text-[24px] font-bold text-navy-900">2026年度の制度一覧（区・都・国）</h2>
+      {/* 大きな数字 */}
+      <section className="cv-auto bg-cream py-14 sm:py-20" aria-labelledby="numbers-h">
+        <Container>
+          <h2 id="numbers-h" className="text-center text-[24px] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+            いま申請できる<span className="marker">主な助成額</span>
+            <span className="mt-1 block text-[14px] font-bold text-ink-2">{formatDateJa(siteConfig.subsidyInfoDate)}時点の公式情報</span>
+          </h2>
+          <h3 className="mt-10 mb-4 flex items-center gap-3 text-[20px] font-black text-navy-900">
+            <span className="shrink-0 rounded-full bg-orange-500 px-4 py-1 text-[15px] whitespace-nowrap text-navy-900">葛飾区</span>
+            {katsushikaProgram.programName}
+          </h3>
+          <BigNumbers
+            items={[
+              { subsidy: s("katsushika-solar"), label: "太陽光発電", icon: images.iconSunPanel },
+              { subsidy: s("katsushika-battery"), label: "蓄電池", icon: images.iconHouseBattery },
+              { subsidy: s("katsushika-solar-battery-addon"), label: "太陽光＋蓄電池の併設加算", icon: images.iconHouseYen },
+            ]}
+          />
+          <h3 className="mt-10 mb-4 flex items-center gap-3 text-[20px] font-black text-navy-900">
+            <span className="shrink-0 rounded-full bg-green-600 px-4 py-1 text-[15px] whitespace-nowrap text-white">東京都</span>
+            クール・ネット東京の家庭向け助成
+          </h3>
+          <BigNumbers
+            tone="green"
+            items={[
+              { subsidy: s("tokyo-solar-existing"), label: "太陽光（既存住宅）", icon: images.iconGSunPanelLeaf },
+              { subsidy: s("tokyo-solar-new"), label: "太陽光（新築住宅）", icon: images.iconGHouseYenLeaf },
+              { subsidy: s("tokyo-battery"), label: "蓄電池", icon: images.iconGHouseBattery2 },
+            ]}
+          />
+          <SubsidyDisclaimer className="mt-8" />
+        </Container>
+      </section>
+
+      <SubsidyBanner />
+
+      <Container className="pb-10 sm:pb-14">
+        <section aria-labelledby="order" className="cv-block cv-tall">
+          <h2 id="order" className="text-center text-[24px] leading-[1.45] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+            申請は、契約日ではなく
+            <br className="sm:hidden" />「<span className="marker">着工日</span>」から逆算する
+          </h2>
+          <p className="mx-auto mt-4 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
+            補助金で最も多い失敗は「工事を始めてから申請しようとした」ケースです。葛飾区の助成は着工4週間前までの事前協議が原則で、区の回答書が届く前に着工すると対象外になります。東京都の助成も事前申込が必要です。
+          </p>
+          <div className="mt-8 rounded-[2rem] bg-paper-2 p-4 sm:p-6">
+            <p className="mb-4 text-center font-heading text-[15px] font-bold text-navy-900">葛飾区「かつしかエコ助成金」の時系列</p>
+            <ApplicationTimeline />
+          </div>
+          <StaffTip className="mx-auto mt-8 max-w-3xl" title="よくある失敗" image={images.poseThink} tone="orange">
+            契約を急いで、区の<strong className="marker">事前協議の前に工事を始めてしまう</strong>ケースです。回答書が届く前の着工は助成の対象外になります。
+          </StaffTip>
+
+          <div className="mx-auto mt-12 max-w-3xl">
+            <Steps
+              steps={[
+                { icon: "search", title: "使える制度を整理する", meta: "相談時", body: "住宅区分（既存・新築）、導入する設備、容量の候補から、対象になり得る制度を区・都・国の順に洗い出します。" },
+                { icon: "check", title: "機器を決める", meta: "見積もり時", body: "東京都の蓄電池助成は2026年10月1日以降の事前申込からSII登録機器に限られます。型番の登録状況を確認してから機器を確定します。" },
+                { icon: "stamp", title: "区の事前協議・都の事前申込", meta: "着工の4週間前まで", body: "葛飾区へ事前協議を申し込み、東京都（クール・ネット東京）の事前申込も行います。区の審査には時間がかかります。" },
+                { icon: "tools", title: "回答書の到着後に着工", meta: "回答書を受け取ってから", body: "区から事前協議回答書が届いてから設置工事に入ります。工事完了後、完了報告と交付申請を行います。" },
+              ]}
+            />
+          </div>
+          <Callout tone="warn" title="併用について" className="mx-auto mt-8 max-w-3xl">
+            区の公式案内には他制度との併用に関する明記がなく、東京都の案内は「都および公社の他の同種の助成金との重複受給は不可」としています。区と都、国との併用可否は、ご自宅の条件で各窓口に確認してください。当サイトでは確認できていない併用を前提にした合計額は出していません。
+          </Callout>
+        </section>
+
+        <section className="cv-block mt-16" aria-labelledby="all-table">
+          <h2 id="all-table" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">
+            2026年度の制度一覧（区・都・国）
+          </h2>
           <p className="mt-2 text-[14px] text-ink-2">各メニューの助成額・上限・事前手続き・受付状況を1つの表にまとめました。詳細条件は各制度ページをご覧ください。</p>
           <div className="mt-6">
             <SubsidyTable menus={[...katsushikaProgram.menus, ...tokyoSolarProgram.menus, ...tokyoBatteryProgram.menus, ...nationalPrograms.flatMap((p) => p.menus)]} showArea />
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="order">
-          <h2 id="order" className="text-[24px] font-bold text-navy-900">申請の順番：契約日ではなく「着工日」から逆算する</h2>
-          <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
-            補助金で最も多い失敗は「工事を始めてから申請しようとした」ケースです。葛飾区の助成は着工4週間前までの事前協議が原則で、区の回答書が届く前に着工すると対象外になります。東京都の助成も事前申込が必要です。
-          </p>
-          <div className="mt-8">
-            <Steps
-              steps={[
-                { title: "使える制度を整理する", meta: "相談時", body: "住宅区分（既存・新築）、導入する設備、容量の候補から、対象になり得る制度を区・都・国の順に洗い出します。" },
-                { title: "機器を決める", meta: "見積もり時", body: "東京都の蓄電池助成は2026年10月1日以降の事前申込からSII登録機器に限られます。型番の登録状況を確認してから機器を確定します。" },
-                { title: "区の事前協議・都の事前申込", meta: "着工の4週間前まで", body: "葛飾区へ事前協議を申し込み、東京都（クール・ネット東京）の事前申込も行います。区の審査には数週間かかります。" },
-                { title: "回答書の到着後に着工", meta: "回答書を受け取ってから", body: "区から事前協議回答書が届いてから設置工事に入ります。工事完了後、完了報告と交付申請を行います。" },
-              ]}
-            />
-          </div>
-          <Callout tone="warn" title="併用について" className="mt-8">
-            区の公式案内には他制度との併用に関する明記がなく、東京都の案内は「都および公社の他の同種の助成金との重複受給は不可」としています。区と都、国との併用可否は、ご自宅の条件で各窓口に確認してください。当サイトでは確認できていない併用を前提にした合計額は出していません。
-          </Callout>
+        <section className="cv-block mx-auto mt-16 max-w-4xl" aria-labelledby="faq">
+          <h2 id="faq" className="text-center text-[24px] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+            補助金の<span className="marker">よくある質問</span>
+          </h2>
+          <FaqSection items={faqItems} withSchema className="mt-8" />
         </section>
 
-        <section className="mt-16" aria-labelledby="sim">
-          <div className="border border-navy-900 bg-navy-900 p-8 text-white sm:p-10">
-            <p className="text-[13px] font-bold tracking-wide text-orange-400">いくら補助される？</p>
-            <h2 id="sim" className="mt-2 text-[24px] font-bold text-white">わが家の想定助成額を、制度ごとに試算する</h2>
-            <p className="mt-3 max-w-2xl text-[15px] leading-[1.9] text-navy-100/85">住宅区分・太陽光の容量・蓄電池の容量・V2H・HEMSの有無を選ぶと、葛飾区と東京都それぞれの計算式・想定額・上限・注意点を表示します。</p>
-            <div className="mt-6">
-              <LinkButton href="/simulation" variant="accent" size="lg">補助金シミュレーターを使う <ArrowIcon /></LinkButton>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-16" aria-labelledby="faq">
-          <h2 id="faq" className="text-[24px] font-bold text-navy-900">補助金についてよくある質問</h2>
-          <FaqSection items={faqItems} withSchema className="mt-6" />
-        </section>
-
-        <SubsidyDisclaimer className="mt-12" />
-        <SourceList sources={sources} className="mt-10" />
+        <SourceList sources={sources} className="mt-12" />
       </Container>
 
       {posts.length > 0 && (
@@ -142,7 +236,7 @@ export default function SubsidyIndexPage() {
         secondary={{ href: "/subsidy/katsushika", label: "葛飾区の補助金を詳しく見る" }}
       />
 
-      <JsonLd data={graph(articleSchema({ path: PATH, title: TITLE, description: "葛飾区・東京都・国の太陽光・蓄電池補助金の全体像", datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate }))} />
+      <JsonLd data={graph(articleSchema({ path: PATH, title: TITLE, description: "葛飾区・東京都・国の太陽光・蓄電池補助金の全体像", datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate, section: "補助金", sources: sources.map((s) => ({ name: s.name, url: s.url })) }))} />
     </>
   );
 }

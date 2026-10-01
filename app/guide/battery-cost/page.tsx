@@ -1,3 +1,4 @@
+import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -70,7 +71,7 @@ export default function Page() {
           body: (
             <>
               <p>葛飾区にお住まいの場合、蓄電池の導入で検討対象になる主な制度は次のとおりです（{kBattery.lastVerified.replace(/-/g, "/")} 時点）。</p>
-              <table>
+              <ProseTable>
                 <thead>
                   <tr>
                     <th>制度</th>
@@ -95,7 +96,7 @@ export default function Page() {
                     <td>{tBattery.maxAmount}</td>
                   </tr>
                 </tbody>
-              </table>
+              </ProseTable>
               <p>東京都の助成は容量に応じた金額で、DR（デマンドレスポンス）実証に参加すると加算や上限の扱いが変わります。また、2026年10月1日以降に事前申込をする場合、助成対象はSIIが登録している機器に限られます。検討中の機種が登録済みかどうかは、見積もりの段階で確認が必要です。</p>
               <p>国の制度は状況が変わりやすく、{nDr.programName}（令和7年度補正）は2026年5月29日に予算到達で公募終了しています。区・都・国の併用可否は各制度の公式案内に明記がないものがあるため、申請前に各窓口への確認が必要です。想定額は<Link href="/simulation">補助金シミュレーター</Link>で、都の制度の詳細は<Link href="/subsidy/tokyo">東京都の補助金ページ</Link>でご確認ください。</p>
             </>

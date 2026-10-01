@@ -11,13 +11,17 @@ export function WorksCard({ work }: { work: Work }) {
     work.hems ? "HEMS" : null,
   ].filter(Boolean);
   return (
-    <article className="border border-line bg-white">
+    <article className="overflow-hidden rounded-3xl bg-white shadow-card transition-transform duration-200 hover:-translate-y-1">
       <Link href={`/works/${work.slug}`} className="block">
-        <ImagePlaceholder src={cover?.src} alt={cover?.alt ?? `${work.area}の施工事例`} ratio="4/3" label="施工写真準備中" />
+        <ImagePlaceholder src={cover?.src} alt={cover?.alt ?? `${work.area}の施工事例`} ratio="4/3" label="施工写真準備中" frame={false} className="rounded-none" />
         <div className="p-5">
-          <p className="text-[12px] font-bold text-accent-text">{work.area}／{work.housingType}</p>
-          <h3 className="mt-1 text-[16px] font-bold text-navy-900">{work.title}</h3>
-          {specs.length > 0 && <p className="mt-2 text-[13px] text-ink-2">{specs.join("・")}</p>}
+          <p>
+            <span className="inline-block rounded-full bg-green-600 px-3 py-[2px] text-[12px] font-bold text-white">
+              {work.area}／{work.housingType}
+            </span>
+          </p>
+          <h3 className="mt-2 text-[17px] font-bold text-navy-900">{work.title}</h3>
+          {specs.length > 0 && <p className="mt-2 text-[13px] font-bold text-accent-text">{specs.join("・")}</p>}
         </div>
       </Link>
     </article>

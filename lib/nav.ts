@@ -48,6 +48,7 @@ export const headerNav: NavGroup[] = [
   },
   {
     label: "導入ガイド",
+    href: "/guide",
     links: [
       { href: "/guide/solar-cost", label: "太陽光発電の費用" },
       { href: "/guide/battery-cost", label: "蓄電池の費用" },
@@ -98,6 +99,7 @@ export const footerNav: NavGroup[] = [
   {
     label: "導入ガイド",
     links: [
+      { href: "/guide", label: "導入ガイド一覧" },
       { href: "/guide/solar-cost", label: "太陽光発電の費用" },
       { href: "/guide/solar-merit-demerit", label: "メリット・デメリット" },
       { href: "/guide/solar-lifespan", label: "太陽光パネルの寿命" },

@@ -94,6 +94,16 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 
+/**
+ * 所在地の Google マップへのリンク。
+ * Googleビジネスプロフィールの URL（gbp.mapsUrl）があればそれを、無ければ住所での検索 URL を返す。
+ * 緯度経度は確認できていないので使わない。
+ */
+export function companyMapUrl(): string {
+  if (siteConfig.gbp.mapsUrl) return siteConfig.gbp.mapsUrl;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.company.address.full)}`;
+}
+
 /** 連絡先メール（SOLAR SHIFT 専用が未設定なら会社代表メール） */
 export function contactEmail(): string {
   return siteConfig.contact.email || siteConfig.company.email;

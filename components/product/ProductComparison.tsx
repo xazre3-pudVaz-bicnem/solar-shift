@@ -1,3 +1,4 @@
+import { TableScroll } from "@/components/ui/TableScroll";
 import Link from "next/link";
 import type { Product } from "@/data/products";
 import { priceLabel } from "@/data/products";
@@ -21,10 +22,10 @@ export function ProductComparison({ products, category }: { products: Product[];
           { label: "保証", get: (p: Product) => p.warranty ?? "—" },
         ];
   return (
-    <div className="overflow-x-auto">
+    <TableScroll label="商品の比較表">
       <table className="w-full min-w-[40rem] border-collapse text-[14px]">
         <thead>
-          <tr className="bg-paper-2">
+          <tr className="bg-green-600 text-white">
             <th className="border border-line px-3 py-2 text-left font-bold">商品</th>
             {cols.map((c) => (
               <th key={c.label} className="border border-line px-3 py-2 text-left font-bold">{c.label}</th>
@@ -48,6 +49,6 @@ export function ProductComparison({ products, category }: { products: Product[];
           ))}
         </tbody>
       </table>
-    </div>
+    </TableScroll>
   );
 }

@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "links:check": "node scripts/check-links.mjs",
+    "chat:selftest": "tsx scripts/chat-selftest.ts",
     "blog:generate": "tsx scripts/generate-blog-post.ts",
     "blog:dry-run": "cross-env DRY_RUN=1 tsx scripts/generate-blog-post.ts",
     "fonts:fetch": "node scripts/fetch-fonts.mjs"

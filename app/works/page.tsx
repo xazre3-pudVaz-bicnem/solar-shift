@@ -45,8 +45,8 @@ export default function WorksPage() {
             ))}
           </div>
         ) : (
-          <div className="border border-dashed border-line-2 bg-white p-8 sm:p-10">
-            <p className="text-[20px] font-bold text-navy-900">施工事例は順次掲載予定です</p>
+          <div className="rounded-[2rem] border-[3px] border-dashed border-orange-200 bg-white p-8 sm:p-10">
+            <p className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">施工事例は順次掲載予定です</p>
             <p className="mt-3 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
               SOLAR SHIFT は2026年に始まった新しいサービスのため、現時点で公開できる施工事例はありません。施工が完了し、お客様の掲載許可をいただいた事例から、次の項目とともにご紹介していきます。
             </p>

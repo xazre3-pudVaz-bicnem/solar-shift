@@ -1,3 +1,4 @@
+import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -74,7 +75,7 @@ export default function Page() {
           body: (
             <>
               <p>葛飾区にお住まいの場合、検討対象になる主な制度は次の2つです（{kSolar.lastVerified.replace(/-/g, "/")} 時点）。</p>
-              <table>
+              <ProseTable>
                 <thead>
                   <tr>
                     <th>制度</th>
@@ -94,7 +95,7 @@ export default function Page() {
                     <td>{tSolar.maxAmount}</td>
                   </tr>
                 </tbody>
-              </table>
+              </ProseTable>
               <p>葛飾区の助成は上限30万円のため、5kWを超えると助成額は増えません。東京都の既存住宅向け助成は3.75kWを境に単価が変わります。容量を決めるときは、屋根に載る枚数と電気の使用量だけでなく、制度の区分も踏まえて検討します。</p>
               <p>区と都の併用可否は公式案内で明記が確認できていないため、申請前に各窓口への確認が必要です。想定額の目安は<Link href="/simulation">補助金シミュレーター</Link>で、制度の詳細は<Link href="/subsidy/katsushika">葛飾区の補助金ページ</Link>で確認できます。</p>
             </>

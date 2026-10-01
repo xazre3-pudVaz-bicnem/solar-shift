@@ -13,8 +13,11 @@ import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, webPageSchema } from "@/lib/schema";
+import { graph, howToSchema, webPageSchema } from "@/lib/schema";
 import { images } from "@/data/images";
+import { ApplicationTimeline } from "@/components/subsidy/ApplicationTimeline";
+import { StaffTip } from "@/components/ui/StaffTip";
+import { reveal } from "@/lib/reveal";
 
 const PATH = "/flow";
 const DESC =
@@ -32,6 +35,7 @@ export default function FlowPage() {
   const t = getSubsidy("tokyo-solar-existing")!;
   const steps = [
     {
+      icon: "mail" as const,
       title: "お問い合わせ・ヒアリング",
       meta: "フォームからご連絡ください",
       body: (
@@ -42,6 +46,7 @@ export default function FlowPage() {
       ),
     },
     {
+      icon: "search" as const,
       title: "現地調査（無料）",
       meta: "屋根・分電盤・設置場所を確認",
       body: (
@@ -52,6 +57,7 @@ export default function FlowPage() {
       ),
     },
     {
+      icon: "calc" as const,
       title: "ご提案・お見積もり",
       meta: "内訳を分けた見積もりと、制度ごとの想定助成額",
       body: (
@@ -62,11 +68,13 @@ export default function FlowPage() {
       ),
     },
     {
+      icon: "handshake" as const,
       title: "ご契約",
       meta: "内容と日程を確認してから",
       body: <p>見積もり内容・保証・工事日程・補助金の申請スケジュールを確認のうえ、ご契約いただきます。契約を急かすことはありません。補助金の交付は工事完了後の実績報告を経て行われるため、支払いの流れも事前に説明します。</p>,
     },
     {
+      icon: "stamp" as const,
       title: "補助金の事前手続き",
       meta: `葛飾区：工事着工の4週間前までに事前協議／東京都：事前申込`,
       body: (
@@ -77,6 +85,7 @@ export default function FlowPage() {
       ),
     },
     {
+      icon: "tools" as const,
       title: "設置工事",
       meta: "区の回答書が届いてから着工",
       body: (
@@ -87,11 +96,13 @@ export default function FlowPage() {
       ),
     },
     {
+      icon: "doc" as const,
       title: "完了報告・交付申請",
       meta: "工事完了後",
       body: <p>区・都それぞれの完了報告と交付申請の書類を準備します。審査後、交付額確定の通知があり、助成金が交付されます。申請の集中時期は通知までに時間がかかる場合があります。</p>,
     },
     {
+      icon: "support" as const,
       title: "運転開始・導入後サポート",
       meta: "同じ窓口で、ずっと",
       body: <p>発電状況の見方、売電の手続き、モニターの使い方をご説明します。運転開始後の発電量の異常や機器の不具合、保証の使い方についても、同じ窓口でご相談いただけます。パワーコンディショナの交換時期（一般に10〜15年程度）など、長期のメンテナンスの目安もお伝えします。</p>,
@@ -121,9 +132,27 @@ export default function FlowPage() {
           ]}
         />
 
-        <div className="mt-14">
+        <h2 className="mt-14 text-center font-heading text-[26px] leading-[1.3] font-black text-navy-900 sm:text-[36px]" {...reveal()}>
+          設置までの
+          <span className="num-xl mx-2 text-[60px] text-orange-600 sm:text-[80px]">{steps.length}</span>
+          <span className="font-en font-extrabold text-orange-600">STEP</span>
+        </h2>
+        <div className="cv-block cv-tall mx-auto mt-10 max-w-3xl">
           <Steps steps={steps} />
         </div>
+
+        <section className="mt-16 rounded-[2rem] bg-cream p-5 sm:p-8" aria-labelledby="timeline-h">
+          <h2 id="timeline-h" className="text-center text-[22px] font-black text-navy-900 sm:text-[26px]">
+            葛飾区の助成を使うときの<span className="marker">申請の時系列</span>
+          </h2>
+          <p className="mt-2 text-center text-[13px] text-ink-2">朱色のところが、順番を間違えやすいポイントです。</p>
+          <div className="mt-6">
+            <ApplicationTimeline />
+          </div>
+        </section>
+        <StaffTip className="mx-auto mt-8 max-w-3xl" title="覚えておくこと" image={images.poseIdea} tone="orange">
+          基準は契約日ではなく<strong className="marker">着工日</strong>です。工事を希望する日から逆算して、事前協議の申し込み日を決めます。
+        </StaffTip>
 
         <Callout tone="warn" title="スケジュールの考え方" className="mt-12">
           <ul className="list-disc space-y-1 pl-5">
@@ -133,8 +162,8 @@ export default function FlowPage() {
           </ul>
         </Callout>
 
-        <section className="mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="text-[24px] font-bold text-navy-900">流れについてよくある質問</h2>
+        <section className="cv-block mt-16" aria-labelledby="faq-h">
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">流れについてよくある質問</h2>
           <FaqSection items={faqsByIds(["install-period", "install-survey", "subsidy-pre-consultation", "subsidy-combination"])} withSchema className="mt-6" />
         </section>
 
@@ -146,7 +175,7 @@ export default function FlowPage() {
             { href: "/subsidy/tokyo", label: "東京都の補助金" },
             { href: "/guide/solar-cost", label: "太陽光発電の費用" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 hover:border-navy-900">
+            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
               {l.label} →
             </Link>
           ))}
@@ -156,7 +185,17 @@ export default function FlowPage() {
         title="いつまでに何をすればいいか。最初の相談で整理します。"
         body={`ご希望の時期から逆算して、申請と工事のスケジュールを組み立てます。現地調査・お見積もりは無料です。${siteConfig.primaryArea.name}を中心に周辺エリアにも対応しています。`}
       />
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "導入・施工の流れ", description: DESC }))} />
+      <JsonLd
+        data={graph(
+          webPageSchema({ path: PATH, name: "導入・施工の流れ", description: DESC, dateModified: siteConfig.subsidyInfoDate }),
+          howToSchema({
+            path: PATH,
+            name: "太陽光発電・蓄電池を導入する流れ（相談から運転開始まで）",
+            description: DESC,
+            steps: steps.map((s) => ({ name: s.title, text: s.meta })),
+          }),
+        )}
+      />
     </>
   );
 }

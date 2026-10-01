@@ -1,3 +1,4 @@
+import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -34,7 +35,7 @@ export default function Page() {
           body: (
             <>
               <p>太陽光発電システムは、複数の機器で構成されています。寿命は機器ごとに異なるため、「システムの寿命は何年か」と一括りにせず、部位ごとに見るのが正確です。</p>
-              <table>
+              <ProseTable>
                 <thead>
                   <tr>
                     <th>部位</th>
@@ -69,7 +70,7 @@ export default function Page() {
                     <td>メーカーごとに条件が異なる</td>
                   </tr>
                 </tbody>
-              </table>
+              </ProseTable>
               <p>いずれも「一般に」「多くのメーカーで」という目安であり、実際の年数は機種・設置環境・使い方で変わります。正確な数字は、検討する機種の保証書で確認します。</p>
             </>
           ),

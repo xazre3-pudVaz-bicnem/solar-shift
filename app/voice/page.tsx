@@ -38,7 +38,7 @@ export default function VoicePage() {
         {publishedVoices.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2">
             {publishedVoices.map((v) => (
-              <article key={v.id} className="border border-line bg-white p-6">
+              <article key={v.id} className="rounded-3xl bg-white p-6 shadow-card">
                 <p className="text-[13px] font-bold text-accent-text">{v.area}・{v.displayName}</p>
                 <p className="mt-1 text-[12px] text-ink-3">{v.equipment.join("・")}／{v.date}</p>
                 <blockquote className="mt-4 text-[15px] leading-[1.9] text-ink">{v.body}</blockquote>
@@ -51,8 +51,8 @@ export default function VoicePage() {
             ))}
           </div>
         ) : (
-          <div className="border border-dashed border-line-2 bg-white p-8 sm:p-10">
-            <p className="text-[20px] font-bold text-navy-900">お客様の声は準備中です</p>
+          <div className="rounded-[2rem] border-[3px] border-dashed border-orange-200 bg-white p-8 sm:p-10">
+            <p className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">お客様の声は準備中です</p>
             <p className="mt-3 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
               SOLAR SHIFT は2026年に始まった新しいサービスのため、現時点で掲載できるお客様の声はありません。導入後にお客様から伺った声は、ご本人の掲載許可をいただいたものから順次掲載します。
             </p>

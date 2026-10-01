@@ -30,6 +30,8 @@ export default function V2hPage() {
         { name: "V2H", href: PATH },
       ]}
       eyebrow="V2H"
+      heroImage={images.houseEvV2h}
+      tip={{ title: "最初に確認すること", body: <>V2Hは<strong className="marker">対応車種と機器の組み合わせ</strong>に制限があります。お持ちの車（購入予定の車）で使えるかを先に確認しましょう。</>, image: images.poseIdea }}
       title={<>V2H<span className="block text-[0.7em] text-ink-2">電気自動車を、走る蓄電池として使う</span></>}
       lead="V2H（Vehicle to Home）は、電気自動車（EV・PHEV）のバッテリーにためた電気を家庭で使えるようにする設備です。太陽光で発電した電気をEVに充電し、夜間や停電時に家で使うことができます。"
       conclusion={`V2Hは、EVの大きなバッテリーを家庭用蓄電池のように使う設備です。太陽光と組み合わせると、昼に発電した電気でEVを充電し、夜や停電時に家へ給電できます。対応車種とV2H機器の組み合わせに制限があり、車を使っている時間は家に給電できない点が家庭用蓄電池との違いです。葛飾区の助成は${k.amount}（${k.maxAmount}）で、国のCEV補助金は2026年8月27日に受付終了しています（2026年10月1日時点）。`}
@@ -44,7 +46,7 @@ export default function V2hPage() {
         {
           id: "how",
           heading: "V2Hの仕組み",
-          image: { src: images.houseEvV2h.src, alt: images.houseEvV2h.alt },
+          image: images.batEv,
           body: (
             <>
               <p>V2H機器は、家の分電盤とEVの間に設置され、<strong>EVへの充電</strong>と<strong>EVから家への給電</strong>の両方向で電気を変換します。通常の充電設備（普通充電器）は一方向ですが、V2Hは双方向である点が違いです。</p>
@@ -56,6 +58,7 @@ export default function V2hPage() {
         {
           id: "merit",
           heading: "利点と注意点",
+          image: images.iconHouseEv,
           body: (
             <>
               <h3>利点</h3>
@@ -77,7 +80,7 @@ export default function V2hPage() {
         {
           id: "with-solar",
           heading: "太陽光・蓄電池との組み合わせ",
-          image: { src: images.iconHouseEv.src, alt: images.iconHouseEv.alt, fit: "contain" },
+          image: images.iconGHouseEv,
           body: (
             <>
               <p>構成は大きく3通りです。</p>
@@ -93,6 +96,7 @@ export default function V2hPage() {
         {
           id: "katsushika",
           heading: "葛飾区で導入するときの考え方",
+          image: images.poseChart,
           body: (
             <>
               <p>葛飾区の「かつしかエコ助成金」では、V2Hは{k.amount}（{k.maxAmount}）が助成対象です（{k.lastVerified.replace(/-/g, "/")} 時点）。算定基礎は本体価格で、工事費は含まれません。工事着工4週間前までの事前協議が原則必要です。</p>

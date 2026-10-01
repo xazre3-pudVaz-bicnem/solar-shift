@@ -61,8 +61,8 @@ export default function RecommendBatteryPage() {
             "助成：東京都10万円/kWh（経費が上限・SII登録機器）、葛飾区は対象経費の1/4（上限20万円）",
           ]}
         />
-        <section className="mt-12" aria-labelledby="use-h">
-          <h2 id="use-h" className="text-[22px] font-bold text-navy-900">使い方別の選び方</h2>
+        <section className="cv-block mt-12" aria-labelledby="use-h">
+          <h2 id="use-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">使い方別の選び方</h2>
           <div className="mt-5 grid gap-px bg-line sm:grid-cols-2">
             {USE_CASES.map((r) => (
               <div key={r.title} className="bg-white p-6">
@@ -72,17 +72,17 @@ export default function RecommendBatteryPage() {
             ))}
           </div>
           <p className="mt-4 text-[14px] text-ink-2">
-            容量と種類の詳しい考え方は<Link href="/guide/battery-how-to-choose" className="mx-1 text-navy-600 underline underline-offset-4">蓄電池の選び方</Link>、費用は<Link href="/guide/battery-cost" className="mx-1 text-navy-600 underline underline-offset-4">蓄電池の費用</Link>をご覧ください。
+            容量と種類の詳しい考え方は<Link href="/guide/battery-how-to-choose" className="mx-1 text-navy-600 underline underline-offset-4">蓄電池の選び方</Link>、費用は<Link href="/guide/battery-cost" className="mx-1 text-navy-600 underline underline-offset-4">蓄電池の費用</Link>をご覧ください。仕様の見方は<Link href="/products/battery" className="mx-1 text-navy-600 underline underline-offset-4">蓄電池一覧</Link>にまとめています。
           </p>
         </section>
-        <section className="mt-14" aria-labelledby="rec-h">
-          <h2 id="rec-h" className="text-[22px] font-bold text-navy-900">おすすめ機種</h2>
+        <section className="cv-block mt-14" aria-labelledby="rec-h">
+          <h2 id="rec-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">おすすめ機種</h2>
           <div className="mt-5">
             <ProductCatalog products={products} category="battery" emptyTitle="おすすめ機種は順次掲載予定です" emptyBody="メーカー公式情報で仕様とSII登録状況を確認し、使い方ごとに「なぜ勧めるのか」の理由を添えて掲載します。仕様からの自動判定や、根拠のないランキングは行いません。" />
           </div>
         </section>
-        <section className="mt-14" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="text-[22px] font-bold text-navy-900">よくある質問</h2>
+        <section className="cv-block mt-14" aria-labelledby="faq-h">
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">よくある質問</h2>
           <FaqSection items={faqsByIds(["battery-capacity", "subsidy-tokyo-battery-sii", "cost-battery"])} withSchema className="mt-5" />
         </section>
         <SubsidyDisclaimer className="mt-10" />

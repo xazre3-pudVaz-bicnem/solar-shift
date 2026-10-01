@@ -68,6 +68,8 @@ for (const c of categories) routes.add(`/blog/category/${c}`);
 routes.add("/feed.xml");
 routes.add("/sitemap.xml");
 routes.add("/robots.txt");
+routes.add("/llms.txt");
+routes.add("/manifest.webmanifest");
 
 // リンク収集
 const files = [
@@ -94,6 +96,8 @@ for (const f of files) {
     // 動的に組み立てるもの（テンプレート文字列）や、プロンプト内の説明用パス（/パス など非ASCII）は対象外
     if (href.includes("${") || /[^\x20-\x7e]/.test(href)) continue;
     total += 1;
+    // public/ に実在するファイル（フォントのCSS・画像など）へのリンクは有効
+    if (fs.existsSync(path.join(ROOT, "public", href))) continue;
     if (!routes.has(href)) problems.push(`${path.relative(ROOT, f)}: ${href}`);
   }
 }

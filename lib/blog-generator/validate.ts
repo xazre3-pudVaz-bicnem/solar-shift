@@ -77,7 +77,7 @@ export function countChars(md: string): number {
 }
 
 /** 本文から円の金額を全角・カンマ・万円表記込みで抽出して数値にする */
-function extractYenAmounts(text: string): { raw: string; value: number }[] {
+export function extractYenAmounts(text: string): { raw: string; value: number }[] {
   const out: { raw: string; value: number }[] = [];
   const normalized = text.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/，/g, ",");
   // 「12.5万円」「120万円」「96,000円」「7,000円」

@@ -1,3 +1,4 @@
+import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -6,6 +7,7 @@ import { faqsByIds } from "@/data/faq";
 import { simulate } from "@/lib/subsidy-calc";
 import { ServiceLayout } from "@/components/sections/ServiceLayout";
 import { images } from "@/data/images";
+import { SubsidyBars } from "@/components/subsidy/SubsidyBars";
 
 const PATH = "/solar-battery";
 const DESC =
@@ -34,6 +36,8 @@ export default function SolarBatteryPage() {
         { name: "太陽光＋蓄電池", href: PATH },
       ]}
       eyebrow="太陽光＋蓄電池"
+      heroImage={images.houseBatterySunset}
+      tip={{ title: "同時導入の特典", body: <>葛飾区では、太陽光と蓄電池を併せて申請すると<strong className="marker">併設加算（一律5万円）</strong>の対象になります。</>, image: images.poseOk }}
       title={<>太陽光＋蓄電池<span className="block text-[0.7em] text-ink-2">つくった電気を、ためて使う</span></>}
       lead="太陽光発電と蓄電池を組み合わせると、昼につくった電気を夜に使えるようになり、買う電気を減らしながら停電にも備えられます。同時に導入するか、後から追加するかで、工事・機器・補助金の扱いが変わります。"
       conclusion={`太陽光と蓄電池の同時導入は、工事を1回にまとめられること、ハイブリッド型パワーコンディショナで機器を集約できること、葛飾区の併設加算（${addon.amount}）の対象になることが主な利点です。一方、初期費用は大きくなるため、「夜に使う電気の量」と「停電への備えの必要性」で判断します。既に太陽光がある家は、パワコンの交換時期に合わせた後付けも選択肢です。`}
@@ -48,7 +52,7 @@ export default function SolarBatteryPage() {
         {
           id: "why",
           heading: "なぜ組み合わせるのか：昼の電気を夜に",
-          image: { src: images.houseBatterySunset.src, alt: images.houseBatterySunset.alt },
+          image: images.batSolarToHome,
           body: (
             <>
               <p>太陽光だけの家では、昼に発電した電気のうち使い切れない分を売電し、夜は電力会社から買います。2026年度のFITは最初の4年間が24円/kWhですが、5〜10年目は8.3円/kWhに下がります。買う電気の単価のほうが高い状態が続けば、<strong>売るより自宅で使うほうが有利</strong>です。</p>
@@ -60,6 +64,7 @@ export default function SolarBatteryPage() {
         {
           id: "together",
           heading: "同時導入の利点と注意点",
+          image: images.houseBatteryOutdoor,
           body: (
             <>
               <h3>利点</h3>
@@ -81,7 +86,7 @@ export default function SolarBatteryPage() {
         {
           id: "later",
           heading: "後付けの場合：既に太陽光がある家",
-          image: { src: images.houseBatteryOutdoor.src, alt: images.houseBatteryOutdoor.alt },
+          image: images.batDayNight,
           body: (
             <>
               <p>既に太陽光がある家に蓄電池を後付けする場合、既設のパワーコンディショナを残して蓄電池専用の単機能型を追加するか、パワーコンディショナごとハイブリッド型に交換するかの2通りがあります。</p>
@@ -93,10 +98,11 @@ export default function SolarBatteryPage() {
         {
           id: "example",
           heading: "導入例：既存住宅に太陽光5kW＋蓄電池7kWh",
+          figure: <SubsidyBars result={ex} />,
           body: (
             <>
               <p>葛飾区の既存住宅で、太陽光5kWと蓄電池7kWhを同時導入した場合の想定助成額を、制度ごとに分けて示します（{addon.lastVerified.replace(/-/g, "/")} 時点の公式情報による概算。区と都は合算していません）。</p>
-              <table>
+              <ProseTable>
                 <thead>
                   <tr>
                     <th>自治体</th>
@@ -120,7 +126,7 @@ export default function SolarBatteryPage() {
                     )),
                   )}
                 </tbody>
-              </table>
+              </ProseTable>
               <p>葛飾区の蓄電池は対象経費の1/4のため、経費が未確定の段階では上限額で示しています。ご自宅の条件での試算は<Link href="/simulation">補助金シミュレーター</Link>をご利用ください。</p>
             </>
           ),
@@ -128,6 +134,7 @@ export default function SolarBatteryPage() {
         {
           id: "decide",
           heading: "セットにするかどうかの判断基準",
+          image: images.poseThink,
           body: (
             <>
               <ol>

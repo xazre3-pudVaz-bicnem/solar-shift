@@ -82,8 +82,8 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
           ]}
         />
 
-        <section className="mt-14" aria-labelledby="subsidy-h">
-          <h2 id="subsidy-h" className="text-[24px] font-bold text-navy-900 sm:text-[28px]">{area.name}で使える補助金（{formatDateJa(siteConfig.subsidyInfoDate)}時点）</h2>
+        <section className="cv-block mt-14" aria-labelledby="subsidy-h">
+          <h2 id="subsidy-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}で使える補助金（{formatDateJa(siteConfig.subsidyInfoDate)}時点）</h2>
           <div className="mt-6 space-y-10">
             {programs.map((p) => (
               <div key={p.id}>
@@ -104,8 +104,8 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
           <SubsidyDisclaimer className="mt-6" />
         </section>
 
-        <section className="mt-16" aria-labelledby="housing-h">
-          <h2 id="housing-h" className="text-[24px] font-bold text-navy-900 sm:text-[28px]">{area.name}の住宅事情と屋根条件</h2>
+        <section className="cv-block mt-16" aria-labelledby="housing-h">
+          <h2 id="housing-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}の住宅事情と屋根条件</h2>
           <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:gap-12">
             <ImagePlaceholder src={images.katsushikaStreetSunset.src} alt={images.katsushikaStreetSunset.alt} ratio="4/3" label={`${area.name}の街並み写真（差し替え）`} className="lg:sticky lg:top-24" />
             <div className="space-y-6">
@@ -122,11 +122,11 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="disaster-h">
-          <h2 id="disaster-h" className="text-[24px] font-bold text-navy-900 sm:text-[28px]">{area.name}の災害リスクと停電への備え</h2>
+        <section className="cv-block mt-16" aria-labelledby="disaster-h">
+          <h2 id="disaster-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}の災害リスクと停電への備え</h2>
           <div className="mt-6 space-y-6">
             {page.disaster.map((d) => (
-              <div key={d.title} className="border-l-4 border-navy-900 pl-5">
+              <div key={d.title} className="rounded-2xl border-l-8 border-orange-500 bg-white py-4 pr-5 pl-5 shadow-card">
                 <h3 className="text-[18px] font-bold text-navy-900">{d.title}</h3>
                 <p className="mt-2 text-[15px] leading-[1.9] text-ink">{d.body}</p>
                 {d.sourceUrl && (
@@ -143,28 +143,28 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
         </section>
 
         {page.towns && page.towns.length > 0 && (
-          <section className="mt-16" aria-labelledby="towns-h">
-            <h2 id="towns-h" className="text-[20px] font-bold text-navy-900">{area.name}内の対応地域（代表例）</h2>
+          <section className="cv-block mt-16" aria-labelledby="towns-h">
+            <h2 id="towns-h" className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">{area.name}内の対応地域（代表例）</h2>
             <p className="mt-2 text-[14px] text-ink-2">{area.name}内は全域が主要対応エリアです。以下は代表的な地域名で、網羅ではありません。</p>
             <ul className="mt-4 flex flex-wrap gap-2">
               {page.towns.map((t) => (
-                <li key={t} className="border border-line bg-paper-2 px-3 py-1 text-[13px] text-ink-2">{t}</li>
+                <li key={t} className="rounded-full bg-white px-3 py-1 text-[13px] font-bold text-navy-900 shadow-sm">{t}</li>
               ))}
             </ul>
           </section>
         )}
 
-        <section className="mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="text-[24px] font-bold text-navy-900 sm:text-[28px]">{area.name}の太陽光・蓄電池についてよくある質問</h2>
+        <section className="cv-block mt-16" aria-labelledby="faq-h">
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}の太陽光・蓄電池についてよくある質問</h2>
           <FaqSection items={page.faq} withSchema className="mt-6" />
         </section>
 
-        <section className="mt-16" aria-labelledby="links-h">
-          <h2 id="links-h" className="text-[20px] font-bold text-navy-900">{area.name}の公式情報</h2>
-          <ul className="mt-4 space-y-2 text-[14px]">
+        <section className="cv-block mt-16" aria-labelledby="links-h">
+          <h2 id="links-h" className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">{area.name}の公式情報</h2>
+          <ul className="mt-4 space-y-1 text-[14px]">
             {page.officialLinks.map((l) => (
               <li key={l.url}>
-                <a href={l.url} target="_blank" rel="noopener noreferrer" className="text-navy-600 underline underline-offset-4 hover:text-accent-text">{l.name}</a>
+                <a href={l.url} target="_blank" rel="noopener noreferrer" className="inline-block py-1 text-navy-600 underline underline-offset-4 hover:text-accent-text">{l.name}</a>
               </li>
             ))}
           </ul>
@@ -181,7 +181,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
             { href: "/solar", label: "太陽光発電について" },
             { href: "/battery", label: "家庭用蓄電池について" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 hover:border-navy-900">
+            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
               {l.label} →
             </Link>
           ))}

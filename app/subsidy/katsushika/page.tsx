@@ -1,3 +1,4 @@
+import { TableScroll } from "@/components/ui/TableScroll";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
@@ -23,6 +24,10 @@ import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
+import { BigNumbers } from "@/components/subsidy/BigNumbers";
+import { ApplicationTimeline } from "@/components/subsidy/ApplicationTimeline";
+import { StaffTip } from "@/components/ui/StaffTip";
+import { reveal } from "@/lib/reveal";
 
 const PATH = "/subsidy/katsushika";
 const P = katsushikaProgram;
@@ -30,7 +35,7 @@ const P = katsushikaProgram;
 export const metadata: Metadata = buildMetadata({
   title: "葛飾区の太陽光・蓄電池補助金2026｜かつしかエコ助成金の金額・条件・申請",
   description:
-    "葛飾区の太陽光発電・蓄電池の補助金（令和8年度かつしかエコ助成金）を解説。太陽光6万円/kW上限30万円、蓄電池1/4上限20万円、併設加算5万円、V2H・HEMSの助成額、着工4週間前の事前協議、申請の流れ。2026年10月1日時点の公式情報。",
+    "葛飾区の太陽光・蓄電池補助金（令和8年度かつしかエコ助成金）を解説。太陽光6万円/kW上限30万円、蓄電池1/4上限20万円、併設加算5万円、V2H・HEMS、着工4週間前の事前協議と申請の流れ。2026年10月1日時点の公式情報。",
   path: PATH,
   keywords: ["葛飾区 太陽光 補助金", "葛飾区 太陽光発電 補助金", "葛飾区 蓄電池 補助金", "かつしかエコ助成金", "V2H 補助金 葛飾区", "葛飾区 太陽光"],
   type: "article",
@@ -82,8 +87,29 @@ export default function KatsushikaSubsidyPage() {
           ]}
         />
 
-        <section className="mt-14" aria-labelledby="table">
-          <h2 id="table" className="text-[24px] font-bold text-navy-900">助成額の一覧（{P.fiscalYear}）</h2>
+        <section className="cv-block mt-12" aria-labelledby="numbers">
+          <h2 id="numbers" className="text-center text-[24px] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+            葛飾区の助成額は<span className="marker">この6つ</span>
+            <span className="mt-1 block text-[14px] font-bold text-ink-2">{P.fiscalYear}・{formatDateJa(P.lastVerified)}時点</span>
+          </h2>
+          <BigNumbers
+            className="mt-8"
+            items={[
+              { subsidy: solar, label: "太陽光発電", icon: images.iconSunPanel },
+              { subsidy: battery, label: "蓄電池", icon: images.iconHouseBattery },
+              { subsidy: addon, label: "太陽光＋蓄電池の併設加算", icon: images.iconHouseYen },
+              { subsidy: v2h, label: "V2H", icon: images.iconHouseEv },
+              { subsidy: hems, label: "HEMS", icon: images.iconClipboardHouse },
+              { subsidy: getSubsidy("katsushika-solar-hems-addon")!, label: "太陽光＋HEMSの併設加算", icon: images.iconPanelLeaf },
+            ]}
+          />
+          <StaffTip className="mx-auto mt-8 max-w-3xl" title="いちばん大事なこと" image={images.poseIdea} tone="orange">
+            <strong className="marker">工事着工の4週間前までに事前協議</strong>が必要です。区の回答書が届く前に工事を始めると、助成の対象外になります。
+          </StaffTip>
+        </section>
+
+        <section className="cv-block mt-14" aria-labelledby="table">
+          <h2 id="table" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">助成額の一覧（{P.fiscalYear}）</h2>
           <p className="mt-2 text-[14px] text-ink-2">出典：<a href={P.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-navy-600 underline underline-offset-4">{P.sourceName}</a>（{formatDateJa(P.lastVerified)} 確認）</p>
           <div className="mt-6">
             <SubsidyTable menus={P.menus} />
@@ -94,24 +120,24 @@ export default function KatsushikaSubsidyPage() {
           </Callout>
         </section>
 
-        <section className="mt-16" aria-labelledby="examples">
-          <h2 id="examples" className="text-[24px] font-bold text-navy-900">想定助成額の計算例（葛飾区分のみ）</h2>
+        <section className="cv-block mt-16" aria-labelledby="examples">
+          <h2 id="examples" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">想定助成額の計算例（葛飾区分のみ）</h2>
           <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
             区の制度だけで計算した例です。蓄電池は「対象経費の1/4」のため、経費が未確定のときは上限額（{battery.maxAmount}）で示しています。東京都の助成は別制度のため、ここには含めていません。
           </p>
-          <div className="mt-6 overflow-x-auto">
+          <TableScroll className="mt-6" label="想定助成額の計算例（葛飾区分のみ）">
             <table className="w-full min-w-[40rem] border-collapse text-[14px]">
               <thead>
-                <tr className="bg-navy-900 text-left text-white">
-                  <th className="border border-navy-800 px-3 py-2.5">導入内容（既存住宅）</th>
-                  <th className="border border-navy-800 px-3 py-2.5">内訳</th>
-                  <th className="border border-navy-800 px-3 py-2.5">区の想定助成額（小計）</th>
+                <tr className="bg-green-600 text-left text-white">
+                  <th className="border border-green-700 px-3 py-2.5">導入内容（既存住宅）</th>
+                  <th className="border border-green-700 px-3 py-2.5">内訳</th>
+                  <th className="border border-green-700 px-3 py-2.5">区の想定助成額（小計）</th>
                 </tr>
               </thead>
               <tbody>
                 {examples.map((e, i) => (
                   <tr key={e.label} className={i % 2 ? "bg-paper-2" : "bg-white"}>
-                    <th scope="row" className="border border-line px-3 py-2.5 text-left font-bold text-navy-900">{e.label}</th>
+                    <th scope="row" className="border border-line bg-cream/70 px-3 py-2.5 text-left font-bold text-navy-900">{e.label}</th>
                     <td className="border border-line px-3 py-2.5">
                       <ul className="space-y-0.5">
                         {e.result.lines.map((l) => (
@@ -127,16 +153,20 @@ export default function KatsushikaSubsidyPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableScroll>
           <p className="mt-4 text-[13px] text-ink-2">
             ご自宅の条件で東京都分も含めて確認するには<Link href="/simulation" className="mx-1 text-navy-600 underline underline-offset-4">補助金シミュレーター</Link>をご利用ください（区と都は分けて表示します）。
           </p>
         </section>
 
-        <section className="mt-16" aria-labelledby="flow">
-          <h2 id="flow" className="text-[24px] font-bold text-navy-900">申請の流れ（事前協議から交付まで）</h2>
+        <section className="cv-block mt-16" aria-labelledby="flow">
+          <h2 id="flow" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">申請の流れ（事前協議から交付まで）</h2>
           <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">区の公式案内に示されている流れをもとに整理しています。書類の様式や提出方法は区の手引きをご確認ください。</p>
-          <div className="mt-8">
+          <div className="mt-8 rounded-[2rem] bg-paper-2 p-4 sm:p-6">
+            <p className="mb-4 text-center font-heading text-[15px] font-bold text-navy-900">申請の時系列（朱色のところが要注意）</p>
+            <ApplicationTimeline />
+          </div>
+          <div className="mx-auto mt-10 max-w-3xl">
             <Steps
               steps={[
                 { title: "事前協議の申し込み", meta: "工事着工の4週間前まで（必着）", body: "環境課環境計画係（410番窓口）へ窓口または郵送で申し込みます。見積書や機器の仕様が分かる書類が必要になるため、業者の見積もりが出てから準備します。" },
@@ -156,15 +186,15 @@ export default function KatsushikaSubsidyPage() {
           </Callout>
         </section>
 
-        <section className="mt-16" aria-labelledby="detail">
-          <h2 id="detail" className="text-[24px] font-bold text-navy-900">メニュー別の詳細</h2>
+        <section className="cv-block cv-tall mt-16" aria-labelledby="detail">
+          <h2 id="detail" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">メニュー別の詳細</h2>
           <div className="mt-6">
             <SubsidyProgramSection program={P} headingLevel="h3" />
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="tokyo">
-          <h2 id="tokyo" className="text-[24px] font-bold text-navy-900">東京都の助成も検討対象になります</h2>
+        <section className="cv-block mt-16" aria-labelledby="tokyo">
+          <h2 id="tokyo" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">東京都の助成も検討対象になります</h2>
           <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
             葛飾区の住宅は、東京都（クール・ネット東京）の家庭向け助成の対象にもなり得ます。区と都の併用可否は公式情報で明記が確認できていないため、両方を検討する場合は申請前に各窓口へ確認してください。
           </p>
@@ -176,8 +206,8 @@ export default function KatsushikaSubsidyPage() {
           </div>
         </section>
 
-        <section className="mt-16" aria-labelledby="faq">
-          <h2 id="faq" className="text-[24px] font-bold text-navy-900">葛飾区の補助金についてよくある質問</h2>
+        <section className="cv-block mt-16" aria-labelledby="faq">
+          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">葛飾区の補助金についてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-6" />
         </section>
 
@@ -200,7 +230,7 @@ export default function KatsushikaSubsidyPage() {
             { href: "/solar-battery", label: "太陽光＋蓄電池について" },
             { href: "/flow", label: "導入までの流れ" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 hover:border-navy-900">
+            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
               {l.label} →
             </Link>
           ))}
@@ -224,6 +254,12 @@ export default function KatsushikaSubsidyPage() {
             path: PATH,
             title: "葛飾区の太陽光・蓄電池補助金（かつしかエコ助成金）2026年度の金額・条件・申請の流れ",
             description: metadata.description as string,
+            section: "補助金",
+            sources: [
+              { name: P.sourceName, url: P.sourceUrl },
+              { name: tokyoSolarProgram.sourceName, url: tokyoSolarProgram.sourceUrl },
+              { name: tokyoBatteryProgram.sourceName, url: tokyoBatteryProgram.sourceUrl },
+            ],
             datePublished: "2026-10-01",
             dateModified: P.lastVerified,
             keywords: ["葛飾区 太陽光 補助金", "かつしかエコ助成金"],

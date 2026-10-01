@@ -1,3 +1,4 @@
+import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -55,7 +56,7 @@ export default function Page() {
           body: (
             <>
               <p>卒FIT後の選択肢は、大きく次の4つです。組み合わせることもできます。</p>
-              <table>
+              <ProseTable>
                 <thead>
                   <tr>
                     <th>選択肢</th>
@@ -90,7 +91,7 @@ export default function Page() {
                     <td>オール電化、エコキュートが設置済み</td>
                   </tr>
                 </tbody>
-              </table>
+              </ProseTable>
               <p>初期費用をかけずにできるのは「売電継続」と「エコキュートの設定変更」です。蓄電池とV2Hは機器の導入が必要ですが、停電対策という別の価値も得られます。</p>
             </>
           ),

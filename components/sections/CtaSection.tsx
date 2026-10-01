@@ -1,9 +1,13 @@
+import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { siteConfig } from "@/lib/site";
+import { images } from "@/data/images";
+import { reveal } from "@/lib/reveal";
 
 /**
- * ページ下部の行動喚起。既定文言は持たず、ページごとに title / body を指定する。
+ * ページ下部の行動喚起。クリーム地に白い角丸パネル、朱色と緑のピルボタン、スタッフのイラスト。
+ * 既定文言は持たず、ページごとに title / body を指定する。
  * 電話・LINE は siteConfig に値があるときだけ出す。
  */
 export function CtaSection({
@@ -11,47 +15,55 @@ export function CtaSection({
   body,
   primary = { href: "/contact", label: "無料相談・お見積もりを依頼する" },
   secondary = { href: "/simulation", label: "わが家の補助金を試算する" },
-  tone = "navy",
 }: {
   title: string;
   body: string;
   primary?: { href: string; label: string };
   secondary?: { href: string; label: string } | null;
-  tone?: "navy" | "light";
+  /** 互換のために残している（現在は常にクリーム地） */
+  tone?: "cream" | "navy" | "light";
 }) {
-  const dark = tone === "navy";
+  const img = images.poseFist;
   return (
-    <section className={`${dark ? "bg-navy-900 text-white" : "border-y border-line bg-paper-2 text-navy-900"} py-16 sm:py-20`}>
+    <section className="relative overflow-hidden bg-cream py-14 sm:py-20">
+      <span className="absolute top-8 left-[8%] h-3 w-3 animate-twinkle rounded-full bg-orange-400" aria-hidden="true" />
+      <span className="absolute right-[10%] bottom-10 h-4 w-4 animate-twinkle rounded-full bg-green-400 [animation-delay:1s]" aria-hidden="true" />
       <Container>
-        <div className="grid items-center gap-8 lg:grid-cols-[1.3fr_1fr]">
-          <div>
-            <p className={`mb-3 text-[13px] font-bold tracking-wide ${dark ? "text-orange-400" : "text-accent-text"}`}>
-              ご相談・お見積もりは無料です
-            </p>
-            <h2 className={`text-[24px] leading-[1.4] font-bold sm:text-[30px] ${dark ? "text-white" : "text-navy-900"}`}>{title}</h2>
-            <p className={`mt-4 text-[15px] leading-[1.9] ${dark ? "text-navy-100/85" : "text-ink-2"}`}>{body}</p>
-          </div>
-          <div className="flex flex-col gap-3 lg:items-end">
-            <LinkButton href={primary.href} variant={dark ? "accent" : "primary"} size="lg" className="w-full sm:w-auto">
-              {primary.label}
-              <ArrowIcon />
-            </LinkButton>
-            {secondary && (
-              <LinkButton href={secondary.href} variant={dark ? "white" : "secondary"} size="lg" className="w-full sm:w-auto">
-                {secondary.label}
+        <div className="relative rounded-[2rem] bg-white px-5 py-9 shadow-pop sm:px-12 sm:py-12" {...reveal(0, "zoom")}>
+          <div className="grid items-center gap-8 lg:grid-cols-[1fr_auto_11rem] lg:gap-10">
+            <div>
+              <p className="mb-4 flex">
+                <span className="relative inline-block rounded-full bg-orange-500 px-5 py-1.5 font-heading text-[14px] font-bold text-navy-900 after:absolute after:top-full after:left-7 after:border-x-[7px] after:border-t-[8px] after:border-x-transparent after:border-t-orange-500 after:content-['']">
+                  ご相談・お見積もりは無料です
+                </span>
+              </p>
+              <h2 className="text-[24px] leading-[1.45] font-black text-navy-900 sm:text-[30px]">{title}</h2>
+              <p className="mt-4 text-[15px] leading-[1.9] text-ink-2">{body}</p>
+            </div>
+            <div className="flex min-w-0 flex-col gap-3">
+              <LinkButton href={primary.href} variant="accent" size="lg" className="shine w-full sm:w-auto">
+                <span className="relative z-[2]">{primary.label}</span>
+                <ArrowIcon className="relative z-[2] h-4 w-4" />
               </LinkButton>
-            )}
-            {siteConfig.contact.telDisplay && (
-              <a href={`tel:${siteConfig.contact.tel}`} className={`mt-2 text-[14px] ${dark ? "text-white" : "text-navy-900"}`}>
-                お電話：{siteConfig.contact.telDisplay}
-                {siteConfig.contact.hours && <span className="ml-2 text-[12px] opacity-70">（{siteConfig.contact.hours}）</span>}
-              </a>
-            )}
-            {siteConfig.contact.lineUrl && (
-              <a href={siteConfig.contact.lineUrl} target="_blank" rel="noopener noreferrer" className={`text-[14px] underline underline-offset-4 ${dark ? "text-white" : "text-navy-900"}`}>
-                LINEで相談する
-              </a>
-            )}
+              {secondary && (
+                <LinkButton href={secondary.href} variant="green" size="lg" className="w-full sm:w-auto">
+                  {secondary.label}
+                  <ArrowIcon />
+                </LinkButton>
+              )}
+              {siteConfig.contact.telDisplay && (
+                <a href={`tel:${siteConfig.contact.tel}`} className="mt-1 text-center text-[14px] font-bold text-navy-900">
+                  お電話：{siteConfig.contact.telDisplay}
+                  {siteConfig.contact.hours && <span className="ml-2 text-[12px] font-normal text-ink-3">（{siteConfig.contact.hours}）</span>}
+                </a>
+              )}
+              {siteConfig.contact.lineUrl && (
+                <a href={siteConfig.contact.lineUrl} target="_blank" rel="noopener noreferrer" className="text-center text-[14px] font-bold text-green-700 underline underline-offset-4">
+                  LINEで相談する
+                </a>
+              )}
+            </div>
+            <Image src={img.src} alt="" width={img.width} height={img.height} sizes="176px" className="mx-auto hidden h-auto w-36 animate-float-slow lg:block lg:w-full" />
           </div>
         </div>
       </Container>

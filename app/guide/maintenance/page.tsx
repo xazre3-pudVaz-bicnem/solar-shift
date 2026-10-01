@@ -1,3 +1,4 @@
+import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -66,7 +67,7 @@ export default function Page() {
           body: (
             <>
               <p>専門業者による点検は、ご家庭では確認できない項目を見るものです。一般に数年に1回程度が目安といわれ、設置直後の初期点検と、その後の定期点検に分かれます。</p>
-              <table>
+              <ProseTable>
                 <thead>
                   <tr>
                     <th>点検項目</th>
@@ -95,7 +96,7 @@ export default function Page() {
                     <td>各回路の電圧・電流の測定、設計値との比較</td>
                   </tr>
                 </tbody>
-              </table>
+              </ProseTable>
               <p>点検の頻度と費用は、機器の保証条件や点検の範囲で変わります。導入時に、点検の有無・頻度・費用がどう設定されているかを確認してください。保証の条件として点検が必要な場合は、その周期を守ることが保証を維持する前提になります。</p>
             </>
           ),

@@ -183,3 +183,38 @@ export function getPostsForPillar(categories: string[], n = 3): BlogPost[] {
     .filter((p) => categories.includes(p.category))
     .slice(0, n);
 }
+
+/** 一覧1ページあたりの記事数（毎日1本増えるので、一覧は必ずページを分ける） */
+export const POSTS_PER_PAGE = 12;
+
+/**
+ * カテゴリページを検索結果に出す最小の記事数。
+ * 記事が1〜2本しかないカテゴリページは内容が薄いので、3本たまるまで noindex・sitemap 対象外にする。
+ */
+export const MIN_POSTS_TO_INDEX_CATEGORY = 3;
+
+export function pageCount(total: number): number {
+  return Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
+}
+
+/** page は 1 始まり */
+export function pageSlice<T>(items: T[], page: number): T[] {
+  return items.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
+}
+
+export function isCategoryIndexable(slug: string): boolean {
+  return getPostsByCategory(slug).length >= MIN_POSTS_TO_INDEX_CATEGORY;
+}
+
+/** 一覧での前後の記事（newer = 1つ新しい記事、older = 1つ古い記事） */
+export function getAdjacentPosts(slug: string): { newer?: BlogPost; older?: BlogPost } {
+  const posts = getAllPosts();
+  const i = posts.findIndex((p) => p.slug === slug);
+  if (i === -1) return {};
+  return { newer: posts[i - 1], older: posts[i + 1] };
+}
+
+/** その一覧でいちばん新しい更新日（sitemap の lastModified 用） */
+export function latestUpdate(posts: BlogPost[]): string | undefined {
+  return posts.reduce<string | undefined>((max, p) => (!max || p.updatedAt > max ? p.updatedAt : max), undefined);
+}

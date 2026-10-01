@@ -54,7 +54,7 @@ export default function ProductsPage() {
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           {CATEGORIES.map((c) => (
-            <Link key={c.href} href={c.href} className="block border border-line bg-white p-5 hover:border-navy-900">
+            <Link key={c.href} href={c.href} className="block rounded-3xl border border-line bg-white p-5 shadow-card transition-transform duration-200 hover:-translate-y-1 hover:border-orange-400">
               <h2 className="text-[17px] font-bold text-navy-900">{c.title}</h2>
               <p className="mt-2 text-[14px] leading-[1.8] text-ink-2">{c.body}</p>
               <p className="mt-3 text-[13px] font-bold text-navy-600">一覧を見る →</p>
@@ -69,7 +69,7 @@ export default function ProductsPage() {
         title="機種選びは、屋根と電気の使い方を見てから。"
         body="カタログの数字だけでは決められない部分を、現地調査で確認してからご提案します。価格・納期・補助金の対象可否もあわせてお伝えします。相談は無料です。"
       />
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "取扱商品・おすすめ商品一覧", description: DESC }))} />
+      <JsonLd data={graph(webPageSchema({ path: PATH, name: "取扱商品・おすすめ商品一覧", description: DESC, type: "CollectionPage" }))} />
     </>
   );
 }

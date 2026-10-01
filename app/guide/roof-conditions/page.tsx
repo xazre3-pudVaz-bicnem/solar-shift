@@ -1,3 +1,4 @@
+import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -38,7 +39,7 @@ export default function Page() {
           body: (
             <>
               <p>太陽光パネル（ソーラーパネル）を屋根に載せられるか、載せて意味があるかは、次の6つの条件で判断します。</p>
-              <table>
+              <ProseTable>
                 <thead>
                   <tr>
                     <th>条件</th>
@@ -78,7 +79,7 @@ export default function Page() {
                     <td>発電効率、パネル配置</td>
                   </tr>
                 </tbody>
-              </table>
+              </ProseTable>
               <p>これらは図面である程度把握できますが、下地の状態や影の実際の掛かり方は現地でしか分かりません。6つを一つずつ確認した結果、「設置できる・できない」と「設置する意味がある・薄い」の2段階で判断します。</p>
             </>
           ),

@@ -1,3 +1,4 @@
+import { OpenChatButton } from "@/components/chat/OpenChatButton";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -39,14 +40,14 @@ export default function ContactPage() {
       <Container className="py-10 sm:py-14">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
           <div>
-            <h2 className="text-[20px] font-bold text-navy-900">お問い合わせフォーム</h2>
+            <h2 className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">お問い合わせフォーム</h2>
             <p className="mt-2 text-[14px] text-ink-2">{siteConfig.contact.formNote}</p>
             <div className="mt-6">
               <ContactForm fallbackEmail={email} />
             </div>
           </div>
           <aside className="space-y-8">
-            <div className="border border-line bg-paper-2 p-5">
+            <div className="rounded-3xl bg-beige p-5">
               <h2 className="text-[16px] font-bold text-navy-900">お問い合わせ後の流れ</h2>
               <div className="mt-4">
                 <Steps
@@ -59,7 +60,7 @@ export default function ContactPage() {
                 />
               </div>
             </div>
-            <div className="border border-line bg-white p-5 text-[14px] leading-[1.8]">
+            <div className="rounded-3xl bg-white p-5 text-[14px] leading-[1.8] shadow-card">
               <h2 className="text-[16px] font-bold text-navy-900">メールでのお問い合わせ</h2>
               {email && (
                 <p className="mt-2">
@@ -79,22 +80,30 @@ export default function ContactPage() {
               )}
               <p className="mt-3 text-[13px] text-ink-3">運営：{siteConfig.company.name}（{siteConfig.company.address.full}）</p>
             </div>
+            <div className="rounded-3xl border-2 border-green-200 bg-white p-5 text-[14px] leading-[1.8]">
+              <h2 className="text-[16px] font-bold text-navy-900">まずチャットで聞いてみる</h2>
+              <p className="mt-2 text-ink-2">補助金の金額や申請の順番など、よくある質問にはチャット（自動応答）でもお答えします。</p>
+              <OpenChatButton className="mt-3 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-green-600 px-5 py-1.5 text-[14px] font-bold text-white hover:bg-green-700">
+                チャットで質問する
+              </OpenChatButton>
+            </div>
             <div className="text-[14px] leading-[1.8] text-ink-2">
               <p className="font-bold text-navy-900">相談の前に見ておくと話が早いページ</p>
               <ul className="mt-2 space-y-1">
-                <li><Link href="/simulation" className="text-navy-600 underline underline-offset-4">補助金シミュレーター</Link></li>
-                <li><Link href="/subsidy/katsushika" className="text-navy-600 underline underline-offset-4">葛飾区の補助金</Link></li>
-                <li><Link href="/flow" className="text-navy-600 underline underline-offset-4">導入までの流れ</Link></li>
+                <li><Link href="/simulation" className="inline-block py-0.5 text-navy-600 underline underline-offset-4">補助金シミュレーター</Link></li>
+                <li><Link href="/subsidy/katsushika" className="inline-block py-0.5 text-navy-600 underline underline-offset-4">葛飾区の補助金</Link></li>
+                <li><Link href="/flow" className="inline-block py-0.5 text-navy-600 underline underline-offset-4">導入までの流れ</Link></li>
+                <li><Link href="/faq" className="inline-block py-0.5 text-navy-600 underline underline-offset-4">よくある質問</Link></li>
               </ul>
             </div>
           </aside>
         </div>
-        <section className="mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="text-[22px] font-bold text-navy-900">お問い合わせについてよくある質問</h2>
+        <section className="cv-block mt-16" aria-labelledby="faq-h">
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">お問い合わせについてよくある質問</h2>
           <FaqSection items={faqsByIds(["install-survey", "service-sales", "service-area"])} withSchema className="mt-5" />
         </section>
       </Container>
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "お問い合わせ", description: DESC }))} />
+      <JsonLd data={graph(webPageSchema({ path: PATH, name: "お問い合わせ", description: DESC, type: "ContactPage" }))} />
     </>
   );
 }

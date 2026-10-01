@@ -17,7 +17,7 @@ import { images } from "@/data/images";
 
 const PATH = "/reason";
 const DESC =
-  "SOLAR SHIFTが大切にしていること。補助金を一次情報で分かりやすく案内する、住宅ごとに必要な設備を検討する、太陽光から蓄電池・V2Hまで総合的に考える、葛飾区を中心とした地域密着、導入前から導入後まで同じ窓口。株式会社サイプレス運営。";
+  "SOLAR SHIFTが大切にしていること。補助金を一次情報で分かりやすく案内する、住宅ごとに必要な設備を検討する、太陽光から蓄電池・V2Hまで総合的に考える、葛飾区を中心とした地域密着、導入前から導入後まで同じ窓口。";
 
 export const metadata: Metadata = buildMetadata({
   title: "SOLAR SHIFTが選ばれる理由・大切にしていること",
@@ -98,11 +98,14 @@ export default function ReasonPage() {
 
         <div className="mt-14 space-y-14">
           {REASONS.map((r, i) => (
-            <section key={r.n} aria-labelledby={`r-${r.n}`} className={`grid items-center gap-8 lg:gap-14 ${i % 2 === 1 ? "lg:grid-cols-[1fr_18rem] lg:[&>*:first-child]:order-2" : "lg:grid-cols-[18rem_1fr]"}`}>
+            <section key={r.n} aria-labelledby={`r-${r.n}`} className={`cv-block grid items-center gap-8 lg:gap-14 ${i % 2 === 1 ? "lg:grid-cols-[1fr_18rem] lg:[&>*:first-child]:order-2" : "lg:grid-cols-[18rem_1fr]"}`}>
               <ImagePlaceholder src={REASON_ICONS[i].src} alt="" ratio="1/1" fit="contain" frame={false} sizes="288px" className="mx-auto w-48 lg:w-full" />
               <div>
-                <p className="font-en text-[13px] font-bold tracking-[0.2em] text-orange-500">{r.n}</p>
-                <h2 id={`r-${r.n}`} className="mt-2 text-[22px] leading-[1.45] font-bold text-navy-900 sm:text-[26px]">{r.title}</h2>
+                <p className="flex items-baseline gap-1 font-en font-bold text-green-700">
+                  <span className="text-[13px] tracking-[0.14em]">POINT</span>
+                  <span className="text-[30px] leading-none">{r.n}</span>
+                </p>
+                <h2 id={`r-${r.n}`} className="mt-2 text-[23px] leading-[1.45] font-black text-navy-900 sm:text-[28px]">{r.title}</h2>
                 <p className="mt-4 text-[15px] leading-[1.95] text-ink">{r.body}</p>
                 <p className="mt-5">
                   <Link href={r.link.href} className="text-[14px] font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text">
@@ -114,8 +117,8 @@ export default function ReasonPage() {
           ))}
         </div>
 
-        <section className="mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="text-[24px] font-bold text-navy-900">よくある質問</h2>
+        <section className="cv-block mt-16" aria-labelledby="faq-h">
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">よくある質問</h2>
           <FaqSection items={faqsByIds(["service-company", "service-sales", "subsidy-guarantee", "install-survey"])} withSchema className="mt-6" />
         </section>
 

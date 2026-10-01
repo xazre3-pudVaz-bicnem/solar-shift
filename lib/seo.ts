@@ -5,6 +5,9 @@ import { siteConfig } from "@/lib/site";
  * 本番 URL は NEXT_PUBLIC_SITE_URL（または SITE_URL）だけから決める。
  * 未設定なら canonical / OG URL / sitemap を一切出さず、robots は noindex にする。
  * NODE_ENV は見ない（Vercel のプレビューも production ビルドのため）。
+ *
+ * このファイルはクライアントコンポーネントからも読み込まれる（formatDateJa）。
+ * fs などサーバー専用のモジュールを import しないこと。
  */
 const RAW_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || "";
 export const SITE_URL: string | undefined = RAW_SITE_URL ? RAW_SITE_URL.replace(/\/+$/, "") : undefined;
@@ -21,7 +24,16 @@ export function absoluteUrl(path = "/"): string | undefined {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-export const SITE_TITLE_SUFFIX = `| ${siteConfig.name} 葛飾区の太陽光発電・蓄電池`;
+/**
+ * タイトルの末尾。検索結果で表示されるのは全角30字前後なので、サフィックスは短くする
+ * （地域名はページ側のタイトルに入れる。サフィックスに長い説明を付けると本題が切れる）。
+ */
+export const SITE_TITLE_SUFFIX = `｜${siteConfig.name}`;
+
+/** SNS 共有用の画像（app/og/[[...path]]/route.tsx がビルド時に生成する）。ページのパスと 1 対 1 */
+export function ogImagePath(path: string): string {
+  return path === "/" ? "/og" : `/og${path}`;
+}
 
 type BuildMetadataInput = {
   /** 「｜SOLAR SHIFT」を付ける前のタイトル */
@@ -37,22 +49,38 @@ type BuildMetadataInput = {
   noindex?: boolean;
   /** タイトルを末尾サフィックスなしでそのまま使う */
   rawTitle?: boolean;
+  /** 記事のカテゴリ名（og:article:section） */
+  section?: string;
+  /** 記事のタグ（og:article:tag） */
+  tags?: string[];
+  /**
+   * OG 画像を別ページのものにしたいとき、そのページのパスを渡す
+   * （一覧の2ページ目以降は、1ページ目と同じ画像を使う）。
+   */
+  ogFrom?: string;
 };
 
 export function buildMetadata(input: BuildMetadataInput): Metadata {
-  const title = input.rawTitle ? input.title : `${input.title} ${SITE_TITLE_SUFFIX}`;
+  const title = input.rawTitle ? input.title : `${input.title}${SITE_TITLE_SUFFIX}`;
   const url = absoluteUrl(input.path);
-  const ogImage = absoluteUrl("/opengraph-image");
+  const ogImage = absoluteUrl(ogImagePath(input.ogFrom ?? input.path));
   const noindex = input.noindex || !IS_PUBLIC;
+  const feed = absoluteUrl("/feed.xml");
 
   return {
     title,
     description: input.description,
     keywords: input.keywords,
-    alternates: url ? { canonical: url } : undefined,
+    alternates: url
+      ? {
+          canonical: url,
+          ...(feed ? { types: { "application/rss+xml": [{ url: feed, title: `${siteConfig.name} ブログ` }] } } : {}),
+        }
+      : undefined,
+    // 本番URL未設定（プレビュー）は noindex,nofollow。準備中ページは noindex,follow（リンクはたどらせる）
     robots: noindex
-      ? { index: false, follow: !input.noindex }
-      : { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+      ? { index: false, follow: IS_PUBLIC }
+      : { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
     openGraph: {
       title,
       description: input.description,
@@ -60,15 +88,16 @@ export function buildMetadata(input: BuildMetadataInput): Metadata {
       locale: "ja_JP",
       type: input.type ?? "website",
       url,
-      ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: siteConfig.name }] } : {}),
+      ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: input.title }] } : {}),
       ...(input.type === "article"
-        ? { publishedTime: input.publishedTime, modifiedTime: input.modifiedTime }
+        ? { publishedTime: input.publishedTime, modifiedTime: input.modifiedTime, authors: [siteConfig.editorial.supervisor], section: input.section, tags: input.tags }
         : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description: input.description,
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
   };
 }

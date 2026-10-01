@@ -10,8 +10,8 @@ import { formatDateJa } from "@/lib/seo";
 export function SubsidyCard({ subsidy, id }: { subsidy: Subsidy; id?: string }) {
   const s = subsidy;
   return (
-    <article id={id} className="border border-line bg-white">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-paper-2 px-5 py-4">
+    <article id={id} className="overflow-hidden rounded-3xl bg-white shadow-card">
+      <header className="flex flex-wrap items-center justify-between gap-3 bg-cream px-5 py-4">
         <div>
           <p className="text-[12px] font-bold text-ink-3">{s.areaLabel}／{s.programName}／{s.fiscalYear}</p>
           <h3 className="mt-1 text-[18px] font-bold text-navy-900">{s.name}</h3>

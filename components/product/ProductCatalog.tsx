@@ -1,8 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Product, ProductCategory } from "@/data/products";
+import { images } from "@/data/images";
 import { ProductCard } from "@/components/product/ProductCard";
 import { ProductComparison } from "@/components/product/ProductComparison";
 import { ManufacturerList } from "@/components/product/ManufacturerList";
+import { reveal } from "@/lib/reveal";
 
 /**
  * 商品一覧の本体。商品が0件のときは「順次掲載予定」と候補メーカーを出し、
@@ -22,6 +25,7 @@ export function ProductCatalog({
   showComparison?: boolean;
 }) {
   const mfCategory = category === "solar" || category === "battery" || category === "v2h" || category === "hems" || category === "hybrid" ? category : undefined;
+  const pose = images.poseChart;
   return (
     <div className="space-y-12">
       {products.length > 0 ? (
@@ -33,7 +37,7 @@ export function ProductCatalog({
           </div>
           {showComparison && (category === "solar" || category === "battery") && (
             <section aria-label="比較表">
-              <h2 className="text-[20px] font-bold text-navy-900">主な仕様の比較</h2>
+              <h2 className="text-[22px] font-black text-navy-900">主な仕様の比較</h2>
               <div className="mt-4">
                 <ProductComparison products={products} category={category} />
               </div>
@@ -41,17 +45,26 @@ export function ProductCatalog({
           )}
         </>
       ) : (
-        <div className="border border-dashed border-line-2 bg-white p-8">
-          <p className="text-[18px] font-bold text-navy-900">{emptyTitle}</p>
-          <p className="mt-2 max-w-3xl text-[14px] leading-[1.9] text-ink-2">{emptyBody}</p>
-          <p className="mt-4 text-[14px]">
-            機種のご相談は<Link href="/contact" className="mx-1 font-bold text-navy-600 underline underline-offset-4">お問い合わせフォーム</Link>から受け付けています。
-          </p>
+        <div className="grid items-center gap-5 rounded-[2rem] border-[3px] border-dashed border-orange-200 bg-white p-6 sm:grid-cols-[9rem_1fr] sm:p-8" {...reveal()}>
+          <Image src={pose.src} alt="" width={pose.width} height={pose.height} sizes="144px" className="mx-auto h-auto w-28 sm:w-full" />
+          <div>
+            <p className="font-heading text-[20px] font-black text-navy-900">{emptyTitle}</p>
+            <p className="mt-2 max-w-3xl text-[14px] leading-[1.9] text-ink-2">{emptyBody}</p>
+            <p className="mt-4 text-[14px]">
+              機種のご相談は
+              <Link href="/contact" className="mx-1 font-bold text-navy-600 underline decoration-orange-400 decoration-2 underline-offset-4">
+                お問い合わせフォーム
+              </Link>
+              から受け付けています。
+            </p>
+          </div>
         </div>
       )}
 
       <section aria-labelledby="mf-h">
-        <h2 id="mf-h" className="text-[20px] font-bold text-navy-900">取扱を検討しているメーカー</h2>
+        <h2 id="mf-h" className="text-[22px] font-black text-navy-900">
+          取扱を検討しているメーカー
+        </h2>
         <p className="mt-2 text-[14px] leading-[1.8] text-ink-2">
           取扱契約の有無を確認中のため、現時点では「正規取扱店」「認定店」などの表記は行っていません。メーカーの選定にあたっては、公式サイトの仕様・保証情報を確認してからご提案します。
         </p>

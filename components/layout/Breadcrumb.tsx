@@ -7,23 +7,23 @@ import { JsonLd } from "@/components/seo/JsonLd";
 export function Breadcrumb({ crumbs }: { crumbs: Crumb[] }) {
   return (
     <>
-      <nav aria-label="パンくずリスト" className="overflow-x-auto">
-        <ol className="flex items-center gap-1.5 whitespace-nowrap text-[12px] text-ink-3">
+      <nav aria-label="パンくずリスト" className="overflow-hidden">
+        <ol className="flex min-w-0 items-center gap-1.5 whitespace-nowrap text-[12px] text-ink-3">
           {crumbs.map((c, i) => {
             const last = i === crumbs.length - 1;
             return (
-              <li key={c.href} className="flex items-center gap-1.5">
+              <li key={c.href} className={`flex items-center gap-1.5 ${last ? "min-w-0 flex-1" : "shrink-0"}`}>
                 {i > 0 && (
                   <svg className="h-3 w-3 shrink-0 text-line-2" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                     <path d="m4.5 2.5 3 3.5-3 3.5" stroke="currentColor" strokeWidth="1.2" />
                   </svg>
                 )}
                 {last ? (
-                  <span aria-current="page" className="text-ink-2">
+                  <span aria-current="page" className="block min-w-0 truncate py-1 text-ink-2">
                     {c.name}
                   </span>
                 ) : (
-                  <Link href={c.href} className="hover:text-navy-900">
+                  <Link href={c.href} className="inline-block px-0.5 py-1 hover:text-navy-900">
                     {c.name}
                   </Link>
                 )}

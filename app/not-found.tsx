@@ -33,7 +33,7 @@ export default function NotFound() {
           <ul className="mt-8 grid gap-2 sm:grid-cols-2">
             {LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="block border border-line bg-white px-4 py-3 text-[15px] font-bold text-navy-900 hover:border-navy-900">
+                <Link href={l.href} className="block rounded-2xl border border-line bg-white px-4 py-3 text-[15px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
                   {l.label} →
                 </Link>
               </li>

@@ -93,8 +93,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <p className="mt-6 text-[22px] font-bold text-navy-900">{priceLabel(p)}</p>
             {p.price === null && <p className="mt-1 text-[13px] text-ink-3">価格は屋根条件・工事内容により異なります。現地調査のうえでお見積もりします。</p>}
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/contact" className="inline-flex h-12 items-center bg-navy-900 px-6 text-[15px] font-bold text-white hover:bg-navy-700">この商品について問い合わせる</Link>
-              <Link href="/simulation" className="inline-flex h-12 items-center border border-navy-900 px-6 text-[15px] font-bold text-navy-900 hover:bg-navy-50">補助金を試算する</Link>
+              <Link href="/contact" className="inline-flex h-12 items-center rounded-full bg-cta px-6 text-[15px] font-bold text-white shadow-pill hover:bg-cta-dark">この商品について問い合わせる</Link>
+              <Link href="/simulation" className="inline-flex h-12 items-center rounded-full bg-green-600 px-6 text-[15px] font-bold text-white hover:bg-green-700">補助金を試算する</Link>
             </div>
             <LastUpdated updatedAt={p.updatedAt} showSupervisor={false} className="mt-6" />
           </div>
@@ -103,7 +103,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_18rem]">
           <div className="space-y-12">
             <section aria-labelledby="spec">
-              <h2 id="spec" className="text-[22px] font-bold text-navy-900">仕様</h2>
+              <h2 id="spec" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">仕様</h2>
               <DefinitionList rows={specRows} className="mt-4" />
               {p.officialUrl && (
                 <p className="mt-3 text-[13px]">
@@ -114,7 +114,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {p.features.length > 0 && (
               <section aria-labelledby="features">
-                <h2 id="features" className="text-[22px] font-bold text-navy-900">特徴</h2>
+                <h2 id="features" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">特徴</h2>
                 <ul className="mt-4 list-disc space-y-1.5 pl-5 text-[15px] leading-[1.85]">
                   {p.features.map((f) => <li key={f}>{f}</li>)}
                 </ul>
@@ -123,7 +123,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {p.recommendedFor.length > 0 && (
               <section aria-labelledby="for">
-                <h2 id="for" className="text-[22px] font-bold text-navy-900">どんな家庭に向いているか</h2>
+                <h2 id="for" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">どんな家庭に向いているか</h2>
                 <ul className="mt-4 list-disc space-y-1.5 pl-5 text-[15px] leading-[1.85]">
                   {p.recommendedFor.map((f) => <li key={f}>{f}</li>)}
                 </ul>
@@ -133,13 +133,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {(p.merits.length > 0 || p.cautions.length > 0) && (
               <section aria-labelledby="pros" className="grid gap-6 sm:grid-cols-2">
                 <div>
-                  <h2 id="pros" className="text-[22px] font-bold text-navy-900">メリット</h2>
+                  <h2 id="pros" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">メリット</h2>
                   <ul className="mt-4 list-disc space-y-1.5 pl-5 text-[15px] leading-[1.85]">
                     {p.merits.map((f) => <li key={f}>{f}</li>)}
                   </ul>
                 </div>
                 <div>
-                  <h2 className="text-[22px] font-bold text-navy-900">注意点</h2>
+                  <h2 className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">注意点</h2>
                   <ul className="mt-4 list-disc space-y-1.5 pl-5 text-[15px] leading-[1.85]">
                     {p.cautions.map((f) => <li key={f}>{f}</li>)}
                   </ul>
@@ -149,13 +149,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {p.pairing && (
               <section aria-labelledby="pairing">
-                <h2 id="pairing" className="text-[22px] font-bold text-navy-900">太陽光との組み合わせ</h2>
+                <h2 id="pairing" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">太陽光との組み合わせ</h2>
                 <p className="mt-4 text-[15px] leading-[1.9]">{p.pairing}</p>
               </section>
             )}
 
             <section aria-labelledby="subsidy">
-              <h2 id="subsidy" className="text-[22px] font-bold text-navy-900">補助金対象になる可能性</h2>
+              <h2 id="subsidy" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">補助金対象になる可能性</h2>
               {p.subsidyNote && <p className="mt-4 text-[15px] leading-[1.9]">{p.subsidyNote}</p>}
               {subsidies.length > 0 && (
                 <div className="mt-4">
@@ -168,21 +168,21 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {p.katsushikaNote && (
               <section aria-labelledby="katsushika">
-                <h2 id="katsushika" className="text-[22px] font-bold text-navy-900">葛飾区で導入するときの考え方</h2>
+                <h2 id="katsushika" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">葛飾区で導入するときの考え方</h2>
                 <p className="mt-4 text-[15px] leading-[1.9]">{p.katsushikaNote}</p>
               </section>
             )}
 
             {p.faq.length > 0 && (
               <section aria-labelledby="faq">
-                <h2 id="faq" className="text-[22px] font-bold text-navy-900">この商品についてよくある質問</h2>
+                <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">この商品についてよくある質問</h2>
                 <FaqSection items={p.faq} withSchema className="mt-4" />
               </section>
             )}
 
             {others.length > 1 && (p.category === "solar" || p.category === "battery") && (
               <section aria-labelledby="others">
-                <h2 id="others" className="text-[22px] font-bold text-navy-900">他製品との違い</h2>
+                <h2 id="others" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">他製品との違い</h2>
                 <div className="mt-4">
                   <ProductComparison products={[p, ...others]} category={p.category} />
                 </div>
@@ -191,7 +191,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           </div>
 
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-            <div className="border border-line bg-paper-2 p-5 text-[14px] leading-[1.8]">
+            <div className="rounded-3xl bg-beige p-5 text-[14px] leading-[1.8]">
               <p className="font-bold text-navy-900">関連ページ</p>
               <ul className="mt-2 space-y-1.5">
                 <li><Link href={listHref} className="text-navy-600 underline underline-offset-4">{productCategoryLabel[p.category]}一覧</Link></li>
