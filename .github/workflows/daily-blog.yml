@@ -1,0 +1,69 @@
+name: 毎日のブログ記事を生成（GitHub Actions 版）
+
+# Vercel Cron（vercel.json + /api/cron/generate-post）の代わりに GitHub Actions で回す場合に使う。
+# 両方を同時に有効にしない（二重投稿になる）。
+# 必要な Secrets: ANTHROPIC_API_KEY（任意: ANTHROPIC_MODEL）
+
+on:
+  schedule:
+    # 日本時間 毎朝 10:20（UTC 01:20）
+    - cron: "20 1 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "ファイルを書かずに、生成される記事の内容だけ確認する"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-blog
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: APIキーの確認
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::シークレット ANTHROPIC_API_KEY が設定されていません。"
+            exit 1
+          fi
+
+      - name: 記事を生成
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+        run: npm run blog:generate
+
+      - name: コミットして push
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "solar-shift-blog-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add content/blog
+          if git diff --cached --quiet; then
+            echo "新しい記事はありません（スキップ）。"
+            exit 0
+          fi
+          git commit -m "blog: 自動生成記事を追加"
+          git push

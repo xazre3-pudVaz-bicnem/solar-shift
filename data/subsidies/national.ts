@@ -1,0 +1,140 @@
+import type { SubsidyProgram } from "./types";
+
+const LAST_VERIFIED = "2026-10-01";
+
+/**
+ * 国の制度は年度途中で公募終了・再開・次回公募が変わりやすい。
+ * status を正確に保ち、シミュレーターでは自動合算しない（参考表示のみ）。
+ */
+export const nationalPrograms: SubsidyProgram[] = [
+  {
+    id: "national-dr-battery-r7h",
+    area: "national",
+    programName: "DR家庭用蓄電池事業（令和7年度補正）",
+    issuer: "経済産業省（執行：一般社団法人 環境共創イニシアチブ（SII））",
+    fiscalYear: "令和7年度補正（2026年度実施）",
+    summary:
+      "DR（デマンドレスポンス）に活用できる家庭用蓄電システムを新規導入する個人・法人向けの国の補助金。2026年5月29日に申請額が予算に達し、公募は終了しています。",
+    sourceName: "SII「令和7年度補正 DR家庭用蓄電池事業」公式サイト",
+    sourceUrl: "https://dr-battery.sii.or.jp/r7h/about/",
+    lastVerified: LAST_VERIFIED,
+    notes: [
+      "2026年5月29日に交付申請額の合計が予算に達したため公募終了（当初予定は2026年12月10日まで）。",
+      "次回の公募（令和8年度補正など）の有無・内容は現時点で未確定です。",
+    ],
+    menus: [
+      {
+        id: "national-dr-battery",
+        programName: "DR家庭用蓄電池事業",
+        name: "家庭用蓄電システム導入支援",
+        area: "national",
+        areaLabel: "国",
+        issuer: "SII",
+        fiscalYear: "令和7年度補正",
+        equipment: "battery",
+        target: "DRに活用可能なリソースとして家庭用蓄電システムを新規導入する個人・法人・個人事業主",
+        amount: "設備費＋工事費の3/10以内",
+        maxAmount: "上限60万円/申請",
+        applicationPeriod: "2026年3月24日〜（2026年5月29日に予算到達のため終了）",
+        deadline: "受付終了",
+        preApplicationRequired: true,
+        preApplicationNote: "SII登録の販売事業者・アグリゲーターを通じた申請が必要。",
+        status: "closed",
+        conditions: [
+          "SIIに登録された機器であること",
+          "蓄電池の販売目標価格（1kWhあたり12.5万円以下）の要件を満たすこと",
+          "DR（デマンドレスポンス）への協力に同意すること",
+        ],
+        notes: ["公募終了のため、現在は申請できません。次回公募の情報は公式サイトをご確認ください。"],
+        sourceName: "SII「令和7年度補正 DR家庭用蓄電池事業」",
+        sourceUrl: "https://dr-battery.sii.or.jp/r7h/about/",
+        lastVerified: LAST_VERIFIED,
+      },
+    ],
+  },
+  {
+    id: "national-cev-v2h-r8",
+    area: "national",
+    programName: "CEV補助金（V2H充放電設備）",
+    issuer: "経済産業省（執行：一般社団法人 次世代自動車振興センター（NeV））",
+    fiscalYear: "令和8年度（2026年度）",
+    summary:
+      "電気自動車の電力を家庭で使うV2H充放電設備の導入を支援する国の補助金。2026年度分のV2H充放電設備・外部給電器の交付申請受付は2026年8月27日に終了しています。",
+    sourceName: "一般社団法人 次世代自動車振興センター（NeV）",
+    sourceUrl: "https://www.cev-pc.or.jp/",
+    lastVerified: LAST_VERIFIED,
+    notes: [
+      "2026年度の交付申請受付期間は2026年7月17日〜9月30日の予定でしたが、2026年8月27日に受付終了しました。",
+      "補助上限・要件は年度ごとに変わります。次回公募の情報はNeV公式サイトをご確認ください。",
+    ],
+    menus: [
+      {
+        id: "national-cev-v2h",
+        programName: "CEV補助金",
+        name: "V2H充放電設備（個人）",
+        area: "national",
+        areaLabel: "国",
+        issuer: "NeV",
+        fiscalYear: "令和8年度",
+        equipment: "v2h",
+        target: "V2H充放電設備を導入する個人・法人等",
+        amount: "機器費・工事費の一部（詳細は公募要領で要確認）",
+        maxAmount: "公募要領で要確認",
+        applicationPeriod: "2026年7月17日〜（2026年8月27日に受付終了）",
+        deadline: "受付終了",
+        preApplicationRequired: true,
+        status: "closed",
+        conditions: ["補助対象として登録された機器であること", "公募要領の要件を満たすこと"],
+        notes: ["受付終了のため、現在は申請できません。"],
+        sourceName: "一般社団法人 次世代自動車振興センター（NeV）",
+        sourceUrl: "https://www.cev-pc.or.jp/",
+        lastVerified: LAST_VERIFIED,
+      },
+    ],
+  },
+  {
+    id: "national-mirai-eco-2026",
+    area: "national",
+    programName: "みらいエコ住宅2026事業（住宅省エネ2026キャンペーン）",
+    issuer: "国土交通省・環境省・経済産業省",
+    fiscalYear: "2026年度",
+    summary:
+      "住宅の省エネリフォーム等を支援する国の事業。リフォームでは蓄電池の設置が補助対象メニューに含まれる一方、太陽光発電設備の設置は補助対象外。",
+    sourceName: "みらいエコ住宅2026事業【公式】",
+    sourceUrl: "https://mirai-eco2026.mlit.go.jp/",
+    lastVerified: LAST_VERIFIED,
+    notes: [
+      "太陽光発電設備の設置工事は補助対象外です。",
+      "リフォームの対象は、2016年12月31日以前に新築された既存住宅など、条件があります。",
+      "登録事業者（工事施工者）を通じた申請が必要です。予算上限に達した時点で受付終了となります。",
+    ],
+    menus: [
+      {
+        id: "national-mirai-eco-battery",
+        programName: "みらいエコ住宅2026事業",
+        name: "リフォーム：蓄電池の設置",
+        area: "national",
+        areaLabel: "国",
+        issuer: "国土交通省ほか",
+        fiscalYear: "2026年度",
+        equipment: "battery",
+        target: "対象となる既存住宅に省エネリフォームを行う所有者等（必須工事との組み合わせ条件あり）",
+        amount: "96,000円/戸",
+        maxAmount: "96,000円/戸",
+        applicationPeriod: "公式サイトで要確認（予算到達時に終了）",
+        deadline: "公式サイトで要確認",
+        preApplicationRequired: true,
+        preApplicationNote: "登録事業者による申請。必須工事（断熱改修やエコ住宅設備など）との組み合わせ条件がある。",
+        status: "unknown",
+        conditions: [
+          "必須工事（開口部の断熱改修など）と同時に行うこと等の条件を満たすこと",
+          "登録事業者が工事・申請を行うこと",
+        ],
+        notes: ["受付状況は変わりやすいため、申請前に公式サイトで必ず確認してください。"],
+        sourceName: "みらいエコ住宅2026事業【公式】対象要件の詳細【リフォーム】",
+        sourceUrl: "https://mirai-eco2026.mlit.go.jp/reform/",
+        lastVerified: LAST_VERIFIED,
+      },
+    ],
+  },
+];

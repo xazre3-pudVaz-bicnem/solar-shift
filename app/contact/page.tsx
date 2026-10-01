@@ -1,0 +1,100 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { buildMetadata } from "@/lib/seo";
+import { siteConfig, contactEmail } from "@/lib/site";
+import { faqsByIds } from "@/data/faq";
+import { Container } from "@/components/ui/Container";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ContactForm } from "@/components/sections/ContactForm";
+import { Steps } from "@/components/ui/Steps";
+import { FaqSection } from "@/components/sections/FaqSection";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { graph, webPageSchema } from "@/lib/schema";
+import { images } from "@/data/images";
+
+const PATH = "/contact";
+const DESC = "SOLAR SHIFTへのお問い合わせ。葛飾区の太陽光発電・蓄電池・V2H・HEMS・補助金についての無料相談、現地調査・お見積もりの依頼はこちら。訪問販売・電話営業はしていません。";
+
+export const metadata: Metadata = buildMetadata({
+  title: "お問い合わせ・無料相談｜葛飾区の太陽光・蓄電池",
+  description: DESC,
+  path: PATH,
+  keywords: ["太陽光 無料相談 葛飾区", "太陽光 見積もり 葛飾区", "蓄電池 相談"],
+});
+
+export default function ContactPage() {
+  const email = contactEmail();
+  return (
+    <>
+      <PageHeader
+        crumbs={[
+          { name: "ホーム", href: "/" },
+          { name: "お問い合わせ", href: PATH },
+        ]}
+        eyebrow="お問い合わせ・無料相談"
+        title="太陽光・蓄電池・補助金について、お気軽にご相談ください"
+        lead="現地調査・お見積もりは無料です。「補助金について聞きたい」「わが家が対象か知りたい」だけでも構いません。訪問販売や電話営業はしていません。お問い合わせをいただいた方にだけご連絡します。"
+        image={images.peopleCoupleTalk}
+      />
+      <Container className="py-10 sm:py-14">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
+          <div>
+            <h2 className="text-[20px] font-bold text-navy-900">お問い合わせフォーム</h2>
+            <p className="mt-2 text-[14px] text-ink-2">{siteConfig.contact.formNote}</p>
+            <div className="mt-6">
+              <ContactForm fallbackEmail={email} />
+            </div>
+          </div>
+          <aside className="space-y-8">
+            <div className="border border-line bg-paper-2 p-5">
+              <h2 className="text-[16px] font-bold text-navy-900">お問い合わせ後の流れ</h2>
+              <div className="mt-4">
+                <Steps
+                  steps={[
+                    { title: "担当者からご連絡", body: "通常2〜3営業日以内に、メールでご連絡します。" },
+                    { title: "ヒアリング", body: "屋根の形状・築年数・電気の使い方・ご希望の設備を伺います。" },
+                    { title: "現地調査（無料）", body: "ご都合のよい日程で屋根・分電盤・設置場所を確認します。" },
+                    { title: "ご提案・お見積もり", body: "内訳を分けた見積もりと、制度ごとの想定助成額をお渡しします。" },
+                  ]}
+                />
+              </div>
+            </div>
+            <div className="border border-line bg-white p-5 text-[14px] leading-[1.8]">
+              <h2 className="text-[16px] font-bold text-navy-900">メールでのお問い合わせ</h2>
+              {email && (
+                <p className="mt-2">
+                  <a href={`mailto:${email}?subject=${encodeURIComponent("【SOLAR SHIFT】お問い合わせ")}`} className="font-bold text-navy-600 underline underline-offset-4">{email}</a>
+                </p>
+              )}
+              {siteConfig.contact.telDisplay && (
+                <p className="mt-3">
+                  お電話：<a href={`tel:${siteConfig.contact.tel}`} className="font-bold text-navy-600 underline underline-offset-4">{siteConfig.contact.telDisplay}</a>
+                  {siteConfig.contact.hours && <span className="ml-1 text-ink-3">（{siteConfig.contact.hours}）</span>}
+                </p>
+              )}
+              {siteConfig.contact.lineUrl && (
+                <p className="mt-3">
+                  <a href={siteConfig.contact.lineUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-navy-600 underline underline-offset-4">LINEで相談する</a>
+                </p>
+              )}
+              <p className="mt-3 text-[13px] text-ink-3">運営：{siteConfig.company.name}（{siteConfig.company.address.full}）</p>
+            </div>
+            <div className="text-[14px] leading-[1.8] text-ink-2">
+              <p className="font-bold text-navy-900">相談の前に見ておくと話が早いページ</p>
+              <ul className="mt-2 space-y-1">
+                <li><Link href="/simulation" className="text-navy-600 underline underline-offset-4">補助金シミュレーター</Link></li>
+                <li><Link href="/subsidy/katsushika" className="text-navy-600 underline underline-offset-4">葛飾区の補助金</Link></li>
+                <li><Link href="/flow" className="text-navy-600 underline underline-offset-4">導入までの流れ</Link></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+        <section className="mt-16" aria-labelledby="faq-h">
+          <h2 id="faq-h" className="text-[22px] font-bold text-navy-900">お問い合わせについてよくある質問</h2>
+          <FaqSection items={faqsByIds(["install-survey", "service-sales", "service-area"])} withSchema className="mt-5" />
+        </section>
+      </Container>
+      <JsonLd data={graph(webPageSchema({ path: PATH, name: "お問い合わせ", description: DESC }))} />
+    </>
+  );
+}
