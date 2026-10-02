@@ -1,3 +1,4 @@
+import { EnergyFlowFigure } from "@/components/sections/EnergyFlowFigure";
 import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -37,12 +38,13 @@ export default function SolarBatteryPage() {
       ]}
       eyebrow="太陽光＋蓄電池"
       heroImage={images.houseBatterySunset}
-      tip={{ title: "同時導入の特典", body: <>葛飾区では、太陽光と蓄電池を併せて申請すると<strong className="marker">併設加算（一律5万円）</strong>の対象になります。</>, image: images.poseOk }}
+      tip={{ title: "葛飾区の併設加算", body: <>葛飾区では、太陽光と蓄電池を併設すると<strong className="marker">併設加算（一律5万円）</strong>の対象になります。同時に設置する場合も、すでにある機器に足す場合も対象です。</>, image: images.poseOk }}
       title={<>太陽光＋蓄電池<span className="block text-[0.7em] text-ink-2">つくった電気を、ためて使う</span></>}
       lead="太陽光発電と蓄電池を組み合わせると、昼につくった電気を夜に使えるようになり、買う電気を減らしながら停電にも備えられます。同時に導入するか、後から追加するかで、工事・機器・補助金の扱いが変わります。"
-      conclusion={`太陽光と蓄電池の同時導入は、工事を1回にまとめられること、ハイブリッド型パワーコンディショナで機器を集約できること、葛飾区の併設加算（${addon.amount}）の対象になることが主な利点です。一方、初期費用は大きくなるため、「夜に使う電気の量」と「停電への備えの必要性」で判断します。既に太陽光がある家は、パワコンの交換時期に合わせた後付けも選択肢です。`}
+      conclusion={`太陽光と蓄電池の同時導入は、工事を1回にまとめられること、ハイブリッド型パワーコンディショナで機器を集約できることが主な利点です。葛飾区の併設加算（${addon.amount}）は、同時に設置する場合も、すでにある機器に足す場合も対象になります。同時導入は初期費用が大きくなるため、「夜に使う電気の量」と「停電への備えの必要性」で判断します。既に太陽光がある家は、パワコンの交換時期に合わせた後付けも選択肢です。`}
       points={[
-        "同時導入の利点：工事1回・ハイブリッド型で機器集約・葛飾区の併設加算（一律5万円）",
+        "同時導入の利点：工事が1回で済む・ハイブリッド型で機器を集約できる",
+        "葛飾区の併設加算（一律5万円）は、同時に設置する場合も、既設の機器に足す場合も対象",
         "同時導入の注意点：初期費用が大きい。容量の組み合わせを誤ると蓄電池を使い切れない",
         "後付けの利点：先に太陽光の実績を見てから容量を決められる。注意点：単機能型になりやすく、工事が2回",
         "2026年度のFITは5年目以降8.3円/kWh。売るより使う設計に蓄電池が効く",
@@ -52,7 +54,7 @@ export default function SolarBatteryPage() {
         {
           id: "why",
           heading: "なぜ組み合わせるのか：昼の電気を夜に",
-          image: images.batSolarToHome,
+          figure: <EnergyFlowFigure />,
           body: (
             <>
               <p>太陽光だけの家では、昼に発電した電気のうち使い切れない分を売電し、夜は電力会社から買います。2026年度のFITは最初の4年間が24円/kWhですが、5〜10年目は8.3円/kWhに下がります。買う電気の単価のほうが高い状態が続けば、<strong>売るより自宅で使うほうが有利</strong>です。</p>
@@ -71,7 +73,7 @@ export default function SolarBatteryPage() {
               <ul>
                 <li><strong>工事が1回で済む</strong>：足場・電気工事・申請をまとめられる</li>
                 <li><strong>ハイブリッド型を選べる</strong>：太陽光と蓄電池のパワーコンディショナを1台に集約し、変換ロスと機器数を減らせる</li>
-                <li><strong>葛飾区の併設加算</strong>：太陽光と蓄電池を併せて申請すると{addon.amount}が加算される（{addon.lastVerified.replace(/-/g, "/")} 時点の公式情報）</li>
+                <li><strong>葛飾区の併設加算</strong>：太陽光と蓄電池を併設すると{addon.amount}が加算される。同時に設置する場合も、既設の機器に足す場合も対象（{addon.lastVerified.replace(/-/g, "/")} 時点の公式情報）</li>
                 <li><strong>設計を一体で考えられる</strong>：太陽光の容量と蓄電池の容量のバランスを最初から合わせられる</li>
               </ul>
               <h3>注意点</h3>
@@ -90,8 +92,8 @@ export default function SolarBatteryPage() {
           body: (
             <>
               <p>既に太陽光がある家に蓄電池を後付けする場合、既設のパワーコンディショナを残して蓄電池専用の単機能型を追加するか、パワーコンディショナごとハイブリッド型に交換するかの2通りがあります。</p>
-              <p>パワーコンディショナは一般に10〜15年程度で交換時期を迎えるため、<strong>交換時期と蓄電池の導入を合わせる</strong>と、工事と費用の無駄を減らせます。FITの買取期間（10年）が終わる「卒FIT」のタイミングも、自家消費に切り替える節目になります。</p>
-              <p>なお、葛飾区の併設加算は太陽光と蓄電池を併せて申請する場合の加算です。後付けで加算の対象になるかは区の窓口にご確認ください。卒FIT後の考え方は<Link href="/guide/post-fit">卒FIT後の選択肢</Link>へ。</p>
+              <p>太陽光発電協会によると、パワーコンディショナの耐用年数は10〜15年といわれます。<strong>交換時期と蓄電池の導入を合わせる</strong>と、工事を一度にまとめられます。FITの買取期間（10年）が終わる「卒FIT」のタイミングも、自家消費に切り替える節目になります。</p>
+              <p>葛飾区の併設加算は、すでにある太陽光に蓄電池を足す場合も対象です（区の案内）。その場合は、電力会社が発行した、売電を確認できる書類の写しを添えて申し込みます。卒FIT後の考え方は<Link href="/guide/post-fit">卒FIT後の選択肢</Link>へ。</p>
             </>
           ),
         },
@@ -149,7 +151,7 @@ export default function SolarBatteryPage() {
         },
       ]}
       subsidies={subsidies}
-      subsidyNote={<p>同時導入では葛飾区の併設加算が対象になります。区と都の併用可否は各窓口での確認が必要です。</p>}
+      subsidyNote={<p>太陽光と蓄電池を併設すると、葛飾区の併設加算の対象になります（既設の機器に足す場合も対象）。区と都は併用できますが、補助金の合計は助成対象経費が上限です。</p>}
       faq={faqsByIds(["battery-set", "battery-capacity", "subsidy-combination", "cost-payback"])}
       related={[
         { href: "/subsidy/katsushika", label: "葛飾区の補助金", description: "併設加算を含む金額・条件" },

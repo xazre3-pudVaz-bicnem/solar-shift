@@ -1,16 +1,24 @@
+import { TrustFacts } from "@/components/ui/TrustFacts";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
-import { areasWithPage, getArea } from "@/data/areas";
-import { getProgram } from "@/data/subsidies";
+import { siteConfig, addressWithPostal, companyMapUrl, companyMapEmbedUrl } from "@/lib/site";
+import { areasWithPage, getArea, secondaryAreas } from "@/data/areas";
+import { getSubsidy } from "@/data/subsidies";
+import { KATSUSHIKA_PRE_CONSULTATION_WEEKS } from "@/data/subsidies/katsushika-details";
+import { sources as verified } from "@/data/sources";
+import { headline } from "@/lib/subsidy-headline";
+import { images } from "@/data/images";
+import { reveal } from "@/lib/reveal";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { KeyPoints } from "@/components/ui/KeyPoints";
-import { SubsidyTable } from "@/components/subsidy/SubsidyTable";
-import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
-import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
+import { Toc } from "@/components/ui/Toc";
+import { DefinitionList } from "@/components/ui/DefinitionList";
+import { MapEmbed } from "@/components/ui/MapEmbed";
+import { Steps } from "@/components/ui/Steps";
 import { LastUpdated } from "@/components/ui/LastUpdated";
 import { SourceList } from "@/components/ui/SourceList";
 import { FaqSection } from "@/components/sections/FaqSection";
@@ -19,14 +27,34 @@ import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, articleSchema } from "@/lib/schema";
-import { AuthorBox } from "@/components/blog/AuthorBox";
-import { images } from "@/data/images";
+import { graph, webPageSchema, serviceSchema } from "@/lib/schema";
 
+/**
+ * エリアページ（いまは葛飾区だけ）。
+ * 検索意図：「葛飾区 太陽光 業者」「葛飾区 太陽光 施工」「葛飾区 太陽光 会社」「葛飾区 蓄電池 業者」
+ * ＝ 葛飾区で頼める業者（会社）と、対応している地域・進め方を知りたい。
+ *
+ * ほかのページとの役割分担（lib/seo-map.ts）
+ *   - 補助金の金額・書類・時系列の詳細 … /subsidy/katsushika（ここには要点だけ）
+ *   - 太陽光・蓄電池そのものの解説     … /solar /battery
+ *   - サービス全体の入口               … /
+ *
+ * 施工体制・保証・資格・実績など、確認できていないことは書かない（会社情報は lib/site.ts にあるものだけ）。
+ * 地名は「区内の対応エリア」としてこのページの中でだけ挙げる（地名ごとのページは作らない）。
+ */
 export const dynamicParams = false;
+
+const UPDATED = "2026-10-02";
 
 export function generateStaticParams() {
   return areasWithPage.map((a) => ({ slug: a.slug }));
+}
+
+function titleOf(name: string) {
+  return `${name}の太陽光・蓄電池業者｜対応エリアと相談の進め方`;
+}
+function descriptionOf(name: string) {
+  return `${name}で太陽光発電・蓄電池の業者をお探しの方へ。SOLAR SHIFT は${siteConfig.company.address.city}${siteConfig.company.address.town}の${siteConfig.company.name}が運営し、区内全域に対応しています。対応地域、相談から施工までの進め方、業者を選ぶときに確かめたい点をまとめました。`;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -34,14 +62,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const area = getArea(slug);
   if (!area?.page) return {};
   return buildMetadata({
-    title: `${area.name}の太陽光発電・蓄電池｜補助金・住宅事情・水害リスクと備え`,
-    description: `${area.name}で太陽光発電・蓄電池を導入する方へ。${area.name}の補助金制度（かつしかエコ助成金・東京都の助成）、戸建の多い住宅事情と屋根条件、水害リスクを踏まえた機器の設置、地域特化FAQ。${siteConfig.company.name}運営のSOLAR SHIFT。`,
+    title: titleOf(area.name),
+    description: descriptionOf(area.name),
     path: `/area/${area.slug}`,
-    keywords: [`${area.name} 太陽光`, `${area.name} 太陽光発電`, `${area.name} 蓄電池`, `${area.name} 太陽光 業者`, `${area.name} 太陽光 おすすめ`, `${area.name} ソーラーパネル`],
-    type: "article",
-    modifiedTime: siteConfig.subsidyInfoDate,
+    keywords: [`${area.name} 太陽光 業者`, `${area.name} 太陽光 施工`, `${area.name} 太陽光 会社`, `${area.name} 蓄電池 業者`],
+    modifiedTime: UPDATED,
   });
 }
+
+const H2 = "border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900 sm:text-[28px]";
+const LEAD = "mt-4 max-w-3xl text-base leading-[1.9] text-ink-2";
+const TEXT_LINK = "font-bold text-navy-700 underline underline-offset-4 hover:text-accent-text";
 
 export default async function AreaDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -49,11 +80,65 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
   if (!area?.page) notFound();
   const page = area.page;
   const path = `/area/${area.slug}`;
-  const programs = page.subsidyProgramIds.map((id) => getProgram(id)).filter((p): p is NonNullable<typeof p> => Boolean(p));
-  const posts = getPostsForPillar(["katsushika-subsidy", "blackout"], 3);
-  const sources = [
+  const c = siteConfig.company;
+  const posts = getPostsForPillar(["install-maintenance", "katsushika-subsidy"], 3);
+
+  const solar = getSubsidy("katsushika-solar")!;
+  const battery = getSubsidy("katsushika-battery")!;
+  const addon = getSubsidy("katsushika-solar-battery-addon")!;
+  const numbers = [
+    { label: "太陽光発電", s: solar },
+    { label: "蓄電池", s: battery },
+    { label: "太陽光＋蓄電池の併設", s: addon },
+  ].map((x) => ({ ...x, h: headline(x.s)! }));
+
+  const mainTowns = page.mainTowns ?? [];
+  const pageSources = [
     ...page.officialLinks.map((l) => ({ name: l.name, url: l.url, verifiedAt: siteConfig.subsidyInfoDate })),
-    ...page.disaster.filter((d) => d.sourceUrl).map((d) => ({ name: d.sourceName!, url: d.sourceUrl!, verifiedAt: siteConfig.subsidyInfoDate })),
+    verified.katsushikaGuide,
+  ];
+  const embedUrl = companyMapEmbedUrl();
+
+  /** 業者を選ぶときに確かめること。1〜3 と 5・6 は葛飾区の案内・手引きにある内容 */
+  const checkpoints: { title: string; body: string }[] = [
+    {
+      title: "「区の委託」「区の紹介」を名乗っていないか",
+      body: `${area.name}は、特定の業者に営業・販売を委託することも、業者を紹介することもないと案内しています。そう名乗る業者とは、その場で契約しないでください。`,
+    },
+    {
+      title: "複数の業者から見積もりを取る",
+      body: "区は、高額な契約を避けるために、複数の業者から見積もりを取ることを勧めています。契約を急がせる業者にも注意を呼びかけています。",
+    },
+    {
+      title: "見積書の内訳が分かれているか",
+      body: "区の助成の申し込みには、機器本体・工事費・調整額がそれぞれ分かる見積書が必要です。「一式」とだけ書かれた見積書には、内訳書を付けてもらいます。",
+    },
+    {
+      title: "申請の順番を説明できるか",
+      body: `区の助成は、着工の${KATSUSHIKA_PRE_CONSULTATION_WEEKS}週間前までに事前協議を申し込み、回答書が届いてから工事を始めます。この順番と日程を、契約の前に説明してもらいます。`,
+    },
+    {
+      title: "機器が助成の要件を満たしているか",
+      body: "太陽光はJETなどの認証を受けたモジュール、蓄電池はSIIに登録された機器が対象です。型番で確かめられます。",
+    },
+    {
+      title: "契約と申請の名義がそろっているか",
+      body: "区の助成では、申請者・住んでいる方・領収書の名義・振込口座の名義が同じである必要があります。契約の名義を、先に確かめておきます。",
+    },
+    {
+      title: "保証と施工の体制を、書面で確かめる",
+      body: "機器の保証、工事の保証、だれが施工するかは、会社や製品によって違います。口頭ではなく、書面で確かめてください。SOLAR SHIFT の内容も、お見積もりの際に遠慮なくご確認ください。",
+    },
+  ];
+
+  const toc = [
+    { id: "about", label: "SOLAR SHIFT について" },
+    { id: "towns", label: `${area.name}内の対応エリア` },
+    { id: "checkpoints", label: "業者を選ぶときに確かめること" },
+    { id: "flow", label: "ご相談から設置まで" },
+    { id: "subsidy", label: `${area.name}で使える補助金（要点）` },
+    { id: "housing", label: `${area.name}の住まいで気をつけること` },
+    { id: "faq", label: "よくある質問" },
   ];
 
   return (
@@ -62,143 +147,269 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
         crumbs={[
           { name: "ホーム", href: "/" },
           { name: "対応エリア", href: "/area" },
-          { name: `${area.name}の太陽光発電`, href: path },
+          { name: `${area.name}の太陽光・蓄電池業者`, href: path },
         ]}
         eyebrow={`${area.prefecture}${area.name}｜主要対応エリア`}
-        title={<>{area.name}の太陽光発電・蓄電池<span className="block text-[0.7em] text-ink-2">補助金・住宅事情・水害リスクと備え</span></>}
+        title={
+          <>
+            {area.name}の太陽光発電・蓄電池業者をお探しの方へ
+            <span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">
+              {c.address.town}の会社が、ご相談から施工・導入後まで対応します
+            </span>
+          </>
+        }
         lead={page.lead}
+        image={images.heroSolarHomeRiverside}
       >
-        <LastUpdated updatedAt={siteConfig.subsidyInfoDate} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={UPDATED} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
-        <KeyPoints
-          conclusion={`${area.name}で太陽光発電・蓄電池を導入する場合、区の「かつしかエコ助成金」と東京都の助成の両方が検討対象です（${formatDateJa(siteConfig.subsidyInfoDate)}時点）。区の助成は工事着工4週間前までの事前協議が原則必要です。${area.name}は戸建の多い住宅都市で、隣家との距離が近い敷地では影の確認が重要です。また区の半分近くが海抜ゼロメートル地帯のため、蓄電池やパワーコンディショナの設置場所は浸水想定を踏まえて検討します。`}
-          points={[
-            "補助金：区（太陽光6万円/kW 上限30万円、蓄電池1/4 上限20万円、併設加算5万円、HEMS、V2H）＋都（太陽光・蓄電池）。併用可否は各窓口で確認",
-            "住宅事情：戸建が多く、隣家との距離が近い。屋根の形・影の影響を現地で確認",
-            "災害リスク：海抜ゼロメートル地帯。機器の設置高さと在宅避難の備えを検討",
-            `SOLAR SHIFT の拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}。区内全域が主要対応エリア`,
-          ]}
-        />
-
-        <section className="cv-block mt-14" aria-labelledby="subsidy-h">
-          <h2 id="subsidy-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}で使える補助金（{formatDateJa(siteConfig.subsidyInfoDate)}時点）</h2>
-          <div className="mt-6 space-y-10">
-            {programs.map((p) => (
-              <div key={p.id}>
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <h3 className="text-[18px] font-bold text-navy-900">{p.area === "katsushika" ? "葛飾区" : "東京都"}｜{p.programName}</h3>
-                  <Link href={p.area === "katsushika" ? "/subsidy/katsushika" : "/subsidy/tokyo"} className="text-[13px] font-bold text-navy-600 underline underline-offset-4">詳しく見る</Link>
-                </div>
-                <p className="mt-2 text-[14px] leading-[1.8] text-ink-2">{p.summary}</p>
-                <div className="mt-4">
-                  <SubsidyTable menus={p.menus} />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <LinkButton href="/simulation" variant="primary">わが家の想定助成額を試算する <ArrowIcon /></LinkButton>
-          </div>
-          <SubsidyDisclaimer className="mt-6" />
-        </section>
-
-        <section className="cv-block mt-16" aria-labelledby="housing-h">
-          <h2 id="housing-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}の住宅事情と屋根条件</h2>
-          <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:gap-12">
-            <ImagePlaceholder src={images.katsushikaStreetSunset.src} alt={images.katsushikaStreetSunset.alt} ratio="4/3" label={`${area.name}の街並み写真（差し替え）`} className="lg:sticky lg:top-24" />
-            <div className="space-y-6">
-              {page.housing.map((h) => (
-                <div key={h.title}>
-                  <h3 className="text-[18px] font-bold text-navy-900">{h.title}</h3>
-                  <p className="mt-2 text-[15px] leading-[1.9] text-ink">{h.body}</p>
-                </div>
-              ))}
-              <p className="text-[14px] text-ink-2">
-                屋根条件の見方は<Link href="/guide/roof-conditions" className="mx-1 text-navy-600 underline underline-offset-4">太陽光に向く屋根の条件</Link>をご覧ください。
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="cv-block mt-16" aria-labelledby="disaster-h">
-          <h2 id="disaster-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}の災害リスクと停電への備え</h2>
-          <div className="mt-6 space-y-6">
-            {page.disaster.map((d) => (
-              <div key={d.title} className="rounded-2xl border-l-8 border-orange-500 bg-white py-4 pr-5 pl-5 shadow-card">
-                <h3 className="text-[18px] font-bold text-navy-900">{d.title}</h3>
-                <p className="mt-2 text-[15px] leading-[1.9] text-ink">{d.body}</p>
-                {d.sourceUrl && (
-                  <p className="mt-2 text-[13px] text-ink-3">
-                    出典：<a href={d.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-navy-600 underline underline-offset-4">{d.sourceName}</a>
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-          <p className="mt-5 text-[14px] text-ink-2">
-            停電時に太陽光・蓄電池で何ができるかは<Link href="/guide/blackout" className="mx-1 text-navy-600 underline underline-offset-4">停電時の太陽光・蓄電池</Link>で解説しています。
-          </p>
-        </section>
-
-        {page.towns && page.towns.length > 0 && (
-          <section className="cv-block mt-16" aria-labelledby="towns-h">
-            <h2 id="towns-h" className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">{area.name}内の対応地域（代表例）</h2>
-            <p className="mt-2 text-[14px] text-ink-2">{area.name}内は全域が主要対応エリアです。以下は代表的な地域名で、網羅ではありません。</p>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {page.towns.map((t) => (
-                <li key={t} className="rounded-full bg-white px-3 py-1 text-[13px] font-bold text-navy-900 shadow-sm">{t}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <section className="cv-block mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]">{area.name}の太陽光・蓄電池についてよくある質問</h2>
-          <FaqSection items={page.faq} withSchema className="mt-6" />
-        </section>
-
-        <section className="cv-block mt-16" aria-labelledby="links-h">
-          <h2 id="links-h" className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">{area.name}の公式情報</h2>
-          <ul className="mt-4 space-y-1 text-[14px]">
-            {page.officialLinks.map((l) => (
-              <li key={l.url}>
-                <a href={l.url} target="_blank" rel="noopener noreferrer" className="inline-block py-1 text-navy-600 underline underline-offset-4 hover:text-accent-text">{l.name}</a>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <SourceList sources={sources} className="mt-12" />
-        <div className="mt-10">
-          <AuthorBox />
+        <div className="mx-auto max-w-5xl">
+          <KeyPoints
+            conclusion={`SOLAR SHIFT は、${c.address.locality}の${c.name}が運営する太陽光発電・蓄電池の事業です。${area.name}内は全域に対応し、現地調査とお見積もりは無料です。区の「かつしかエコ助成金」と東京都の助成を整理し、申請の順番から逆算して計画を立てます。`}
+            points={[
+              `対応エリア：${mainTowns.slice(0, 5).join("・")}など、${area.name}内の全域`,
+              "対応内容：住宅用太陽光発電・家庭用蓄電池・V2H・HEMSの導入と、補助金のご相談",
+              "業者選び：区は、複数の業者から見積もりを取ることを勧めています",
+            ]}
+          />
+          <Toc items={toc} className="mt-8" />
         </div>
 
-        <nav className="mt-10 grid gap-3 sm:grid-cols-3" aria-label="関連ページ">
-          {[
-            { href: "/subsidy/katsushika", label: `${area.name}の補助金を詳しく` },
-            { href: "/solar", label: "太陽光発電について" },
-            { href: "/battery", label: "家庭用蓄電池について" },
-          ].map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
-              {l.label} →
-            </Link>
-          ))}
-        </nav>
+        <div className="mx-auto mt-14 max-w-5xl space-y-16 sm:mt-16 sm:space-y-20">
+          {/* ───────── 会社・事業の情報 */}
+          <section id="about" aria-labelledby="about-h" className="scroll-mt-24">
+            <h2 id="about-h" className={H2}>
+              {area.name}の業者として、SOLAR SHIFT について
+            </h2>
+            <p className={LEAD}>どこの会社が、どこまで対応するのか。はじめにお伝えします。</p>
+            <DefinitionList
+              className="mt-6"
+              rows={[
+                { term: "サービス名", description: `${siteConfig.name}（${siteConfig.nameJa}）` },
+                { term: "運営会社", description: `${c.name}（${c.representativeTitle} ${c.representative}）` },
+                { term: "所在地", description: addressWithPostal() },
+                {
+                  term: "対応エリア",
+                  description: `${area.prefecture}${area.name}（全域）。周辺の${secondaryAreas.map((a) => a.name).join("・")}にも対応しています。`,
+                },
+                { term: "対応内容", description: "住宅用太陽光発電、家庭用蓄電池、太陽光＋蓄電池、V2H、HEMS、補助金の活用のご相談、現地調査、お見積もり、導入後のご相談" },
+                { term: "現地調査・お見積もり", description: "無料" },
+                ...(siteConfig.contact.telDisplay
+                  ? [
+                      {
+                        term: "電話",
+                        description: (
+                          <a href={`tel:${siteConfig.contact.tel}`} className={`inline-flex min-h-11 items-center font-en text-[18px] ${TEXT_LINK}`}>
+                            {siteConfig.contact.telDisplay}
+                          </a>
+                        ),
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+            <p className="mt-4 text-[15px] leading-[1.8] text-ink-2">
+              会社の詳しい情報は
+              <Link href="/company" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                運営会社
+              </Link>
+              、考え方は
+              <Link href="/reason" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                大切にしていること
+              </Link>
+              をご覧ください。施工事例は、施工が完了し、掲載の許可をいただいたものから公開します。
+            </p>
+            <TrustFacts className="mt-6" />
+            {embedUrl && <MapEmbed src={embedUrl} address={addressWithPostal()} title={`${c.name}の所在地`} mapUrl={companyMapUrl()} className="mt-8" />}
+          </section>
+
+          {/* ───────── 区内の対応エリア */}
+          {page.towns && page.towns.length > 0 && (
+            <section id="towns" aria-labelledby="towns-h" className="cv-block scroll-mt-24">
+              <h2 id="towns-h" className={H2} {...reveal()}>
+                {area.name}内の対応エリア
+              </h2>
+              <div className="mt-6 grid items-start gap-8 lg:grid-cols-[1fr_22rem] lg:gap-12">
+                <div>
+                  <p className="text-base leading-[1.9] text-ink">
+                    拠点のある{mainTowns[0]}をはじめ、{mainTowns.slice(1).join("・")}など、{area.name}内は全域に伺います。現地調査の日程は、お住まいの地域とご都合に合わせてご相談ください。
+                  </p>
+                  <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-1.5 border-t border-line pt-5 text-base text-navy-900">
+                    {page.towns.map((t) => (
+                      <li key={t} className="font-medium">
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 text-[13px] leading-[1.8] text-ink-3">代表的な町名です。ここに無い町も、{area.name}内であれば対応しています。</p>
+                </div>
+                <div className="overflow-hidden rounded-xl">
+                  <Image
+                    src={images.katsushikaStreetSunset.src}
+                    alt={images.katsushikaStreetSunset.alt}
+                    width={images.katsushikaStreetSunset.width}
+                    height={images.katsushikaStreetSunset.height}
+                    sizes="(max-width: 1023px) 100vw, 352px"
+                    quality={60}
+                    className="aspect-[16/10] h-auto w-full object-cover lg:aspect-[4/3]"
+                  />
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* ───────── 業者選び */}
+          <section id="checkpoints" aria-labelledby="checkpoints-h" className="cv-block scroll-mt-24">
+            <h2 id="checkpoints-h" className={H2} {...reveal()}>
+              業者を選ぶときに、確かめてほしい{checkpoints.length}つのこと
+            </h2>
+            <p className={LEAD}>
+              SOLAR SHIFT に限らず、どの業者に頼むときにも役に立つ確認点です。{area.name}の案内と手引きにある内容をもとにしています。
+            </p>
+            <ol className="mt-6 max-w-3xl divide-y divide-line overflow-hidden rounded-lg border border-line bg-white">
+              {checkpoints.map((cp, i) => (
+                <li key={cp.title} className="flex gap-3 px-4 py-4 sm:gap-4 sm:px-5">
+                  <span className="mt-[3px] w-7 shrink-0 font-en text-[15px] font-extrabold text-accent-text" aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>
+                    <span className="block text-[17px] leading-[1.6] font-bold text-navy-900">{cp.title}</span>
+                    <span className="mt-1 block text-base leading-[1.85] text-ink-2">{cp.body}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-4 max-w-3xl text-[15px] leading-[1.8] text-ink-2">
+              見積書の読み方は
+              <Link href="/blog/solar-quote-how-to-read" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                太陽光の見積書の見方
+              </Link>
+              、確認点の詳しい説明は
+              <Link href="/blog/katsushika-solar-contractor-checkpoints" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                太陽光業者を選ぶときの確認ポイント
+              </Link>
+              にまとめています。
+            </p>
+          </section>
+
+          {/* ───────── 進め方 */}
+          <section id="flow" aria-labelledby="flow-h" className="cv-block scroll-mt-24">
+            <h2 id="flow-h" className={H2} {...reveal()}>
+              ご相談から設置までの進め方
+            </h2>
+            <p className={LEAD}>区の助成を使う場合は、着工日から逆算して進めます。</p>
+            <div className="mt-8 max-w-3xl">
+              <Steps
+                steps={[
+                  { icon: "mail", title: "ご相談", meta: "無料", body: "フォーム・メール・お電話で、ご希望と住まいの状況を伺います。補助金のことだけのご相談もお受けしています。" },
+                  { icon: "search", title: "現地調査", meta: "無料", body: "屋根の形・向き・影、分電盤、機器を置く場所を確認します。" },
+                  { icon: "calc", title: "お見積もりと、補助金の整理", meta: "契約の前", body: "機器本体と工事費を分けた見積もりと、区・都それぞれの想定助成額をお伝えします。" },
+                  { icon: "stamp", title: "事前協議のあとに、工事", meta: `着工の${KATSUSHIKA_PRE_CONSULTATION_WEEKS}週間前までに申し込み`, body: "区の事前協議回答書が届いてから、工事を始めます。工事のあとに、完了報告と交付申請を行います。" },
+                ]}
+              />
+            </div>
+            <p className="mt-8">
+              <Link href="/flow" className={`inline-flex min-h-11 items-center ${TEXT_LINK}`}>
+                導入までの流れを詳しく見る →
+              </Link>
+            </p>
+          </section>
+
+          {/* ───────── 補助金（要点だけ。詳細は /subsidy/katsushika） */}
+          <section id="subsidy" aria-labelledby="subsidy-h" className="cv-block scroll-mt-24">
+            <h2 id="subsidy-h" className={H2} {...reveal()}>
+              {area.name}で使える補助金（要点）
+            </h2>
+            <p className={LEAD}>
+              {area.name}の「かつしかエコ助成金」の、主な金額です（{formatDateJa(solar.lastVerified)}時点）。東京都の助成と併用できますが、合計は助成対象経費が上限です。
+            </p>
+            <ul className="mt-6 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">
+              {numbers.map(({ label, s, h }) => (
+                <li key={s.id} className="bg-white px-5 py-5">
+                  <p className="font-heading text-[14px] font-bold text-ink-2">{label}</p>
+                  <p className="mt-1.5 flex flex-wrap items-baseline gap-x-1 text-navy-900">
+                    {h.prefix && <span className="text-[14px] font-bold">{h.prefix}</span>}
+                    <span className="num-xl text-[38px] text-orange-600">{h.value}</span>
+                    <span className="font-heading text-[15px] font-black">{h.unit}</span>
+                  </p>
+                  <p className="mt-1.5 text-[13px] leading-[1.6] text-ink-2">{h.note}</p>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <LinkButton href="/subsidy/katsushika" variant="primary" size="lg">
+                金額・条件・必要書類を詳しく見る <ArrowIcon />
+              </LinkButton>
+              <LinkButton href="/simulation" variant="secondary" size="lg">
+                補助金を試算する
+              </LinkButton>
+            </div>
+          </section>
+
+          {/* ───────── 住まいと災害 */}
+          <section id="housing" aria-labelledby="housing-h" className="cv-block scroll-mt-24">
+            <h2 id="housing-h" className={H2} {...reveal()}>
+              {area.name}の住まいで、設置のときに気をつけること
+            </h2>
+            <div className="mt-6 grid gap-x-12 gap-y-8 lg:grid-cols-2">
+              {[...page.housing.map((x) => ({ ...x, sourceName: undefined as string | undefined, sourceUrl: undefined as string | undefined })), ...page.disaster].map((h) => (
+                <div key={h.title}>
+                  <h3 className="text-[19px] leading-[1.5] font-black text-navy-900">{h.title}</h3>
+                  <p className="mt-2 text-base leading-[1.9] text-ink">{h.body}</p>
+                  {h.sourceUrl && (
+                    <p className="mt-2 text-[13px] leading-[1.7] text-ink-3">
+                      出典：
+                      <a href={h.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-navy-600 underline underline-offset-4 hover:text-accent-text">
+                        {h.sourceName}
+                      </a>
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="mt-8 text-[15px] leading-[1.8] text-ink-2">
+              屋根の条件は
+              <Link href="/guide/roof-conditions" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                太陽光に向く屋根の条件
+              </Link>
+              、停電への備えは
+              <Link href="/guide/blackout" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                停電時の太陽光・蓄電池
+              </Link>
+              で解説しています。
+            </p>
+          </section>
+
+          {/* ───────── FAQ */}
+          <section id="faq" aria-labelledby="faq-h" className="cv-block scroll-mt-24">
+            <h2 id="faq-h" className={H2} {...reveal()}>
+              {area.name}でのご相談について、よくある質問
+            </h2>
+            <FaqSection items={page.faq} withSchema className="mt-6" />
+          </section>
+
+          <SourceList sources={pageSources} />
+        </div>
       </Container>
 
       {posts.length > 0 && (
         <Container className="pb-14">
-          <RelatedArticles posts={posts} title={`${area.name}に関する記事`} />
+          <RelatedArticles posts={posts} title="業者選び・補助金に関する記事" />
         </Container>
       )}
 
       <CtaSection
-        title={`${area.name}の住まいに合わせた、太陽光・蓄電池の計画を。`}
-        body={`拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}。区内の住宅事情と水害リスクを踏まえ、区と都の補助金を整理した提案を行います。現地調査・お見積もりは無料です。`}
+        title={`${area.name}の住まいのこと、まずはお聞かせください。`}
+        body={`拠点は${c.address.city}${c.address.town}です。屋根と電気の使い方を伺い、区と都の補助金を整理したうえでご提案します。現地調査・お見積もりは無料です。`}
       />
-      <JsonLd data={graph(articleSchema({ path, title: `${area.name}の太陽光発電・蓄電池｜補助金・住宅事情・水害リスクと備え`, description: page.lead, datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate, keywords: [`${area.name} 太陽光`, `${area.name} 蓄電池`] }))} />
+      <JsonLd
+        data={graph(
+          webPageSchema({ path, name: titleOf(area.name), description: descriptionOf(area.name), dateModified: UPDATED, sources: pageSources.map((s) => ({ name: s.name, url: s.url })) }),
+          serviceSchema({ path, name: `${area.name}の太陽光発電・蓄電池の導入`, description: descriptionOf(area.name), serviceType: "住宅用太陽光発電・家庭用蓄電池の導入" }),
+        )}
+      />
     </>
   );
 }

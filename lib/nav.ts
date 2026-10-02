@@ -1,6 +1,13 @@
+import { isHeldBack } from "./indexing";
+
 /**
  * ナビゲーション定義。ヘッダー・フッター・HTMLサイトマップが共有する。
  * 存在しないパスを書かないこと（scripts/check-links は sitemap と突き合わせる）。
+ *
+ * 施工事例・お客様の声・おすすめ商品など、中身がまだ無いページはここに書いたままでよい。
+ * lib/indexing.ts が「準備中」と判定している間は、下の visible() が自動で外す
+ * （データが登録されると、何も直さなくてもメニューに戻る）。
+ * ヘッダーの最上位は5つまで。
  */
 
 export interface NavLink {
@@ -15,12 +22,12 @@ export interface NavGroup {
   links: NavLink[];
 }
 
-export const headerNav: NavGroup[] = [
+const allHeaderNav: NavGroup[] = [
   {
     label: "サービス",
     links: [
       { href: "/solar", label: "太陽光発電", description: "住宅用太陽光発電の基礎と導入の考え方" },
-      { href: "/battery", label: "家庭用蓄電池", description: "容量・費用・選び方" },
+      { href: "/battery", label: "家庭用蓄電池", description: "役割・容量の決め方・選び方" },
       { href: "/solar-battery", label: "太陽光＋蓄電池", description: "セット導入の利点と注意点" },
       { href: "/v2h", label: "V2H", description: "電気自動車の電気を家で使う" },
       { href: "/hems", label: "HEMS", description: "エネルギーの見える化と制御" },
@@ -40,8 +47,8 @@ export const headerNav: NavGroup[] = [
     label: "商品",
     href: "/products",
     links: [
-      { href: "/products/solar", label: "太陽光パネル一覧" },
-      { href: "/products/battery", label: "蓄電池一覧" },
+      { href: "/products/solar", label: "太陽光パネルの比べ方" },
+      { href: "/products/battery", label: "蓄電池の比べ方" },
       { href: "/recommend/solar", label: "おすすめ太陽光パネル" },
       { href: "/recommend/battery", label: "おすすめ蓄電池" },
     ],
@@ -61,7 +68,7 @@ export const headerNav: NavGroup[] = [
   {
     label: "SOLAR SHIFT",
     links: [
-      { href: "/reason", label: "選ばれる理由" },
+      { href: "/reason", label: "大切にしていること" },
       { href: "/flow", label: "導入までの流れ" },
       { href: "/area", label: "対応エリア" },
       { href: "/works", label: "施工事例" },
@@ -72,7 +79,7 @@ export const headerNav: NavGroup[] = [
   },
 ];
 
-export const footerNav: NavGroup[] = [
+const allFooterNav: NavGroup[] = [
   {
     label: "サービス",
     links: [
@@ -81,7 +88,9 @@ export const footerNav: NavGroup[] = [
       { href: "/solar-battery", label: "太陽光＋蓄電池" },
       { href: "/v2h", label: "V2H" },
       { href: "/hems", label: "HEMS" },
-      { href: "/products", label: "取扱商品" },
+      { href: "/products", label: "商品の選び方" },
+      { href: "/products/solar", label: "太陽光パネルの比べ方" },
+      { href: "/products/battery", label: "蓄電池の比べ方" },
       { href: "/recommend/solar", label: "おすすめ太陽光パネル" },
       { href: "/recommend/battery", label: "おすすめ蓄電池" },
     ],
@@ -104,7 +113,7 @@ export const footerNav: NavGroup[] = [
       { href: "/guide/solar-merit-demerit", label: "メリット・デメリット" },
       { href: "/guide/solar-lifespan", label: "太陽光パネルの寿命" },
       { href: "/guide/battery-cost", label: "蓄電池の費用" },
-      { href: "/guide/battery-how-to-choose", label: "蓄電池の選び方" },
+      { href: "/guide/battery-how-to-choose", label: "全負荷型と特定負荷型の違い" },
       { href: "/guide/blackout", label: "停電時の備え" },
       { href: "/guide/selling-electricity", label: "売電とFIT価格" },
       { href: "/guide/post-fit", label: "卒FIT後の選択肢" },
@@ -116,10 +125,10 @@ export const footerNav: NavGroup[] = [
   {
     label: "SOLAR SHIFT",
     links: [
-      { href: "/reason", label: "選ばれる理由" },
+      { href: "/reason", label: "大切にしていること" },
       { href: "/flow", label: "導入までの流れ" },
       { href: "/area", label: "対応エリア" },
-      { href: "/area/katsushika", label: "葛飾区の太陽光発電" },
+      { href: "/area/katsushika", label: "葛飾区の太陽光・蓄電池業者" },
       { href: "/works", label: "施工事例" },
       { href: "/voice", label: "お客様の声" },
       { href: "/faq", label: "よくある質問" },
@@ -129,6 +138,13 @@ export const footerNav: NavGroup[] = [
     ],
   },
 ];
+
+function visible(groups: NavGroup[]): NavGroup[] {
+  return groups.map((g) => ({ ...g, links: g.links.filter((l) => !isHeldBack(l.href)) })).filter((g) => g.links.length > 0);
+}
+
+export const headerNav: NavGroup[] = visible(allHeaderNav);
+export const footerNav: NavGroup[] = visible(allFooterNav);
 
 export const legalNav: NavLink[] = [
   { href: "/privacy", label: "プライバシーポリシー" },

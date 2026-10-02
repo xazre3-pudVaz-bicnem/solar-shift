@@ -12,7 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const SRC = path.join(process.cwd(), "_photo-sources");
-const OUT = path.join(process.cwd(), "public", "images");
+const OUT = path.join(process.cwd(), "public", "images", "illustrations");
 fs.mkdirSync(OUT, { recursive: true });
 const SCALE = 1536 / 1400;
 

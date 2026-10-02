@@ -41,7 +41,7 @@ export default function FlowPage() {
       body: (
         <>
           <p>屋根の形状・築年数、現在の電気代、気になっている設備（太陽光・蓄電池・V2H・HEMS）、ご希望の時期を伺います。この段階で、住宅区分（既存・新築）と導入する設備から、対象になり得る補助金を区・都・国の順に整理します。</p>
-          <p className="mt-2 text-[13px] text-ink-3">訪問販売・電話営業はしていません。お問い合わせをいただいた方にだけご連絡します。</p>
+          <p className="mt-2 text-[13px] text-ink-3">お問い合わせいただいた内容に応じて、ご案内します。</p>
         </>
       ),
     },
@@ -104,8 +104,8 @@ export default function FlowPage() {
     {
       icon: "support" as const,
       title: "運転開始・導入後サポート",
-      meta: "同じ窓口で、ずっと",
-      body: <p>発電状況の見方、売電の手続き、モニターの使い方をご説明します。運転開始後の発電量の異常や機器の不具合、保証の使い方についても、同じ窓口でご相談いただけます。パワーコンディショナの交換時期（一般に10〜15年程度）など、長期のメンテナンスの目安もお伝えします。</p>,
+      meta: "ご相談は同じ窓口へ",
+      body: <p>発電状況の見方、売電の手続き、モニターの使い方をご説明します。運転開始後の発電量の異常や機器の不具合、保証の使い方についても、同じ窓口でご相談いただけます。パワーコンディショナの耐用年数（太陽光発電協会によると10〜15年）など、長期のメンテナンスの目安もお伝えします。</p>,
     },
   ];
 
@@ -117,7 +117,7 @@ export default function FlowPage() {
           { name: "導入・施工の流れ", href: PATH },
         ]}
         eyebrow="導入・施工の流れ"
-        title="相談から運転開始まで。申請の順番を間違えない進め方。"
+        title={<>導入・施工の流れ<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">相談から運転開始まで。申請の順番を間違えない進め方</span></>}
         lead="太陽光・蓄電池の導入で最も多い失敗は「工事を始めてから補助金を申請しようとした」ケースです。葛飾区の助成は着工4週間前までの事前協議が原則。契約日ではなく着工日から逆算して、申請と工事を組み立てます。"
         image={images.peopleCoupleClipboard}
       />
@@ -141,7 +141,7 @@ export default function FlowPage() {
           <Steps steps={steps} />
         </div>
 
-        <section className="mt-16 rounded-[2rem] bg-cream p-5 sm:p-8" aria-labelledby="timeline-h">
+        <section className="mt-16 rounded-lg bg-paper-2 p-5 sm:p-8" aria-labelledby="timeline-h">
           <h2 id="timeline-h" className="text-center text-[22px] font-black text-navy-900 sm:text-[26px]">
             葛飾区の助成を使うときの<span className="marker">申請の時系列</span>
           </h2>
@@ -158,12 +158,12 @@ export default function FlowPage() {
           <ul className="list-disc space-y-1 pl-5">
             <li>区の事前協議には審査期間がかかり、回答書が届くまで着工できません。工事希望日から逆算して、少なくとも4週間＋審査期間の余裕を見ます。</li>
             <li>機器の納期、足場の手配、電力会社の系統連系の手続きにも時間がかかります。</li>
-            <li>葛飾区の申込期間は{k.applicationPeriod}ですが、予算の状況により早期終了の可能性があります。</li>
+            <li>葛飾区の申込期間は{k.applicationPeriod}です。郵送の場合は、区に届いた日が受付日になります。</li>
           </ul>
         </Callout>
 
         <section className="cv-block mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">流れについてよくある質問</h2>
+          <h2 id="faq-h" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">流れについてよくある質問</h2>
           <FaqSection items={faqsByIds(["install-period", "install-survey", "subsidy-pre-consultation", "subsidy-combination"])} withSchema className="mt-6" />
         </section>
 
@@ -175,7 +175,7 @@ export default function FlowPage() {
             { href: "/subsidy/tokyo", label: "東京都の補助金" },
             { href: "/guide/solar-cost", label: "太陽光発電の費用" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
+            <Link key={l.href} href={l.href} className="rounded-lg border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 duration-200 hover:border-orange-400 hover:bg-paper-2 transition-colors">
               {l.label} →
             </Link>
           ))}

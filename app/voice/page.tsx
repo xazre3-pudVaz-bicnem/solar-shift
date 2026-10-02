@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { publishedVoices } from "@/data/voices";
+import { isHeldBack } from "@/lib/indexing";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Callout } from "@/components/ui/Callout";
@@ -18,7 +19,7 @@ export const metadata: Metadata = buildMetadata({
   description: DESC,
   path: PATH,
   // 声が0件の間は検索結果に出さない
-  noindex: publishedVoices.length === 0,
+  noindex: isHeldBack(PATH),
 });
 
 export default function VoicePage() {
@@ -38,10 +39,10 @@ export default function VoicePage() {
         {publishedVoices.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2">
             {publishedVoices.map((v) => (
-              <article key={v.id} className="rounded-3xl bg-white p-6 shadow-card">
+              <article key={v.id} className="rounded-lg bg-white p-6 border border-line">
                 <p className="text-[13px] font-bold text-accent-text">{v.area}・{v.displayName}</p>
                 <p className="mt-1 text-[12px] text-ink-3">{v.equipment.join("・")}／{v.date}</p>
-                <blockquote className="mt-4 text-[15px] leading-[1.9] text-ink">{v.body}</blockquote>
+                <blockquote className="mt-4 text-base leading-[1.9] text-ink">{v.body}</blockquote>
                 {v.workSlug && (
                   <p className="mt-3">
                     <Link href={`/works/${v.workSlug}`} className="text-[13px] font-bold text-navy-600 underline underline-offset-4">施工事例を見る</Link>
@@ -51,9 +52,9 @@ export default function VoicePage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-[2rem] border-[3px] border-dashed border-orange-200 bg-white p-8 sm:p-10">
-            <p className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">お客様の声は準備中です</p>
-            <p className="mt-3 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
+          <div className="rounded-md border border-l-4 border-line border-l-navy-900 bg-paper-2 px-5 py-6 sm:px-8 sm:py-8">
+            <p className="text-[20px] leading-[1.45] font-black text-navy-900">お客様の声は準備中です</p>
+            <p className="mt-3 max-w-3xl text-base leading-[1.9] text-ink-2">
               SOLAR SHIFT は2026年に始まった新しいサービスのため、現時点で掲載できるお客様の声はありません。導入後にお客様から伺った声は、ご本人の掲載許可をいただいたものから順次掲載します。
             </p>
             <Callout tone="note" title="掲載の基準" className="mt-6">
@@ -65,8 +66,8 @@ export default function VoicePage() {
                 <li>構造化データ（Review・評価）は、掲載した声と一致する範囲でのみ出力すること</li>
               </ul>
             </Callout>
-            <p className="mt-6 text-[14px] text-ink-2">
-              SOLAR SHIFT の考え方は<Link href="/reason" className="mx-1 text-navy-600 underline underline-offset-4">選ばれる理由</Link>、進め方は<Link href="/flow" className="mx-1 text-navy-600 underline underline-offset-4">導入までの流れ</Link>をご覧ください。
+            <p className="mt-6 text-base text-ink-2">
+              SOLAR SHIFT の考え方は<Link href="/reason" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">大切にしていること</Link>、進め方は<Link href="/flow" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">導入までの流れ</Link>をご覧ください。
             </p>
           </div>
         )}

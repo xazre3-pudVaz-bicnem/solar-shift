@@ -10,7 +10,7 @@ const labels = new Map<string, string>([
   ["/contact", "お問い合わせ・無料相談"],
   ["/simulation", "補助金シミュレーター"],
   ["/subsidy", "補助金の総合ページ"],
-  ["/products", "取扱商品"],
+  ["/products", "商品の選び方"],
 ]);
 
 for (const group of [...footerNav, ...headerNav]) {

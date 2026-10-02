@@ -6,20 +6,20 @@ import { reveal, growDelay } from "@/lib/reveal";
  * 区と都は並べて表示するだけで合算しない。
  */
 const ORANGE = ["bg-orange-600", "bg-orange-400", "bg-orange-300", "bg-orange-200"];
-const GREEN = ["bg-green-600", "bg-green-400", "bg-green-300", "bg-green-200"];
+const NAVY = ["bg-navy-900", "bg-navy-500", "bg-navy-300", "bg-navy-100"];
 
 export function SubsidyBars({ result, caption, className = "" }: { result: SimulationResult; caption?: string; className?: string }) {
   const max = Math.max(...result.areas.map((a) => a.subtotal), 1);
   return (
-    <figure className={`rounded-3xl bg-white p-5 shadow-card sm:p-8 ${className}`} {...reveal()}>
+    <figure className={`rounded-lg bg-white p-5 sm:p-8 border border-line ${className}`} {...reveal()}>
       <div className="grid grid-cols-2 gap-4 sm:gap-8">
         {result.areas.map((a, ai) => {
-          const palette = ai === 0 ? ORANGE : GREEN;
+          const palette = ai === 0 ? ORANGE : NAVY;
           const lines = a.lines.filter((l) => l.amount !== null && l.amount > 0);
-          const numColor = ai === 0 ? "text-orange-600" : "text-green-600";
+          const numColor = ai === 0 ? "text-orange-600" : "text-navy-700";
           return (
             <div key={a.area} className="flex flex-col">
-              <p className="text-center font-heading text-[13px] font-bold text-navy-900 sm:text-[15px]">
+              <p className="text-center font-heading text-[13px] font-bold text-navy-900 sm:text-base">
                 {a.label}
                 <span className="block text-[11px] font-normal text-ink-3 sm:text-[12px]">想定助成額（小計）</span>
               </p>

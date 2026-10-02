@@ -23,7 +23,7 @@ export function AreaCard({ area }: { area: Area }) {
     <>
       <div className="flex items-center justify-between gap-3">
         <h3 className="flex items-center gap-2 text-[20px] font-black text-navy-900">
-          <span className={`flex h-9 w-9 items-center justify-center rounded-full ${primary ? "bg-orange-500 text-navy-900" : area.status === "secondary" ? "bg-green-100 text-green-700" : "bg-paper-3 text-ink-3"}`}>
+          <span className={`flex h-9 w-9 items-center justify-center rounded-full ${primary ? "bg-orange-500 text-navy-900" : area.status === "secondary" ? "bg-navy-100 text-navy-700" : "bg-paper-3 text-ink-3"}`}>
             <Pin className="h-5 w-5" />
           </span>
           <span>
@@ -33,13 +33,13 @@ export function AreaCard({ area }: { area: Area }) {
         </h3>
         <Badge tone={primary ? "open" : area.status === "secondary" ? "green" : "closed"}>{statusLabel[area.status]}</Badge>
       </div>
-      <p className="mt-3 text-[14px] leading-[1.8] text-ink-2">{area.summary}</p>
+      <p className="mt-3 text-[15px] leading-[1.8] text-ink-2">{area.summary}</p>
       {area.page && <p className="mt-3 font-heading text-[14px] font-bold text-navy-600">エリアページを見る →</p>}
     </>
   );
-  const cls = `block h-full rounded-3xl bg-white p-5 shadow-card ${primary ? "border-[3px] border-orange-400" : "border border-line"}`;
+  const cls = `block h-full rounded-lg bg-white p-5 border border-line ${primary ? "border-[3px] border-orange-400" : "border border-line"}`;
   return area.page ? (
-    <Link href={`/area/${area.slug}`} className={`${cls} transition-transform duration-200 hover:-translate-y-1`}>
+    <Link href={`/area/${area.slug}`} className={`${cls} duration-200 hover:bg-paper-2 transition-colors`}>
       {inner}
     </Link>
   ) : (

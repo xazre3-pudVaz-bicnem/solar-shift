@@ -2,7 +2,7 @@ import type { SubsidyProgram } from "./types";
 
 const SOURCE_URL = "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html";
 const SOURCE_NAME = "葛飾区公式サイト「令和8年度《個人住宅用》かつしかエコ助成金のご案内」";
-const LAST_VERIFIED = "2026-10-01";
+const LAST_VERIFIED = "2026-10-02";
 const FISCAL_YEAR = "令和8年度（2026年度）";
 const PERIOD = "2026年4月1日〜2027年3月31日（必着）";
 const DEADLINE = "2027年3月31日";
@@ -14,10 +14,12 @@ const PRE_NOTE =
   "原則、工事着工の4週間前までに区への事前協議が必要。区から郵送される事前協議回答書の到着後に設置工事を行う。";
 
 const COMMON_CONDITIONS = [
-  "葛飾区内の、自ら居住する（予定を含む）住宅に対象機器を導入すること",
+  "葛飾区内の、自ら居住する（予定を含む）住宅に、未使用の対象機器を新たに導入すること（リース・レンタルは対象外）",
   "過去10年間に、同じ建物・同じ種類の機器で区のかつしかエコ助成金を受けていないこと",
   "事前協議回答書の到着後に工事を行うこと",
 ];
+/** 併設加算の要件（区の案内：①一方が既設の機器に併設する場合 ②両方の機器を同時に設置する場合 のいずれか） */
+const ADDON_CONDITION = "併設の対象となる機器のいずれかを申請すること。一方が既設の機器に併設する場合と、両方を同時に設置する場合のどちらも対象";
 
 export const katsushikaProgram: SubsidyProgram = {
   id: "katsushika-eco-r8",
@@ -31,9 +33,11 @@ export const katsushikaProgram: SubsidyProgram = {
   sourceUrl: SOURCE_URL,
   lastVerified: LAST_VERIFIED,
   notes: [
-    "申込期間は2026年4月1日〜2027年3月31日（必着）。予算の状況により早期に受付終了となる可能性があります。",
-    "事前協議回答書が届く前に工事に着手した場合は助成対象外となります。",
-    "国・東京都の制度との併用可否や併用時の扱いは、区の公式案内に明記されていないため、申請前に区の窓口へご確認ください。",
+    "申込期間は2026年4月1日〜2027年3月31日（必着）。郵送の場合は、区に届いた日が受付日になります。",
+    "事前協議回答書が届く前に工事に着手した場合は助成対象外となります。申込受付から回答書の到着までは、3〜4週間程度とされています。",
+    "完了報告の最終提出期限は2027年12月28日（必着）です。期限を過ぎると助成金は交付されません。",
+    "助成金額の1,000円未満の端数は切り捨てになります。",
+    "国や東京都の補助制度との併用も可能です。ただし、他の補助金額との合計が助成対象経費を上回る場合は、上回る額が減額されます（区の案内による）。",
     "葛飾区は特定の業者に営業・販売を委託していません。「区の委託業者」を名乗る勧誘にご注意ください。",
   ],
   menus: [
@@ -57,8 +61,10 @@ export const katsushikaProgram: SubsidyProgram = {
       status: "open",
       conditions: COMMON_CONDITIONS,
       notes: [
-        "kW数は太陽電池モジュールの公称最大出力の合計（端数の扱いは区の要綱に従う）",
-        "引渡し前の新築住宅に設置する場合は、引渡しの4週間前までに事前協議が必要",
+        "太陽電池の公称最大出力の合計が1kW以上であること。出力は、合計を出す段階で小数点以下第3位を四捨五入する",
+        "JET（電気安全環境研究所）の太陽電池モジュール認証、またはIECの認証制度に加盟する海外認証機関の認証を受けた製品であること",
+        "全量売電を目的とする設置は対象外。申込者が電力会社と系統連系の契約を結ぶこと",
+        "太陽光発電システム付きの建売住宅を購入する場合は、建物の引渡しの4週間前までに事前協議が必要",
       ],
       sourceName: SOURCE_NAME,
       sourceUrl: SOURCE_URL,
@@ -84,7 +90,10 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationNote: PRE_NOTE,
       status: "open",
       conditions: COMMON_CONDITIONS,
-      notes: ["助成対象経費の範囲（機器費・工事費の扱い）は区の手引きで要確認"],
+      notes: [
+        "助成対象経費は、対象となる機器の本体価格＋工事代",
+        "定置型で、国のZEH支援事業でSII（環境共創イニシアチブ）に補助対象機器として登録されているものが対象",
+      ],
       sourceName: SOURCE_NAME,
       sourceUrl: SOURCE_URL,
       lastVerified: LAST_VERIFIED,
@@ -108,7 +117,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
-      conditions: ["太陽光発電システムと蓄電池の両方を同時に申請すること"],
+      conditions: [ADDON_CONDITION],
       notes: [],
       sourceName: SOURCE_NAME,
       sourceUrl: SOURCE_URL,
@@ -158,7 +167,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
-      conditions: ["太陽光発電システムとHEMSの両方を同時に申請すること"],
+      conditions: [ADDON_CONDITION],
       notes: [],
       sourceName: SOURCE_NAME,
       sourceUrl: SOURCE_URL,
@@ -184,7 +193,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationNote: PRE_NOTE,
       status: "open",
       conditions: COMMON_CONDITIONS,
-      notes: ["助成額の算定基礎は「本体価格」（工事費は含まれない）"],
+      notes: ["助成額の算定基礎は「本体価格」。設置工事費や、電力切替盤などの付属品の価格は含まれない"],
       sourceName: SOURCE_NAME,
       sourceUrl: SOURCE_URL,
       lastVerified: LAST_VERIFIED,

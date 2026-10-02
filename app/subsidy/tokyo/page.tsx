@@ -1,3 +1,4 @@
+import { combination } from "@/data/subsidies/combination";
 import { TableScroll } from "@/components/ui/TableScroll";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -105,23 +106,23 @@ export default function TokyoSubsidyPage() {
         </section>
 
         <section className="cv-block mt-14" aria-labelledby="solar-ex">
-          <h2 id="solar-ex" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">太陽光：容量別の想定助成額（既存・新築）</h2>
-          <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
+          <h2 id="solar-ex" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">太陽光：容量別の想定助成額（既存・新築）</h2>
+          <p className="mt-2 max-w-3xl text-base leading-[1.9] text-ink-2">
             容量区分の単価は容量全体に適用されます。たとえば既存住宅の4kWは「4kW × 12万円」で、3.75kWまでを15万円で計算するわけではありません。この表は制度のルールをそのまま計算した概算です。
           </p>
           <TableScroll className="mt-6" label="太陽光：容量別の想定助成額" hintBelow="sm">
             <table className="w-full min-w-[36rem] border-collapse text-[14px]">
               <thead>
-                <tr className="bg-green-600 text-left text-white">
-                  <th className="border border-green-700 px-3 py-2.5">容量</th>
-                  <th className="border border-green-700 px-3 py-2.5">既存住宅の想定額</th>
-                  <th className="border border-green-700 px-3 py-2.5">新築住宅の想定額</th>
+                <tr className="bg-navy-900 text-left text-white">
+                  <th className="border border-navy-900 px-3 py-2.5">容量</th>
+                  <th className="border border-navy-900 px-3 py-2.5">既存住宅の想定額</th>
+                  <th className="border border-navy-900 px-3 py-2.5">新築住宅の想定額</th>
                 </tr>
               </thead>
               <tbody>
                 {solarExamples.map((e, i) => (
                   <tr key={e.kw} className={i % 2 ? "bg-paper-2" : "bg-white"}>
-                    <th scope="row" className="border border-line bg-cream/70 px-3 py-2.5 text-left font-bold text-navy-900">{e.kw}kW</th>
+                    <th scope="row" className="border border-line bg-paper-2/70 px-3 py-2.5 text-left font-bold text-navy-900">{e.kw}kW</th>
                     <td className="border border-line px-3 py-2.5">
                       <span className="font-bold text-navy-900">{e.existing.amount?.toLocaleString("ja-JP")}円</span>
                       <span className="ml-2 block text-[12px] text-ink-3 sm:inline">{e.existing.formula}</span>
@@ -139,23 +140,23 @@ export default function TokyoSubsidyPage() {
         </section>
 
         <section className="cv-block mt-16" aria-labelledby="battery-ex">
-          <h2 id="battery-ex" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">蓄電池：容量別の想定助成額</h2>
-          <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
+          <h2 id="battery-ex" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">蓄電池：容量別の想定助成額</h2>
+          <p className="mt-2 max-w-3xl text-base leading-[1.9] text-ink-2">
             蓄電容量 × 10万円で計算します。DR実証に参加しない場合は原則上限120万円/戸で、助成対象経費（税抜）が上限です。実際の費用がこれを下回る場合は費用が上限になります。
           </p>
           <TableScroll className="mt-6" label="蓄電池：容量別の想定助成額" hintBelow="sm">
             <table className="w-full min-w-[30rem] border-collapse text-[14px]">
               <thead>
-                <tr className="bg-green-600 text-left text-white">
-                  <th className="border border-green-700 px-3 py-2.5">蓄電容量</th>
-                  <th className="border border-green-700 px-3 py-2.5">計算式</th>
-                  <th className="border border-green-700 px-3 py-2.5">想定額（DR不参加）</th>
+                <tr className="bg-navy-900 text-left text-white">
+                  <th className="border border-navy-900 px-3 py-2.5">蓄電容量</th>
+                  <th className="border border-navy-900 px-3 py-2.5">計算式</th>
+                  <th className="border border-navy-900 px-3 py-2.5">想定額（DR不参加）</th>
                 </tr>
               </thead>
               <tbody>
                 {batteryExamples.map((e, i) => (
                   <tr key={e.kwh} className={i % 2 ? "bg-paper-2" : "bg-white"}>
-                    <th scope="row" className="border border-line bg-cream/70 px-3 py-2.5 text-left font-bold text-navy-900">{e.kwh}kWh</th>
+                    <th scope="row" className="border border-line bg-paper-2/70 px-3 py-2.5 text-left font-bold text-navy-900">{e.kwh}kWh</th>
                     <td className="border border-line px-3 py-2.5 text-[13px] text-ink-2">{e.line.formula}</td>
                     <td className="border border-line px-3 py-2.5 font-bold text-navy-900">
                       {e.line.amount?.toLocaleString("ja-JP")}円{e.line.capped && <span className="ml-1 text-[11px] font-normal text-ink-3">（上限適用）</span>}
@@ -171,23 +172,23 @@ export default function TokyoSubsidyPage() {
         </section>
 
         <section className="cv-block cv-tall mt-16" aria-labelledby="solar-detail">
-          <h2 id="solar-detail" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">太陽光：制度の詳細</h2>
+          <h2 id="solar-detail" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">太陽光：制度の詳細</h2>
           <div className="mt-6">
             <SubsidyProgramSection program={S} headingLevel="h3" />
           </div>
         </section>
 
         <section className="cv-block cv-tall mt-16" aria-labelledby="battery-detail">
-          <h2 id="battery-detail" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">蓄電池：制度の詳細</h2>
+          <h2 id="battery-detail" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">蓄電池：制度の詳細</h2>
           <div className="mt-6">
             <SubsidyProgramSection program={B} headingLevel="h3" />
           </div>
         </section>
 
         <section className="cv-block mt-16" aria-labelledby="with-katsushika">
-          <h2 id="with-katsushika" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">葛飾区の助成との関係</h2>
-          <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
-            東京都の案内は「都および公社の他の同種の助成金との重複受給は不可」としており、区市町村の制度との併用可否には触れていません。葛飾区の公式案内にも他制度との併用に関する明記はありません。両方を検討する場合は、申請前に区の窓口とクール・ネット東京にご自宅の条件で確認してください。
+          <h2 id="with-katsushika" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">葛飾区の助成との関係</h2>
+          <p className="mt-2 max-w-3xl text-base leading-[1.9] text-ink-2">
+            {combination.tokyo}{combination.short}{combination.order}
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <LinkButton href="/subsidy/katsushika" variant="secondary">葛飾区の補助金を見る <ArrowIcon /></LinkButton>
@@ -196,7 +197,7 @@ export default function TokyoSubsidyPage() {
         </section>
 
         <section className="cv-block mt-16" aria-labelledby="faq">
-          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">東京都の補助金についてよくある質問</h2>
+          <h2 id="faq" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">東京都の補助金についてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-6" />
         </section>
 
@@ -218,7 +219,7 @@ export default function TokyoSubsidyPage() {
             { href: "/guide/battery-cost", label: "蓄電池の費用の考え方" },
             { href: "/subsidy/national", label: "国の補助制度" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
+            <Link key={l.href} href={l.href} className="rounded-lg border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 duration-200 hover:border-orange-400 hover:bg-paper-2 transition-colors">
               {l.label} →
             </Link>
           ))}

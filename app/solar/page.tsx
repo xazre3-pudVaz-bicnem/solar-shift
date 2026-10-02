@@ -1,3 +1,4 @@
+import { sources as verified } from "@/data/sources";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -9,13 +10,13 @@ import { FitStepChart } from "@/components/sections/FitStepChart";
 
 const PATH = "/solar";
 const DESC =
-  "葛飾区で住宅用太陽光発電を検討する方へ。仕組み、向いている家・向かない家、容量の決め方、2026年度のFIT価格、葛飾区・東京都の補助金まで、導入前に知っておくべきことを整理。株式会社サイプレス運営のSOLAR SHIFT。";
+  "住宅用太陽光発電の仕組み、向いている家・確認が必要な家、容量の決め方、2026年度のFIT価格、葛飾区・東京都の補助金まで。導入前に知っておきたいことを、葛飾区の SOLAR SHIFT が整理しました。";
 
 export const metadata: Metadata = buildMetadata({
-  title: "葛飾区の住宅用太陽光発電｜仕組み・向いている家・補助金",
+  title: "住宅用太陽光発電の仕組みと向いている家｜容量の決め方・補助金",
   description: DESC,
   path: PATH,
-  keywords: ["葛飾区 太陽光発電", "葛飾区 太陽光", "葛飾区 ソーラーパネル", "住宅用 太陽光発電 仕組み", "太陽光 容量 決め方"],
+  keywords: ["住宅用 太陽光発電", "太陽光発電 仕組み", "太陽光 容量 決め方"],
 });
 
 export default function SolarPage() {
@@ -23,7 +24,7 @@ export default function SolarPage() {
   return (
     <ServiceLayout
       path={PATH}
-      pageName="葛飾区の住宅用太陽光発電"
+      pageName="住宅用太陽光発電"
       description={DESC}
       crumbs={[
         { name: "ホーム", href: "/" },
@@ -32,7 +33,7 @@ export default function SolarPage() {
       eyebrow="太陽光発電"
       heroImage={images.houseRoofSkyWide}
       tip={{ title: "容量の決め方", body: <>容量は「<strong className="marker">屋根に載る枚数・電気の使用量・補助金の上限</strong>」の3つから決めます。大きければ得、とは限りません。</>, image: images.poseIdea }}
-      title={<>住宅用太陽光発電<span className="block text-[0.7em] text-ink-2">屋根でつくった電気を、まず自宅で使う</span></>}
+      title={<>住宅用太陽光発電<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">屋根でつくった電気を、まず自宅で使う</span></>}
       lead="太陽光発電は、屋根に載せたパネルで発電した電気を自宅で使い、余った分を電力会社に売る仕組みです。電気を「買う量」を減らすことが本来の目的で、売電は補助的な収入と考えるのが2026年度以降の基本です。"
       conclusion="住宅用太陽光発電は「自家消費が主、売電が従」で考えます。2026年度のFIT制度は最初の4年間が24円/kWh、5〜10年目が8.3円/kWhと前半に手厚い設定で、葛飾区では区の助成（6万円/kW・上限30万円）と東京都の助成（既存住宅3.75kW超は12万円/kW）が検討対象です。導入の可否は屋根の向き・面積・影・築年数で決まるため、現地調査が出発点になります。"
       points={[
@@ -112,7 +113,7 @@ export default function SolarPage() {
           image: images.iconPanelWrench,
           body: (
             <>
-              <p>太陽光パネルは一般に20〜30年程度使われることが多く、メーカーの出力保証は25年前後が主流です。一方、パワーコンディショナは10〜15年程度で交換が必要になるのが一般的で、長期の維持費として見込んでおきます。</p>
+              <p>太陽光発電協会（JPEA）によると、太陽電池モジュールの耐用年数は20年以上、パワーコンディショナは10〜15年といわれています。パワーコンディショナの交換は、長期の維持費として見込んでおきます。</p>
               <p>設置後は、発電量のモニタリングで異常に気づけるようにし、定期的な点検で配線・架台・パネルの状態を確認します。詳しくは<Link href="/guide/solar-lifespan">太陽光パネルの寿命</Link>と<Link href="/guide/maintenance">メンテナンス</Link>のガイドへ。</p>
             </>
           ),
@@ -123,7 +124,7 @@ export default function SolarPage() {
           image: images.katsushikaStreetSunset,
           body: (
             <>
-              <p>葛飾区は戸建の多い住宅都市で、隣家との距離が近い敷地が多い地域です。影の影響を現地で確認し、屋根の形に合わせた配置にすることで、無理のない容量を載せられます。</p>
+              <p>葛飾区には、立石・四つ木・堀切地域のように、木造の建物が密集する地域として東京都の計画で「整備地域」に指定されている地域があります（葛飾区公式サイト）。隣の建物との距離が近い敷地では、影の影響を現地で確認し、屋根の形に合わせて配置を決めます。</p>
               <p>また、区の半分近くが海抜ゼロメートル地帯で水害リスクがあります。パワーコンディショナや蓄電池の設置場所は、ハザードマップの浸水想定を踏まえて検討します。停電時の備えとしての考え方は<Link href="/guide/blackout">停電時の太陽光・蓄電池</Link>で解説しています。</p>
               <p>区の助成は工事着工4週間前までの事前協議が原則です。契約から着工までの期間に申請を組み込む必要があるため、<Link href="/flow">導入までの流れ</Link>をご確認ください。</p>
             </>
@@ -131,9 +132,11 @@ export default function SolarPage() {
         },
       ]}
       subsidies={subsidies}
-      subsidyNote={<p>葛飾区の住宅では、区と東京都の両方の制度が検討対象になります。併用可否は各窓口での確認が必要です。</p>}
+      subsidyNote={<p>葛飾区の住宅では、区と東京都の両方の制度が検討対象になります。併用できますが、補助金の合計は助成対象経費が上限です。</p>}
       faq={faqsByIds(["solar-roof", "cost-payback", "solar-lifespan", "solar-blackout"])}
       sources={[
+        verified.jpeaLifespan,
+        verified.katsushikaSeibi,
         { name: "経済産業省「再生可能エネルギーのFIT制度・FIP制度における2026年度以降の買取価格等と2026年度の賦課金単価を設定します」", url: "https://www.meti.go.jp/press/2025/03/20260319004/20260319004.html", verifiedAt: "2026-10-01" },
       ]}
       related={[

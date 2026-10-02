@@ -27,13 +27,13 @@ export default function NotFound() {
         <div>
           <p className="font-en text-[13px] font-bold tracking-[0.2em] text-accent-text">404 NOT FOUND</p>
           <h1 className="mt-3 text-[28px] font-bold text-navy-900 sm:text-[36px]">お探しのページが見つかりません</h1>
-          <p className="mt-4 max-w-2xl text-[15px] leading-[1.9] text-ink-2">
+          <p className="mt-4 max-w-2xl text-base leading-[1.9] text-ink-2">
             URLが変更されたか、ページが削除された可能性があります。以下のリンクから目的のページをお探しください。
           </p>
           <ul className="mt-8 grid gap-2 sm:grid-cols-2">
             {LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="block rounded-2xl border border-line bg-white px-4 py-3 text-[15px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
+                <Link href={l.href} className="block rounded-lg border border-line bg-white px-4 py-3 text-base font-bold text-navy-900 duration-200 hover:border-orange-400 hover:bg-paper-2 transition-colors">
                   {l.label} →
                 </Link>
               </li>

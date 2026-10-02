@@ -1,0 +1,7 @@
+{
+  "claims": [
+    { "claim": "事前協議書の提出後は、やむを得ない事情を除いて申請内容の変更は原則認められない", "source": "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/030/818/r8goannaishugo.pdf", "supported": true },
+    { "claim": "回答書が届く前に着工すると助成の対象外になる", "source": "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html", "supported": true },
+    { "claim": "郵送の場合は、区に届いた日が受付日になる", "source": "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/030/818/r8goannaishugo.pdf", "supported": true }
+  ]
+}

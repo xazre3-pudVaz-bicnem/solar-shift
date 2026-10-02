@@ -44,6 +44,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
   const rows = [
     { term: "地域", description: w.area },
     { term: "住宅タイプ", description: w.housingType },
+    ...(w.buildingAge ? [{ term: "築年数", description: w.buildingAge }] : []),
     { term: "屋根形状", description: w.roofShape },
     { term: "太陽光容量", description: w.solarKw !== null ? `${w.solarKw}kW` : "—" },
     { term: "蓄電池容量", description: w.batteryKwh !== null ? `${w.batteryKwh}kWh` : "—" },
@@ -51,11 +52,12 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
     { term: "メーカー", description: w.manufacturer.join("、") || "—" },
     { term: "活用した補助金", description: w.subsidies.length ? w.subsidies.join("、") : "—" },
     { term: "施工日", description: w.installedAt },
+    ...(w.constructionPeriod ? [{ term: "工事期間", description: w.constructionPeriod }] : []),
   ];
 
   return (
     <>
-      <Container className="pt-5 sm:pt-6">
+      <Container className="pt-2 sm:pt-3">
         <Breadcrumb crumbs={crumbs} />
       </Container>
       <Container size="prose" className="py-8 sm:py-12">
@@ -83,7 +85,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
         </section>
         {w.images.length > 1 && (
           <section className="mt-10" aria-label="施工写真">
-            <h2 className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">施工写真</h2>
+            <h2 className="text-[20px] leading-[1.45] font-black text-navy-900">施工写真</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               {w.images.slice(1).map((img) => (
                 <figure key={img.src}>

@@ -1,3 +1,4 @@
+import { combination } from "@/data/subsidies/combination";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
@@ -9,13 +10,13 @@ import { images } from "@/data/images";
 
 const PATH = "/battery";
 const DESC =
-  "葛飾区で家庭用蓄電池を検討する方へ。蓄電池の役割、容量（kWh）の決め方、全負荷・特定負荷、ハイブリッド型と単機能型の違い、設置場所、葛飾区・東京都の補助金（都は10万円/kWh・2026年10月からSII登録機器限定）を整理。";
+  "家庭用蓄電池の役割、容量（kWh）の決め方、全負荷型と特定負荷型、ハイブリッド型と単機能型、設置場所、葛飾区・東京都の補助金まで。選ぶ前に整理しておきたいことを、葛飾区の SOLAR SHIFT がまとめました。";
 
 export const metadata: Metadata = buildMetadata({
-  title: "葛飾区の家庭用蓄電池｜容量の決め方・種類・補助金",
+  title: "家庭用蓄電池の選び方｜役割・容量の決め方・補助金",
   description: DESC,
   path: PATH,
-  keywords: ["葛飾区 蓄電池", "家庭用蓄電池 容量", "蓄電池 全負荷 特定負荷", "蓄電池 ハイブリッド 単機能", "葛飾区 蓄電池 補助金"],
+  keywords: ["家庭用 蓄電池", "蓄電池 選び方", "蓄電池 容量 決め方"],
 });
 
 export default function BatteryPage() {
@@ -25,7 +26,7 @@ export default function BatteryPage() {
   return (
     <ServiceLayout
       path={PATH}
-      pageName="葛飾区の家庭用蓄電池"
+      pageName="家庭用蓄電池の選び方"
       description={DESC}
       crumbs={[
         { name: "ホーム", href: "/" },
@@ -34,9 +35,9 @@ export default function BatteryPage() {
       eyebrow="家庭用蓄電池"
       heroImage={images.batteryOutdoorWall}
       tip={{ title: "機種を決める前に", body: <>東京都の助成は、2026年10月1日以降の事前申込から<strong className="marker">SII登録機器</strong>に限られます。型番が登録済みかを先に確認しましょう。</>, image: images.poseIdea }}
-      title={<>家庭用蓄電池<span className="block text-[0.7em] text-ink-2">昼の電気を夜に使い、停電に備える</span></>}
+      title={<>家庭用蓄電池の選び方<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">昼の電気を夜に使い、停電に備える</span></>}
       lead="家庭用蓄電池は、太陽光で発電した電気や夜間の安い電気をためておき、必要なときに使う設備です。電気代の平準化と、停電時の備えという2つの役割があります。容量・負荷タイプ・設置場所で選び方が変わります。"
-      conclusion="蓄電池は「夜に使う電気の量」と「停電時にどこまで備えたいか」で容量と種類を決めます。一般的な住宅では5〜10kWh前後が選ばれることが多く、全負荷型なら家全体、特定負荷型なら決めた回路だけを停電時に使えます。東京都の助成は10万円/kWh（DR不参加は原則上限120万円/戸）で、2026年10月1日以降の事前申込はSII登録機器に限られます。葛飾区は対象経費の1/4（上限20万円）です。"
+      conclusion="蓄電池は「夜に使う電気の量」と「停電時にどこまで備えたいか」で容量と種類を決めます。容量は製品によって異なり、全負荷型なら家全体、特定負荷型なら決めた回路だけを停電時に使えます。東京都の助成は10万円/kWh（DR不参加は原則上限120万円/戸）で、2026年10月1日以降の事前申込はSII登録機器に限られます。葛飾区は対象経費の1/4（上限20万円）です。"
       points={[
         "役割は2つ：昼に余った電気を夜に回す「平準化」と、停電時の「備え」",
         "容量は夜間の使用量・停電時の優先回路・太陽光の容量・EVの有無から決める",
@@ -72,7 +73,7 @@ export default function BatteryPage() {
                 <li><strong>太陽光の容量</strong>：昼にためられる量は太陽光の発電量で決まる</li>
                 <li><strong>EV・オール電化の有無</strong>：使用量が多い家は大きめ、V2Hがある家はEVのバッテリーも使える</li>
               </ol>
-              <p>一般的な住宅では5〜10kWh前後が選ばれることが多いですが、東京都の助成（10万円/kWh）は助成対象経費が上限になるため、容量と費用のバランスを見て決めます。考え方は<Link href="/guide/battery-how-to-choose">蓄電池の選び方</Link>で詳しく解説しています。</p>
+              <p>容量の選択肢は製品によって異なります。東京都の助成（10万円/kWh）は助成対象経費が上限になるため、容量と費用のバランスを見て決めます。考え方は<Link href="/guide/battery-how-to-choose">蓄電池の選び方</Link>で詳しく解説しています。</p>
             </>
           ),
         },
@@ -121,9 +122,9 @@ export default function BatteryPage() {
             <>
               <p>葛飾区は荒川・中川・江戸川・新中川に囲まれ、区の半分近くが海抜ゼロメートル地帯です。蓄電池やパワーコンディショナは電気機器のため、設置場所はハザードマップの浸水想定を踏まえ、設置高さや屋内設置も含めて検討します。考え方は<Link href="/guide/blackout">停電時の太陽光・蓄電池</Link>と<Link href="/area/katsushika">葛飾区の太陽光発電・蓄電池</Link>で解説しています。</p>
               <p>
-                葛飾区の「{kBattery.programName}」では、蓄電池は<strong>{kBattery.amount}（{kBattery.maxAmount}）</strong>、太陽光発電と同時に導入する場合は併設加算（{kAddon.amount}）があります（{formatDateJa(siteConfig.subsidyInfoDate)}時点の公式情報）。区の助成は工事着工の4週間前までの事前協議が原則のため、機種を決めたら着工日から逆算して申請を組み込みます。詳しくは<Link href="/subsidy/katsushika">葛飾区の補助金</Link>をご覧ください。
+                葛飾区の「{kBattery.programName}」では、蓄電池は<strong>{kBattery.amount}（{kBattery.maxAmount}）</strong>、太陽光発電と併設する場合は併設加算（{kAddon.amount}）があります。すでにある太陽光に蓄電池を足す場合も対象です（{formatDateJa(siteConfig.subsidyInfoDate)}時点の公式情報）。区の助成は工事着工の4週間前までの事前協議が原則のため、機種を決めたら着工日から逆算して申請を組み込みます。詳しくは<Link href="/subsidy/katsushika">葛飾区の補助金</Link>をご覧ください。
               </p>
-              <p>東京都の助成とは、制度も窓口も別です。併用の可否は公式情報で明記が確認できていないため、申請前に各窓口への確認が必要です。</p>
+              <p>東京都の助成とは、制度も窓口も別です。{combination.short}</p>
             </>
           ),
         },
@@ -147,7 +148,7 @@ export default function BatteryPage() {
         { href: "/subsidy/tokyo", label: "東京都の補助金", description: "10万円/kWhの条件とSII登録要件" },
         { href: "/guide/battery-cost", label: "蓄電池の費用", description: "価格を決める要素と助成の考え方" },
         { href: "/guide/battery-how-to-choose", label: "蓄電池の選び方", description: "容量・負荷タイプ・方式の違い" },
-        { href: "/recommend/battery", label: "おすすめ蓄電池", description: "取扱商品（順次掲載）" },
+        { href: "/products/battery", label: "蓄電池の比べ方", description: "容量・出力・負荷タイプの見方" },
         { href: "/products/battery", label: "蓄電池一覧", description: "容量・出力・負荷タイプの見方" },
       ]}
       relatedCategories={["battery", "tokyo-subsidy"]}

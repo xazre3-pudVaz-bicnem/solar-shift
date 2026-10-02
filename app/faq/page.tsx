@@ -35,7 +35,7 @@ export default function FaqPage() {
           { name: "よくある質問", href: PATH },
         ]}
         eyebrow="よくある質問"
-        title="太陽光・蓄電池・補助金について、よくいただく質問"
+        title={<>よくある質問<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">太陽光・蓄電池・補助金について</span></>}
         lead="補助金・費用・設備・工事・サービスについて、確認できる事実の範囲でお答えします。制度に関する回答は公式情報の確認日を基準にしています。"
         image={images.peopleStaffPoint3}
       >
@@ -44,14 +44,14 @@ export default function FaqPage() {
       <Container className="py-10 sm:py-14">
         <nav aria-label="カテゴリ" className="flex flex-wrap gap-2">
           {ORDER.map((c) => (
-            <a key={c} href={`#${c}`} className="rounded-full border border-line bg-white px-4 py-1.5 text-[13px] font-bold text-navy-900 hover:border-orange-400 hover:bg-cream">
+            <a key={c} href={`#${c}`} className="inline-flex min-h-11 items-center rounded-md border border-line bg-white px-4 py-1.5 text-[14px] font-bold text-navy-900 hover:border-orange-400 hover:bg-paper-2">
               {faqCategoryLabel[c]}
             </a>
           ))}
         </nav>
-        <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl bg-green-50 px-4 py-3 text-[14px] leading-[1.7] text-ink">
+        <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg bg-paper-2 px-4 py-3 text-[14px] leading-[1.7] text-ink">
           <span>探している質問が見つからないときは、チャットでも質問できます（自動応答）。</span>
-          <OpenChatButton className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-green-600 px-4 py-1 text-[13px] font-bold text-white hover:bg-green-700">
+          <OpenChatButton className="inline-flex min-h-11 items-center gap-1.5 rounded-md bg-navy-900 px-4 py-1 text-[14px] font-bold text-white hover:bg-navy-700">
             チャットで質問する
           </OpenChatButton>
         </p>
@@ -61,7 +61,7 @@ export default function FaqPage() {
             if (items.length === 0) return null;
             return (
               <section key={c} id={c} aria-labelledby={`${c}-h`} className="cv-block scroll-mt-24">
-                <h2 id={`${c}-h`} className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900 sm:text-[26px]">{faqCategoryLabel[c]}</h2>
+                <h2 id={`${c}-h`} className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900 sm:text-[26px]">{faqCategoryLabel[c]}</h2>
                 <FaqSection items={items} className="mt-5" moreLink={false} />
               </section>
             );

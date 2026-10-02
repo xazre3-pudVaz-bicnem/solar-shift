@@ -45,15 +45,15 @@ export function CategoryIndex({ category: c, page }: { category: BlogCategory; p
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <span className="text-[13px] font-bold text-ink-2">このテーマの基本ページ</span>
           {c.pillarLinks.map((href) => (
-            <Link key={href} href={href} className="inline-flex min-h-9 items-center rounded-full bg-green-600 px-4 py-1 text-[13px] font-bold text-white hover:bg-green-700">
+            <Link key={href} href={href} className="inline-flex min-h-11 items-center rounded-md bg-navy-900 px-4 py-1 text-[14px] font-bold text-white hover:bg-navy-700">
               {pageLabel(href)}
             </Link>
           ))}
         </div>
       </PageHeader>
       <Container className="py-10 sm:py-14">
-        <h2 className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">
-          「{c.name}」の記事 <span className="ml-1 font-en text-[15px] text-ink-2">{all.length}本</span>
+        <h2 className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">
+          「{c.name}」の記事 <span className="ml-1 font-en text-base text-ink-2">{all.length}本</span>
         </h2>
         <div className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((p) => (
@@ -62,18 +62,18 @@ export function CategoryIndex({ category: c, page }: { category: BlogCategory; p
         </div>
         <Pagination basePath={base} current={page} total={total} className="mt-12" />
         {others.length > 0 && (
-          <nav className="mt-14 rounded-3xl bg-beige p-5 sm:p-6" aria-label="他のカテゴリ">
+          <nav className="mt-14 rounded-lg bg-paper-3 p-5 sm:p-6" aria-label="他のカテゴリ">
             <h2 className="font-heading text-[16px] font-black text-navy-900">ほかのカテゴリ</h2>
             <ul className="mt-3 flex flex-wrap gap-2">
               {others.map((o) => (
                 <li key={o.slug}>
-                  <Link href={`/blog/category/${o.slug}`} className="inline-flex min-h-9 items-center rounded-full border border-line bg-white px-4 py-1 text-[13px] font-bold text-navy-900 hover:border-orange-400 hover:bg-cream">
+                  <Link href={`/blog/category/${o.slug}`} className="inline-flex min-h-11 items-center rounded-md border border-line bg-white px-4 py-1 text-[14px] font-bold text-navy-900 hover:border-orange-400 hover:bg-paper-2">
                     {o.name}（{o.count}）
                   </Link>
                 </li>
               ))}
               <li>
-                <Link href="/blog" className="inline-flex min-h-9 items-center rounded-full border border-navy-900 bg-white px-4 py-1 text-[13px] font-bold text-navy-900 hover:bg-cream">
+                <Link href="/blog" className="inline-flex min-h-11 items-center rounded-md border border-navy-900 bg-white px-4 py-1 text-[14px] font-bold text-navy-900 hover:bg-paper-2">
                   すべての記事
                 </Link>
               </li>

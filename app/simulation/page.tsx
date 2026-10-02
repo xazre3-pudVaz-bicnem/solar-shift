@@ -21,7 +21,7 @@ const PATH = "/simulation";
 export const metadata: Metadata = buildMetadata({
   title: "太陽光・蓄電池 補助金シミュレーター｜葛飾区・東京都の想定助成額を試算",
   description:
-    "住宅区分・太陽光の容量・蓄電池の容量・V2H・HEMSの有無を選ぶと、葛飾区（かつしかエコ助成金）と東京都（クール・ネット東京）それぞれの制度名・計算式・想定額・上限・注意点を表示。確認できていない併用は合算しません。",
+    "住宅区分・太陽光の容量・蓄電池の容量・V2H・HEMSの有無を選ぶと、葛飾区（かつしかエコ助成金）と東京都（クール・ネット東京）それぞれの制度名・計算式・想定額・上限・注意点を表示。区と都は別々に表示します（合計は助成対象経費が上限のため）。",
   path: PATH,
   keywords: ["太陽光 補助金 シミュレーション", "蓄電池 補助金 計算", "葛飾区 太陽光 補助金 いくら", "東京都 太陽光 補助金 計算"],
 });
@@ -48,13 +48,13 @@ export default function SimulationPage() {
       <Container className="py-10 sm:py-14">
         <SubsidyCalculator infoDate={siteConfig.subsidyInfoDate} />
 
-        <div className="mt-12 rounded-3xl bg-beige p-6 text-[14px] leading-[1.9] text-ink-2">
-          <p className="text-[15px] font-bold text-navy-900">この試算の前提</p>
+        <div className="mt-12 rounded-lg bg-paper-3 p-6 text-[14px] leading-[1.9] text-ink-2">
+          <p className="text-base font-bold text-navy-900">この試算の前提</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>金額は {formatDateJa(siteConfig.subsidyInfoDate)} 時点の公式情報（下記出典）をもとに、制度のルールをそのまま計算した概算です。</li>
             <li>葛飾区の蓄電池（対象経費の1/4）とV2H（本体価格の1/3）は、経費を入力しない場合は上限額で表示します。</li>
             <li>東京都の助成は助成対象経費（税抜）が上限です。DR実証参加による加算、機能性PV認定の上乗せ、陸屋根の架台・防水工事の追加助成は含んでいません。</li>
-            <li>葛飾区と東京都の併用可否、併用時の上限の扱いは公式情報で明記が確認できていないため、合算していません。</li>
+            <li>葛飾区の助成は国や都の制度と併用できますが、補助金の合計は助成対象経費が上限です。見積もりの金額によって合計が変わるため、区と都は合算せず別々に表示しています。</li>
             <li>
               <strong>実際の対象可否・助成額は、住宅条件、機器、申請時期等で異なります。</strong>交付を保証するものではありません。
             </li>
@@ -65,7 +65,7 @@ export default function SimulationPage() {
         </div>
 
         <section className="cv-block mt-14" aria-labelledby="faq">
-          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">シミュレーターについてよくある質問</h2>
+          <h2 id="faq" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">シミュレーターについてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-5" />
         </section>
 

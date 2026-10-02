@@ -12,7 +12,11 @@
     "chat:selftest": "tsx scripts/chat-selftest.ts",
     "blog:generate": "tsx scripts/generate-blog-post.ts",
     "blog:dry-run": "cross-env DRY_RUN=1 tsx scripts/generate-blog-post.ts",
-    "fonts:fetch": "node scripts/fetch-fonts.mjs"
+    "fonts:fetch": "node scripts/fetch-fonts.mjs",
+    "blog:audit": "tsx scripts/blog-audit.ts",
+    "seo:check": "tsx scripts/seo-check.ts",
+    "blog:selftest": "tsx scripts/blog-selftest.ts",
+    "facts:audit": "tsx scripts/facts-audit.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",

@@ -29,14 +29,14 @@ const OFFICE_NOTE = "なお、葛飾区の助成制度そのものについて�
 /** 連絡先の案内。電話・LINE・受付時間は lib/site.ts に入っているものだけを書く */
 function contactInfoAnswer(): string {
   if (!TEL) {
-    return `SOLAR SHIFT へのご連絡は、お問い合わせフォームで承っています。フォーム送信後、通常2〜3営業日以内に担当者よりご連絡します。${OFFICE_NOTE}`;
+    return `SOLAR SHIFT へのご連絡は、お問い合わせフォームで承っています。フォーム送信後、内容を確認のうえ、担当者よりご連絡します。${OFFICE_NOTE}`;
   }
   const email = contactEmail();
   const notListed = [LINE_URL ? "" : "LINEでの受付", HOURS ? "" : "電話の受付時間"].filter(Boolean).join("と");
   return [
     `SOLAR SHIFT へのご連絡は、お電話（${TEL}${HOURS ? `・${HOURS}` : ""}）${email ? `、メール（${email}）` : ""}、お問い合わせフォームで承っています。`,
     notListed ? `${notListed}は、現時点でこのサイトに掲載していません。` : "",
-    "フォーム送信後は、通常2〜3営業日以内に担当者よりご連絡します。",
+    "フォーム送信後は、内容を確認のうえ、担当者よりご連絡します。",
     OFFICE_NOTE,
   ].join("");
 }
@@ -44,7 +44,7 @@ function contactInfoAnswer(): string {
 /** 相談・見積もりの頼み方 */
 function consultAnswer(): string {
   const how = TEL ? `お問い合わせフォーム、またはお電話（${TEL}）でご連絡ください。フォーム送信後は、` : "お問い合わせフォームからご連絡ください。フォーム送信後、";
-  return `ご相談・現地調査・お見積もりは無料です。${how}通常2〜3営業日以内に担当者よりご連絡します。訪問販売や電話営業は行っていません。`;
+  return `ご相談・現地調査・お見積もりは無料です。${how}内容を確認のうえ、担当者よりご連絡します。「補助金のことだけ聞きたい」というご相談もお受けしています。`;
 }
 
 export const scriptedAnswers: ScriptedAnswer[] = [
@@ -82,7 +82,7 @@ export const scriptedAnswers: ScriptedAnswer[] = [
     label: "わが家の補助金を試算したい",
     pattern: /シミュレ|試算|計算(し|でき|したい)|概算|わが家(は|の|で|だと)|うち(は|の|だと)(いくら|どのくらい)/,
     answer:
-      "補助金シミュレーターで、住宅区分・太陽光の容量・蓄電池の容量などを選ぶと、葛飾区と東京都それぞれの想定助成額を試算できます。区と都の金額は別々に表示し、確認できていない併用を前提とした合算はしていません。試算は概算で、交付を保証するものではありません。",
+      "補助金シミュレーターで、住宅区分・太陽光の容量・蓄電池の容量などを選ぶと、葛飾区と東京都それぞれの想定助成額を試算できます。区と都の金額は別々に表示し、合算はしていません。試算は概算で、交付を保証するものではありません。",
     links: [
       { href: "/simulation", label: "補助金シミュレーター" },
       { href: "/subsidy/katsushika", label: "葛飾区の補助金" },
@@ -95,8 +95,8 @@ export const scriptedAnswers: ScriptedAnswer[] = [
     answer:
       "SOLAR SHIFT は2026年に始まった新しいサービスのため、現時点で公開できる施工事例・お客様の声はありません。施工が完了し、掲載の許可をいただいた事例から順次公開します。架空の事例や数字は掲載しません。",
     links: [
-      { href: "/works", label: "施工事例" },
-      { href: "/reason", label: "選ばれる理由" },
+      { href: "/reason", label: "大切にしていること" },
+      { href: "/company", label: "運営会社" },
     ],
   },
   {
@@ -106,9 +106,9 @@ export const scriptedAnswers: ScriptedAnswer[] = [
     answer:
       "取扱商品は、メーカー公式情報で仕様を確認したものから順次掲載しています。機種は、屋根の条件と電気の使い方を現地で確認してからご提案します。価格が未確定の商品には価格を表示していません。",
     links: [
-      { href: "/products", label: "取扱商品" },
-      { href: "/recommend/solar", label: "おすすめ太陽光パネル" },
-      { href: "/recommend/battery", label: "おすすめ蓄電池" },
+      { href: "/products", label: "商品の選び方" },
+      { href: "/products/solar", label: "太陽光パネルの比べ方" },
+      { href: "/products/battery", label: "蓄電池の比べ方" },
     ],
   },
 ];
@@ -151,7 +151,7 @@ const FAQ_SHORT_LABEL: Record<string, string> = {
   "install-survey": "現地調査は無料？",
   "service-company": "運営会社は？",
   "service-area": "対応エリアは？",
-  "service-sales": "訪問販売はありますか？",
+  "service-sales": "「区の委託業者」を名乗る勧誘について",
 };
 
 /**

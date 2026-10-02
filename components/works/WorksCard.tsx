@@ -11,12 +11,12 @@ export function WorksCard({ work }: { work: Work }) {
     work.hems ? "HEMS" : null,
   ].filter(Boolean);
   return (
-    <article className="overflow-hidden rounded-3xl bg-white shadow-card transition-transform duration-200 hover:-translate-y-1">
+    <article className="overflow-hidden rounded-lg bg-white duration-200 border border-line hover:bg-paper-2 transition-colors">
       <Link href={`/works/${work.slug}`} className="block">
         <ImagePlaceholder src={cover?.src} alt={cover?.alt ?? `${work.area}の施工事例`} ratio="4/3" label="施工写真準備中" frame={false} className="rounded-none" />
         <div className="p-5">
           <p>
-            <span className="inline-block rounded-full bg-green-600 px-3 py-[2px] text-[12px] font-bold text-white">
+            <span className="inline-block rounded-full bg-navy-900 px-3 py-[2px] text-[12px] font-bold text-white">
               {work.area}／{work.housingType}
             </span>
           </p>

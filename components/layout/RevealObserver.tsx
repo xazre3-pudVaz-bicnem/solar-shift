@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
  *    - getBoundingClientRect を全要素に呼ぶと content-visibility:auto の区画まで強制レイアウトされるので、
  *      判定は IntersectionObserver の結果だけで行う。
  *
- * 2. 装飾アニメーション（ふわふわ・きらきら・流れる点線など）… 画面内にあるときだけ動かす。
+ * 2. 図の点線アニメーション（電気の流れの図）… 画面内にあるときだけ動かす。
  *    対象の要素に data-anim を付け、画面内にある間だけ data-inview を付ける。
  *    CSS 側で「data-anim があって data-inview が無い」要素のアニメーションを止めている。
  *    アニメーション自体も数回で止まるようにしてある（globals.css）。
@@ -26,7 +26,7 @@ import { usePathname } from "next/navigation";
  * 後から追加された要素（シミュレーターの結果・チャットなど）も MutationObserver で拾う。
  * JS が動かなければ html[data-reveal-on] も data-anim も付かないので、すべて表示されたまま・動いたままになる。
  */
-const ANIMATED = '[class*="animate-"], .shine, .flow-x, .flow-y';
+const ANIMATED = ".flow-x, .flow-y";
 
 export function RevealObserver() {
   const pathname = usePathname();

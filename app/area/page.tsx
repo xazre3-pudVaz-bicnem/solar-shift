@@ -21,7 +21,7 @@ export const metadata: Metadata = buildMetadata({
   title: "対応エリア｜葛飾区を中心に足立区・江戸川区・墨田区",
   description: DESC,
   path: PATH,
-  keywords: ["葛飾区 太陽光 業者", "足立区 太陽光", "江戸川区 太陽光", "墨田区 太陽光", "太陽光 対応エリア"],
+  keywords: ["SOLAR SHIFT 対応エリア", "足立区 太陽光", "江戸川区 太陽光", "墨田区 太陽光"],
 });
 
 export default function AreaIndexPage() {
@@ -33,7 +33,7 @@ export default function AreaIndexPage() {
           { name: "対応エリア", href: PATH },
         ]}
         eyebrow="対応エリア"
-        title="葛飾区を中心に、周辺エリアへ。"
+        title={<>対応エリア<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">葛飾区を中心に、周辺エリアへ。</span></>}
         lead={`SOLAR SHIFT の拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}です。主要対応エリアは葛飾区、周辺対応エリアは足立区・江戸川区・墨田区です。地域ごとの補助金・住宅事情・災害リスクを踏まえてご提案します。`}
       />
       <Container className="py-10 sm:py-14">
@@ -47,15 +47,15 @@ export default function AreaIndexPage() {
         />
 
         <section className="cv-block mt-12" aria-labelledby="primary-h">
-          <h2 id="primary-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">主要対応エリア</h2>
+          <h2 id="primary-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">主要対応エリア</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {primaryAreas.map((a) => <AreaCard key={a.slug} area={a} />)}
           </div>
         </section>
 
         <section className="cv-block mt-12" aria-labelledby="secondary-h">
-          <h2 id="secondary-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">周辺対応エリア</h2>
-          <p className="mt-2 text-[14px] text-ink-2">葛飾区に隣接する地域です。各区の助成制度の確認を含めてご相談いただけます。</p>
+          <h2 id="secondary-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">周辺対応エリア</h2>
+          <p className="mt-2 text-[15px] text-ink-2">葛飾区に隣接する地域です。各区の助成制度の確認を含めてご相談いただけます。</p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {secondaryAreas.map((a) => <AreaCard key={a.slug} area={a} />)}
           </div>
@@ -63,8 +63,8 @@ export default function AreaIndexPage() {
 
         {plannedAreas.length > 0 && (
           <section className="cv-block mt-12" aria-labelledby="planned-h">
-            <h2 id="planned-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">対応を検討中のエリア</h2>
-            <p className="mt-2 text-[14px] text-ink-2">対応可能かどうかを個別に確認しています。お問い合わせの際にご住所のエリアをお知らせください。</p>
+            <h2 id="planned-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">対応を検討中のエリア</h2>
+            <p className="mt-2 text-[15px] text-ink-2">対応可能かどうかを個別に確認しています。お問い合わせの際にご住所のエリアをお知らせください。</p>
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {plannedAreas.map((a) => <AreaCard key={a.slug} area={a} />)}
             </div>
@@ -76,11 +76,11 @@ export default function AreaIndexPage() {
         </Callout>
 
         <section className="cv-block mt-14" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">対応エリアについてよくある質問</h2>
+          <h2 id="faq-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">対応エリアについてよくある質問</h2>
           <FaqSection items={faqsByIds(["service-area", "install-survey", "service-sales"])} withSchema className="mt-5" />
         </section>
 
-        <p className="mt-10 text-[14px] text-ink-2">
+        <p className="mt-10 text-[15px] text-ink-2">
           対応エリア全体の補助金の考え方は<Link href="/subsidy" className="mx-1 text-navy-600 underline underline-offset-4">補助金の総合ページ</Link>をご覧ください。
         </p>
       </Container>

@@ -2,7 +2,12 @@ name: 毎日のブログ記事を生成（GitHub Actions 版）
 
 # Vercel Cron（vercel.json + /api/cron/generate-post）の代わりに GitHub Actions で回す場合に使う。
 # 両方を同時に有効にしない（二重投稿になる）。
-# 必要な Secrets: ANTHROPIC_API_KEY（任意: ANTHROPIC_MODEL）
+#
+# 毎日1本を必ず出す仕組みではない。毎朝、生成を試み、品質チェック（機械の検査＋読み直し）に通ったときだけ
+# content/blog に保存して push する。通らなかった日は何も保存せず、緑のまま終わる。
+#
+# 必要な Secrets: ANTHROPIC_API_KEY
+# 任意の Secrets: ANTHROPIC_MODEL（記事を書くモデル）／ANTHROPIC_REVIEW_MODEL（公開前の読み直しに使うモデル）
 # ANTHROPIC_API_KEY が未登録の間は、警告を出して何もせずに終わる（失敗にはしない）。
 
 on:
@@ -61,8 +66,14 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
+          ANTHROPIC_REVIEW_MODEL: ${{ secrets.ANTHROPIC_REVIEW_MODEL }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
         run: npm run blog:generate
+
+      # 保存する前に、公開済みの全記事を同じ品質ゲートで点検する（問題のある記事が1本でもあれば push しない）
+      - name: 公開前の点検
+        if: ${{ steps.key.outputs.ready == 'true' && !inputs.dry_run }}
+        run: npm run blog:audit
 
       - name: コミットして push
         if: ${{ steps.key.outputs.ready == 'true' && !inputs.dry_run }}
@@ -71,8 +82,8 @@ jobs:
           git config user.email "bot@users.noreply.github.com"
           git add content/blog
           if git diff --cached --quiet; then
-            echo "新しい記事はありません（スキップ）。"
+            echo "新しい記事はありません（品質基準を満たす記事ができなかった日は、ここで終わります）。"
             exit 0
           fi
-          git commit -m "blog: 自動生成記事を追加"
+          git commit -m "blog: 記事を追加"
           git push

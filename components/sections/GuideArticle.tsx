@@ -1,3 +1,4 @@
+import { Toc } from "@/components/ui/Toc";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { GuideEntry } from "@/data/guides";
@@ -76,39 +77,12 @@ export function GuideArticle({
         <KeyPoints conclusion={conclusion} points={points} />
 
         {tip && (
-          <StaffTip className="mt-8" title={tip.title} image={tip.image ?? images.poseIdea} tone="orange">
+          <StaffTip className="mt-8" title={tip.title} image={tip.image ?? images.poseIdea}>
             {tip.body}
           </StaffTip>
         )}
 
-        <nav aria-label="目次" className="mt-8 rounded-3xl border-2 border-dashed border-orange-200 bg-white px-5 py-5">
-          <p className="flex items-center gap-2 font-heading text-[15px] font-black text-navy-900">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-500 text-navy-900">
-              <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                <path d="M3 4h10M3 8h10M3 12h6" />
-              </svg>
-            </span>
-            目次
-          </p>
-          <ol className="mt-3 space-y-1.5 text-[14px]">
-            {sections.map((s, i) => (
-              <li key={s.id}>
-                <a href={`#${s.id}`} className="flex gap-2 text-navy-700 hover:text-accent-text">
-                  <span className="font-en font-bold text-accent-text">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="underline decoration-line-2 underline-offset-4">{s.heading}</span>
-                </a>
-              </li>
-            ))}
-            {faq.length > 0 && (
-              <li>
-                <a href="#faq" className="flex gap-2 text-navy-700 hover:text-accent-text">
-                  <span className="font-en font-bold text-accent-text">{String(sections.length + 1).padStart(2, "0")}</span>
-                  <span className="underline decoration-line-2 underline-offset-4">よくある質問</span>
-                </a>
-              </li>
-            )}
-          </ol>
-        </nav>
+        <Toc className="mt-8" items={[...sections.map((s) => ({ id: s.id, label: s.heading })), ...(faq.length > 0 ? [{ id: "faq", label: "よくある質問" }] : [])]} />
 
         {/* 図解は .prose-ss の外に置く（中に入れると ul や table に本文用のスタイルが当たる） */}
         <div className="mt-6">
@@ -125,7 +99,7 @@ export function GuideArticle({
 
         {faq.length > 0 && (
           <section id="faq" className="cv-block mt-14 scroll-mt-24">
-            <h2 className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">よくある質問</h2>
+            <h2 className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">よくある質問</h2>
             <FaqSection items={faq} withSchema className="mt-5" />
           </section>
         )}
@@ -140,18 +114,16 @@ export function GuideArticle({
 
         {related.length > 0 && (
           <section className="cv-block mt-12" aria-label="関連ガイド">
-            <h2 className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">関連ガイド</h2>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-              {related.map((g, i) => (
-                <li key={g.slug} {...reveal((i % 2) * 80)}>
-                  <Link href={g.path} className="group flex h-full items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 shadow-card hover:border-orange-400">
+            <h2 className="text-[20px] leading-[1.4] font-black text-navy-900">関連ガイド</h2>
+            <ul className="mt-4 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2" {...reveal()}>
+              {related.map((g) => (
+                <li key={g.slug} className="bg-white">
+                  <Link href={g.path} className="group flex h-full min-h-14 items-center gap-3 px-4 py-3 hover:bg-paper-2">
                     <span className="flex-1">
-                      <span className="block text-[14px] font-bold text-navy-900">{g.title}</span>
-                      <span className="mt-1 block text-[12px] leading-[1.6] text-ink-3">{g.description}</span>
+                      <span className="block text-base font-bold text-navy-900">{g.title}</span>
+                      <span className="mt-1 block text-[13px] leading-[1.6] text-ink-2">{g.description}</span>
                     </span>
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream text-navy-900">
-                      <ArrowIcon />
-                    </span>
+                    <ArrowIcon className="h-4 w-4 text-accent-text" />
                   </Link>
                 </li>
               ))}

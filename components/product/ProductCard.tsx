@@ -10,7 +10,7 @@ export function ProductCard({ product }: { product: Product }) {
       ? [product.ratedOutputW ? `${product.ratedOutputW}W` : null, product.efficiencyPct ? `変換効率${product.efficiencyPct}%` : null]
       : [product.capacityKwh ? `${product.capacityKwh}kWh` : null, product.loadType];
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-3xl bg-white shadow-card transition-transform duration-200 hover:-translate-y-1">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-lg bg-white duration-200 border border-line hover:bg-paper-2 transition-colors">
       <ImagePlaceholder src={product.image} alt={product.imageAlt ?? `${product.manufacturer} ${product.name}`} ratio="4/3" label="商品画像準備中" frame={false} className="rounded-none" />
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center gap-2">
@@ -25,7 +25,7 @@ export function ProductCard({ product }: { product: Product }) {
         </h3>
         {product.modelNumber && <p className="text-[12px] text-ink-3">{product.modelNumber}</p>}
         <p className="mt-2 text-[13px] text-ink-2">{spec.filter(Boolean).join("・")}</p>
-        <p className="mt-auto pt-4 font-heading text-[15px] font-black text-navy-900">{priceLabel(product)}</p>
+        <p className="mt-auto pt-4 font-heading text-base font-black text-navy-900">{priceLabel(product)}</p>
       </div>
     </article>
   );

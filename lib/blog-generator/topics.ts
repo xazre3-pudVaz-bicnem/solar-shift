@@ -1,63 +1,62 @@
 /**
  * 自動生成記事のトピック候補。
- * - intent は「1記事1検索意図」。既存記事・ガイドページの intent と重複しないものだけを置く。
- * - 初期記事（content/blog）とガイド（data/guides.ts）が扱うテーマは入れない。
- * - 使い切ったら generate はスキップする（無理に言い換え記事を作らない）。
+ *
+ * 置いてよいトピックの条件
+ *   1. 1記事1検索意図。既存記事・ガイド・固定ページの意図と重ならない（固定ページとの取り合いは lib/seo-map.ts で検査）
+ *   2. 固定ページでは扱いきれない「細かい疑問」（ロングテール）であること
+ *   3. docs/VERIFIED_FACTS.md にある内容だけで書けること。
+ *      事実シートに無い技術の一般論（効率・寿命・サイクル数・相場など）が必要な題材は置かない
+ *      （書かせても品質ゲートに通らず、API の呼び出しが無駄になる）
+ *   4. links の先頭が、その記事の「親」になる固定ページ（本文から必ずリンクする）
+ *
+ * local: true … 葛飾区に固有の題材。こちらを先に使う（地域に固有の内容を優先する）。
+ * 使い切ったら generate はスキップする（無理に言い換え記事を作らない）。
+ * 題材を足すときは、先に事実シートへ根拠（出典つき）を足す。
  */
 
 export interface Topic {
   intent: string;
+  /** 記事の URL（/blog/<slug>）。英小文字・数字・ハイフンで、内容が分かる名前にする。既存の記事と重ならないこと */
+  slug: string;
   title: string;
   angle: string;
   category: string;
-  /** 本文に必ず入れる固定ページ（2〜3本） */
+  /** 本文に必ず入れる固定ページ（2〜3本）。先頭がこの記事の親ページ */
   links: string[];
+  /** 葛飾区に固有の題材 */
+  local?: boolean;
 }
 
 export const topics: Topic[] = [
-  // ───────── 葛飾区の補助金
-  { intent: "かつしかエコ助成金 事前協議 書類", title: "かつしかエコ助成金の事前協議で準備する書類と提出の流れ", angle: "見積書・仕様書など、着工4週間前の事前協議に向けて何を揃えるか。区の窓口情報と注意点。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
-  { intent: "かつしかエコ助成金 回答書 届かない 着工", title: "区の事前協議回答書が届く前に工事を始めてはいけない理由", angle: "回答書前の着工が対象外になる仕組みと、工事日程を回答書基準で組む考え方。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
-  { intent: "かつしかエコ助成金 HEMS 併設加算", title: "太陽光とHEMSを同時に申請すると加算される1万円の条件", angle: "HEMS2万円/台と併設加算1万円を同時申請で使う考え方。HEMSを入れる意味とセット。", category: "katsushika-subsidy", links: ["/hems", "/subsidy/katsushika"] },
-  { intent: "葛飾区 太陽光 補助金 年度末 申請 間に合う", title: "年度末に葛飾区の太陽光補助金を申請するときの注意点", angle: "申込期間の締切（必着）、審査の集中、着工4週間前の事前協議から逆算した最終ライン。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
-  { intent: "葛飾区 太陽光 補助金 過去10年 再申請", title: "過去に区の助成を受けた家は、もう一度申請できる？10年ルールの読み方", angle: "同じ建物・同じ種類の機器で過去10年間に区の助成を受けていないこと、という条件の整理。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/faq"] },
-  { intent: "葛飾区 新築 太陽光 補助金 引渡し前", title: "葛飾区で新築に太陽光を載せるとき、助成金はいつ申請する？", angle: "新築は引渡しの4週間前までに事前協議。東京都の新築区分（3.6kW境）との関係。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/subsidy/tokyo"] },
+  // ───────── 葛飾区の補助金（区の案内・手引きにある決まりを、1つずつ掘り下げる）
+  { local: true, intent: "かつしかエコ助成金 納税証明書 課税証明書 違い", slug: "katsushika-subsidy-tax-payment-certificate", title: "かつしかエコ助成金で出すのは「納税証明書」。課税証明書では足りない", angle: "区の案内にある注意点。必要なのは令和7年度の特別区民税・都民税・森林環境税の納税証明書の原本で、課税証明書ではない。証明書類は発行後3か月以内。同時に2項目以上を申し込む場合は1部でよい。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
+  { local: true, intent: "かつしかエコ助成金 見積書 一式 内訳書", slug: "katsushika-subsidy-quote-breakdown", title: "見積書が「一式」だと困る理由：かつしかエコ助成金の見積書の決まり", angle: "区の手引きでは、機器本体の費用・工事費用・調整額がそれぞれ分かる見積書が必要で、一式表記の場合は内訳書を添付する。蓄電池の助成対象経費が本体価格＋工事代であることとの関係。太陽光発電協会も、内訳のある見積もりを確認点に挙げている。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/area/katsushika"] },
+  { local: true, intent: "かつしかエコ助成金 名義 申請者 領収書 振込口座", slug: "katsushika-subsidy-applicant-name-rule", title: "申請者・領収書・振込口座の名義をそろえる：かつしかエコ助成金の名義の決まり", angle: "区の案内では、申請者＝建物居住者＝領収書の名義人＝助成金の振込名義人。太陽光は、電力会社との接続契約の契約者も申請者と同じ。契約の前に名義を決めておく。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
+  { local: true, intent: "かつしかエコ助成金 賃貸 使用貸借 同意書", slug: "katsushika-subsidy-rental-owner-consent", title: "賃貸や使用貸借の家でも申請できる？かつしかエコ助成金と所有者の同意", angle: "賃貸住宅・使用貸借住宅は、住宅の所有者の同意が必要（同意書を提出）。自ら居住することが条件。リース・レンタルでの導入は対象外。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/faq"] },
+  { local: true, intent: "かつしかエコ助成金 建売 太陽光付き 引渡し 4週間前", slug: "katsushika-subsidy-new-build-with-solar", title: "太陽光付きの建売住宅を買うとき、かつしかエコ助成金はいつ申し込む？", angle: "機器付きの建売住宅を購入する場合は、建物の引渡しの4週間前までに事前協議書を申し込む。東京都の新築区分（3.6kW が境）との関係。住宅の販売・譲渡を目的とする場合は対象外。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/subsidy/tokyo"] },
+  { local: true, intent: "かつしかエコ助成金 併設加算 既設 太陽光 蓄電池 後付け", slug: "katsushika-subsidy-addon-existing-solar", title: "太陽光がある家に蓄電池を足すと、併設加算の5万円は付く？", angle: "区の案内では、併設加算は「一方が既設の機器に併設する場合」と「両方を同時に設置する場合」のどちらも対象。既設の太陽光に蓄電池を併設するときは、売電を確認できる書類の写し（発行から3か月以内）を追加で出す。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/solar-battery"] },
+  { local: true, intent: "かつしかエコ助成金 完了報告 期限 書類", slug: "katsushika-subsidy-completion-report", title: "工事が終わったら出す書類と期限：かつしかエコ助成金の完了報告", angle: "完了報告の最終提出期限は2027年12月28日（必着）。太陽光と蓄電池それぞれの、完了報告時の必要書類（手引きの一覧）。期限を過ぎると交付されない。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
+  { local: true, intent: "かつしかエコ助成金 振込 いつ 交付額確定通知書", slug: "katsushika-subsidy-payment-timing", title: "かつしかエコ助成金はいつ振り込まれる？完了報告から交付までの目安", angle: "区は通常3〜4週間程度で処理していると案内。申請が集中した場合は長くなり、令和7年度は最大で6か月程度かかった。資金計画は、助成金が後から入る前提で立てる。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
+  { local: true, intent: "かつしかエコ助成金 リース レンタル キャッシュバック 対象外", slug: "katsushika-subsidy-lease-cashback-excluded", title: "リースやキャッシュバック付きの契約は対象外：かつしかエコ助成金と契約の形", angle: "区の助成は、リース・レンタルを対象外としている。助成金の交付後に代金還元（キャッシュバック）を受けないことも要件。太陽光発電協会の説明する、自己所有・PPA・リースの違い（所有権がだれにあるか）と合わせて整理する。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/solar"] },
+  { local: true, intent: "かつしかエコ助成金 事前協議 申請内容 変更 機種変更", slug: "katsushika-subsidy-change-after-consultation", title: "事前協議のあとで機種を変えたくなったら？申請内容は原則変えられない", angle: "区の案内では、事前協議書の提出後は、やむを得ない事情以外の申請内容の変更は原則認められない。機種・容量・見積もりを固めてから申し込む段取り。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
+  { local: true, intent: "かつしかエコ助成金 回答書 届く前 着工 対象外", slug: "katsushika-subsidy-no-start-before-reply", title: "区の事前協議回答書が届く前に、工事を始めてはいけない理由", angle: "回答書の前に着工すると対象外になる決まり。申込受付から回答書の到着まで3〜4週間程度。工事の日程を、契約日ではなく回答書の到着を基準に組む。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
+  { local: true, intent: "葛飾区 太陽光 補助金 年度末 申請 間に合う", slug: "katsushika-subsidy-year-end-deadline", title: "年度末に葛飾区の太陽光補助金を申請するときの、日付の逆算", angle: "申込期間は2027年3月31日（必着）まで。着工の4週間前までに事前協議、回答書までは3〜4週間程度、完了報告の最終期限は2027年12月28日。郵送の場合は区に届いた日が受付日。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/flow"] },
+  { local: true, intent: "葛飾区 太陽光 補助金 過去10年 再申請", slug: "katsushika-subsidy-ten-year-rule", title: "過去に区の助成を受けた家は、もう一度申請できる？10年の決まりの読み方", angle: "申請時点から過去10年間に、同じ建物・同じ種類の機器で区の助成を受けていないこと、という要件の整理。種類が違う機器（太陽光と蓄電池）の関係。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/faq"] },
+  { local: true, intent: "かつしかエコ助成金 JET認証 太陽光パネル 確認", slug: "katsushika-subsidy-jet-certification", title: "太陽光パネルの「JET認証」とは：かつしかエコ助成金の対象かを確かめる", angle: "区の要件：JETの太陽電池モジュール認証、またはIECの認証制度に加盟する海外認証機関の認証。申込時に、認証の登録リストの該当範囲を印刷して出す。公称最大出力の合計が1kW以上であること。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/products/solar"] },
+  { local: true, intent: "かつしかエコ助成金 HEMS 2万円 併設加算 ECHONET Lite", slug: "katsushika-subsidy-hems-echonet-lite", title: "HEMSの助成2万円と、太陽光との併設加算1万円：対象になるHEMSの条件", angle: "HEMSは2万円/1台まで。太陽光との併設加算は一律1万円で、一方が既設の場合も対象。対象は ECHONET Lite を標準的なインターフェースとして搭載しているもの。", category: "katsushika-subsidy", links: ["/hems", "/subsidy/katsushika"] },
+  { local: true, intent: "葛飾区 太陽光 訪問販売 区の委託 名乗る 注意", slug: "katsushika-solar-door-to-door-sales-warning", title: "「葛飾区から委託を受けている」と名乗る業者に注意：区が呼びかけていること", angle: "区は特定の業者に営業・販売を委託しておらず、業者の紹介もしていない。区は複数業者からの見積もりを推奨し、契約を急がせる業者に注意を呼びかけている。太陽光発電協会が挙げる、契約時の確認点（書面で残す・クーリング・オフの説明）。", category: "install-maintenance", links: ["/area/katsushika", "/flow"] },
+  { local: true, intent: "葛飾区 東京都 補助金 併用 申請 順番", slug: "katsushika-tokyo-subsidy-combination-order", title: "区と都の補助金を両方使うときの順番：区の交付が先、都の実績報告があと", angle: "葛飾区の案内では国や都の制度との併用が可能（合計は助成対象経費が上限）。東京都の太陽光の助成は、区の補助金を受給した後で交付申請兼実績報告を行う。区と都の金額は別々に示す。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/subsidy/tokyo"] },
+
   // ───────── 東京都の補助金
-  { intent: "東京都 太陽光 助成 事前申込 タイミング", title: "東京都の太陽光助成はいつ事前申込する？契約・工事との順番", angle: "事前申込→交付申請兼実績報告の流れと、区の事前協議と並行して進める段取り。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/flow"] },
-  { intent: "東京都 太陽光 補助金 3.75kW 境目 容量", title: "東京都の太陽光助成は3.75kWが境目：容量の決め方への影響", angle: "15万円/kW（上限45万円）と12万円/kWの区分が容量全体に適用される仕組みの計算例。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/simulation"] },
-  { intent: "東京都 蓄電池 助成 DR 実証 参加 とは", title: "東京都の蓄電池助成で出てくる「DR実証」とは何か", angle: "デマンドレスポンスの意味、参加で加算や上限の扱いが変わること（具体額は公式確認）、HEMSとの関係。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/hems"] },
-  { intent: "東京都 太陽光 陸屋根 架台 助成", title: "陸屋根の家で太陽光：東京都の架台・防水工事の追加助成", angle: "既存戸建の架台設置10万円/kW、防水工事18万円/kW（条件あり）の位置づけと、陸屋根の設置の考え方。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/guide/roof-conditions"] },
-  { intent: "東京都 蓄電池 増設 助成 6万円", title: "蓄電池を増設するときの東京都の助成（6万円/kWh）の考え方", angle: "新規10万円/kWhと増設6万円/kWhの違い、増設が向くケース。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/battery"] },
-  // ───────── 太陽光
-  { intent: "太陽光 自家消費率 上げる 方法", title: "太陽光の自家消費率を上げる5つの方法", angle: "昼間に家電を回す、エコキュートの昼沸き上げ、蓄電池、HEMS、EV充電。売電24円→8.3円の切り替わりを前提に。", category: "solar", links: ["/solar-battery", "/guide/selling-electricity"] },
-  { intent: "太陽光 影 隣家 発電量 影響", title: "隣の家の影は太陽光にどれだけ影響する？葛飾区の住宅地で確認すること", angle: "影の時間帯・季節変化、配置とパワコン（ストリング）の考え方。具体的な発電量は書かない。", category: "solar", links: ["/guide/roof-conditions", "/area/katsushika"] },
-  { intent: "太陽光 パネル 枚数 何枚 載る", title: "太陽光パネルは何枚載る？屋根面積から容量を見積もる考え方", angle: "1枚の出力×枚数＝容量、屋根の形と離隔、補助金の区分との関係。", category: "solar", links: ["/products/solar", "/guide/solar-cost"] },
-  { intent: "太陽光 現地調査 何を見る 準備", title: "太陽光の現地調査では何を見る？事前に用意しておくもの", angle: "屋根・分電盤・設置スペース・影・電気の使用量。図面や電気料金明細の準備。", category: "install-maintenance", links: ["/flow", "/contact"] },
-  { intent: "太陽光 足場 必要 費用 理由", title: "太陽光の工事に足場は必要？費用に影響する理由", angle: "安全・屋根材・敷地条件。葛飾区の狭小地での組み方。具体額は書かない。", category: "install-maintenance", links: ["/guide/solar-cost", "/flow"] },
-  // ───────── 蓄電池
-  { intent: "蓄電池 全負荷 特定負荷 どっち", title: "全負荷型と特定負荷型、わが家はどっち？停電時に使いたいもので決める", angle: "冷蔵庫・通信・照明・エアコン（200V）など優先順位で選ぶ。", category: "battery", links: ["/guide/battery-how-to-choose", "/battery"] },
-  { intent: "蓄電池 設置場所 屋外 屋内 条件", title: "蓄電池の設置場所：屋外・屋内それぞれの条件と確認ポイント", angle: "温度・直射日光・搬入経路・浸水想定（葛飾区）・騒音。", category: "battery", links: ["/battery", "/guide/blackout"] },
-  { intent: "蓄電池 寿命 サイクル 保証", title: "蓄電池の寿命はどう見る？サイクル数と容量保証の読み方", angle: "一般論の範囲で。年数の断定はしない。保証条件の見方。", category: "battery", links: ["/guide/battery-how-to-choose", "/guide/maintenance"] },
-  { intent: "蓄電池 SII 登録 確認 方法 型番", title: "蓄電池がSII登録機器か確認する方法：型番で調べる手順", angle: "東京都の助成要件（2026年10月以降）に関わる確認手順。メーカー・施工店・SII一覧。", category: "battery", links: ["/subsidy/tokyo", "/products/battery"] },
-  // ───────── V2H
-  { intent: "V2H 対応車種 確認 方法", title: "V2Hは自分の車で使える？対応車種と機器の確認手順", angle: "車種・機器の組み合わせ、購入前の確認、停電時の運用。", category: "v2h", links: ["/v2h", "/subsidy/katsushika"] },
-  { intent: "V2H 蓄電池 どっち 選ぶ", title: "V2Hと家庭用蓄電池、どちらを先に入れる？", angle: "車の使い方（平日外出）と停電時の備えで役割分担を決める。", category: "v2h", links: ["/v2h", "/battery"] },
-  // ───────── 電気代
-  { intent: "電気代 時間帯 料金プラン 太陽光 相性", title: "太陽光・蓄電池と電気料金プランの相性：時間帯別料金の考え方", angle: "具体的な単価は書かない。昼安い・夜安いプランと設備の組み合わせの考え方。", category: "electricity-bill", links: ["/solar-battery", "/guide/all-electric"] },
-  { intent: "電気代 明細 見方 太陽光 検討", title: "太陽光を検討する前に電気料金明細で確認する3つの数字", angle: "使用量・時間帯・契約容量の見方。具体的な料金は書かない。", category: "electricity-bill", links: ["/solar", "/contact"] },
-  // ───────── 停電・防災
-  { intent: "在宅避難 電気 備え 太陽光 蓄電池", title: "在宅避難の電気の備え：太陽光・蓄電池で何日持つかの考え方", angle: "日数の断定はしない。優先回路・日中充電・ハザードマップ確認。", category: "blackout", links: ["/guide/blackout", "/area/katsushika"] },
-  { intent: "停電 自立運転 切り替え 方法", title: "停電時の自立運転への切り替え方：事前に確認しておくこと", angle: "手動／自動切替、専用コンセントの位置、家族で共有すること。機種差は一般論で。", category: "blackout", links: ["/guide/blackout", "/battery"] },
-  // ───────── 商品比較
-  { intent: "太陽光パネル 単結晶 多結晶 違い", title: "単結晶と多結晶の違いは今も気にすべき？パネル選びの現在地", angle: "一般論。効率の具体値は書かない。保証と施工性で選ぶ視点。", category: "product-comparison", links: ["/products/solar", "/recommend/solar"] },
-  { intent: "ハイブリッド 蓄電池 単機能 違い 比較", title: "ハイブリッド型と単機能型の蓄電池を比較：同時導入と後付けで変わる答え", angle: "パワコン1台／2台、変換ロス、後付け時の選択。", category: "product-comparison", links: ["/products/battery", "/solar-battery"] },
-  // ───────── 施工・メンテ
-  { intent: "太陽光 発電量 モニター 異常 気づく", title: "発電量モニターで異常に気づくための見方", angle: "季節変動と急な低下の見分け方。数値の断定はしない。保証の使い方。", category: "install-maintenance", links: ["/guide/maintenance", "/hems"] },
-  { intent: "太陽光 屋根 葺き替え 同時 タイミング", title: "屋根の葺き替えと太陽光は同時にやるべき？タイミングの考え方", angle: "築年数・屋根材・足場の共用。費用の具体額は書かない。", category: "install-maintenance", links: ["/guide/roof-conditions", "/guide/solar-cost"] },
+  { intent: "東京都 太陽光 補助金 3.75kW 境目 容量", slug: "tokyo-solar-subsidy-3-75kw-threshold", title: "東京都の太陽光助成は3.75kWが境目：容量の決め方への影響", angle: "15万円/kW（上限45万円）と12万円/kWの区分が、容量全体に適用される仕組みの計算例。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/simulation"] },
+  { intent: "東京都 蓄電池 増設 助成 6万円", slug: "tokyo-battery-expansion-subsidy", title: "蓄電池を増設するときの東京都の助成（6万円/kWh）の考え方", angle: "新規10万円/kWhと増設6万円/kWh（DR不参加時 上限72万円/戸）の違い。2026年10月1日以降の事前申込はSII登録機器に限ること。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/battery"] },
+  { intent: "東京都 太陽光 陸屋根 架台 防水 助成", slug: "tokyo-solar-flat-roof-mount-waterproof", title: "陸屋根の家で太陽光：東京都の架台・防水工事の追加助成", angle: "既存戸建の架台設置10万円/kW、防水工事18万円/kW（条件あり）の位置づけ。太陽光発電協会の説明する、屋根置き型（勾配屋根・陸屋根）の設置方法。詳細な条件は公式で確認する。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/guide/roof-conditions"] },
+
+  // ───────── 太陽光・導入の進め方（太陽光発電協会の資料の範囲で書けるもの）
+  { intent: "太陽光 現地調査 何を見る 準備", slug: "solar-site-survey-what-to-prepare", title: "太陽光の現地調査では何を見る？事前に用意しておくもの", angle: "太陽光発電協会の説明：屋根の面積・形状・方位・傾斜は発電量に影響する。周りに太陽光を遮るものがないか。設計図面や検針票を用意する。見積もりは屋根の方位・形状・屋根材をもとに作られる。", category: "install-maintenance", links: ["/flow", "/guide/roof-conditions"] },
+  { intent: "太陽光 工事 当日 流れ 連系 立会い", slug: "solar-installation-day-to-operation", title: "太陽光の工事当日から運転開始まで：連系立会いと保証書の受け取り", angle: "太陽光発電協会の説明：機器設置工事と電気配線工事、竣工検査と引き渡し、電力会社との電力受給契約と連系立会い、メーカー発行の保証書の受け取り。葛飾区の助成では、このあとに完了報告を出す。期間の断定はしない。", category: "install-maintenance", links: ["/flow", "/subsidy/katsushika"] },
+
   // ───────── FIT・売電
-  { intent: "売電 手続き 流れ 電力会社 連系", title: "売電を始めるまでの手続き：系統連系の申請から検針まで", angle: "電力会社への申請、FIT認定、運転開始の流れ。期間の断定はしない。", category: "fit", links: ["/guide/selling-electricity", "/flow"] },
-  { intent: "FIT 5年目 8.3円 どうする 自家消費", title: "FIT5年目から売電が8.3円に：そのとき家でできる3つの対策", angle: "2026年度の24円→8.3円を前提に、蓄電池・エコキュート・使い方の調整。", category: "fit", links: ["/guide/post-fit", "/solar-battery"] },
-  // ───────── 省エネ
-  { intent: "エコキュート 昼間 沸き上げ 太陽光", title: "エコキュートの昼間沸き上げで太陽光の電気を使い切る", angle: "設定の考え方、蓄電池との役割分担。効果の数値は書かない。", category: "energy-saving", links: ["/guide/all-electric", "/hems"] },
-  { intent: "HEMS 見える化 電気 使い方 変わる", title: "HEMSで電気の使い方はどう変わる？見える化の活用例", angle: "家庭での使い方例。効果の断定はしない。", category: "energy-saving", links: ["/hems", "/solar-battery"] },
+  { intent: "FIT 5年目 8.3円 どうする 自家消費", slug: "fit-fifth-year-8-3yen-self-consumption", title: "FIT5年目から売電が8.3円に：そのとき家でできること", angle: "2026年度の住宅用は最初の4年間24円/kWh、5〜10年目8.3円/kWh。太陽光発電協会の説明：昼間に電気を使う、エコキュートを太陽光の電気で沸かす、蓄電池や電気自動車と組み合わせる。効果の数値は書かない。", category: "fit", links: ["/guide/selling-electricity", "/solar-battery"] },
+
 ];

@@ -19,11 +19,11 @@ export function Pagination({ basePath, current, total, className = "" }: { baseP
   return (
     <nav aria-label="ページ送り" className={`flex flex-wrap items-center justify-center gap-2 ${className}`}>
       {current > 1 ? (
-        <Link href={href(current - 1)} rel="prev" className={`${pill} border-2 border-navy-900 bg-white font-heading text-[14px] text-navy-900 hover:bg-cream`}>
+        <Link href={href(current - 1)} rel="prev" className={`${pill} border-2 border-navy-900 bg-white font-heading text-[14px] text-navy-900 hover:bg-paper-2`}>
           ← 前へ
         </Link>
       ) : (
-        <span className={`${pill} border-2 border-line bg-white font-heading text-[14px] text-ink-3`} aria-hidden="true">
+        <span className={`${pill} border border-line bg-white font-heading text-[14px] text-ink-3`} aria-hidden="true">
           ← 前へ
         </span>
       )}
@@ -41,7 +41,7 @@ export function Pagination({ basePath, current, total, className = "" }: { baseP
                   {p}
                 </span>
               ) : (
-                <Link href={href(p)} aria-label={`${p}ページ目`} className={`${pill} border-2 border-line-2 bg-white text-navy-900 hover:border-orange-400 hover:bg-cream`}>
+                <Link href={href(p)} aria-label={`${p}ページ目`} className={`${pill} border border-line-2 bg-white text-navy-900 hover:border-orange-400 hover:bg-paper-2`}>
                   {p}
                 </Link>
               )}
@@ -50,11 +50,11 @@ export function Pagination({ basePath, current, total, className = "" }: { baseP
         )}
       </ul>
       {current < total ? (
-        <Link href={href(current + 1)} rel="next" className={`${pill} border-2 border-navy-900 bg-white font-heading text-[14px] text-navy-900 hover:bg-cream`}>
+        <Link href={href(current + 1)} rel="next" className={`${pill} border-2 border-navy-900 bg-white font-heading text-[14px] text-navy-900 hover:bg-paper-2`}>
           次へ →
         </Link>
       ) : (
-        <span className={`${pill} border-2 border-line bg-white font-heading text-[14px] text-ink-3`} aria-hidden="true">
+        <span className={`${pill} border border-line bg-white font-heading text-[14px] text-ink-3`} aria-hidden="true">
           次へ →
         </span>
       )}

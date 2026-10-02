@@ -5,6 +5,9 @@ import { siteConfig, contactEmail } from "@/lib/site";
  * お問い合わせフォームの送信先。
  * RESEND_API_KEY と CONTACT_EMAIL_TO が設定されていれば Resend でメール送信する。
  * 未設定なら 503 を返し、フロント側でメールアドレスを案内する（送信したふりをしない）。
+ *
+ * 必須：お名前・ご相談内容・連絡先（メールアドレスか電話番号のどちらか）
+ * 任意：町名・月の電気代・太陽光の有無・蓄電池の有無
  */
 
 export const dynamic = "force-dynamic";
@@ -14,8 +17,12 @@ interface Payload {
   email?: string;
   tel?: string;
   area?: string;
+  town?: string;
   topic?: string;
   message?: string;
+  bill?: string;
+  hasSolar?: string;
+  hasBattery?: string;
   website?: string; // ハニーポット
 }
 
@@ -38,14 +45,24 @@ export async function POST(req: Request) {
   const email = clean(data.email, 200);
   const tel = clean(data.tel, 40);
   const area = clean(data.area, 50);
+  const town = clean(data.town, 50);
   const topic = clean(data.topic, 100);
   const message = clean(data.message, 4000);
+  const bill = clean(data.bill, 40);
+  const hasSolar = clean(data.hasSolar, 20);
+  const hasBattery = clean(data.hasBattery, 20);
 
-  if (!name || !email || !message) {
-    return NextResponse.json({ error: "お名前・メールアドレス・ご相談内容は必須です。" }, { status: 400 });
+  if (!name || !message) {
+    return NextResponse.json({ error: "お名前とご相談内容は必須です。" }, { status: 400 });
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!email && !tel) {
+    return NextResponse.json({ error: "ご連絡先として、メールアドレスか電話番号のどちらかをご記入ください。" }, { status: 400 });
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: "メールアドレスの形式が正しくありません。" }, { status: 400 });
+  }
+  if (tel && !/^[0-9+\-()\s]{9,20}$/.test(tel)) {
+    return NextResponse.json({ error: "電話番号の形式が正しくありません。" }, { status: 400 });
   }
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -59,10 +76,13 @@ export async function POST(req: Request) {
     `${siteConfig.name} サイトからお問い合わせがありました。`,
     "",
     `お名前: ${name}`,
-    `メール: ${email}`,
+    `メール: ${email || "（未入力）"}`,
     `電話: ${tel || "（未入力）"}`,
-    `エリア: ${area}`,
+    `エリア: ${area}${town ? `（${town}）` : ""}`,
     `種類: ${topic}`,
+    `月の電気代: ${bill || "（未選択）"}`,
+    `太陽光発電: ${hasSolar || "（未選択）"}`,
+    `蓄電池: ${hasBattery || "（未選択）"}`,
     "",
     "ご相談内容:",
     message,
@@ -74,7 +94,7 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       from,
       to: [to],
-      reply_to: email,
+      ...(email ? { reply_to: email } : {}),
       subject: `【${siteConfig.name}】お問い合わせ：${topic}（${name} 様）`,
       text,
     }),

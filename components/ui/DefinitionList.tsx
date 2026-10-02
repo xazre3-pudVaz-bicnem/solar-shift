@@ -12,7 +12,7 @@ export function DefinitionList({ rows, className = "" }: { rows: DefinitionRow[]
       {rows.map((r, i) => (
         <div key={i} className="grid gap-1 py-4 sm:grid-cols-[11rem_1fr] sm:gap-6">
           <dt className="text-[14px] font-bold text-ink-2">{r.term}</dt>
-          <dd className="text-[15px] leading-[1.8] text-ink">{r.description}</dd>
+          <dd className="text-base leading-[1.8] text-ink">{r.description}</dd>
         </div>
       ))}
     </dl>

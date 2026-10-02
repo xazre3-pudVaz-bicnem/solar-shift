@@ -31,7 +31,7 @@ export const guides: GuideEntry[] = [
     description: "設置費用の内訳、費用が変わる要因、補助金を差し引いた考え方を整理します。",
     intent: "太陽光発電 費用",
     related: ["/subsidy/katsushika", "/simulation", "/solar"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
   {
     slug: "solar-merit-demerit",
@@ -41,7 +41,7 @@ export const guides: GuideEntry[] = [
     description: "電気代・停電対策・売電の利点と、費用・屋根・メンテナンスの注意点を両面から解説。",
     intent: "太陽光発電 メリット デメリット",
     related: ["/solar", "/guide/solar-cost", "/guide/roof-conditions"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
   {
     slug: "solar-lifespan",
@@ -51,7 +51,7 @@ export const guides: GuideEntry[] = [
     description: "パネル・パワーコンディショナ・架台それぞれの寿命の目安と、保証の読み方。",
     intent: "太陽光パネル 寿命",
     related: ["/guide/maintenance", "/solar"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
   {
     slug: "battery-cost",
@@ -61,17 +61,17 @@ export const guides: GuideEntry[] = [
     description: "蓄電池の価格を決める要素、容量と費用のバランス、助成を踏まえた考え方。",
     intent: "蓄電池 費用",
     related: ["/subsidy/tokyo", "/battery", "/simulation"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
   {
     slug: "battery-how-to-choose",
     image: "batStack",
     path: "/guide/battery-how-to-choose",
-    title: "蓄電池の選び方｜容量・全負荷/特定負荷・ハイブリッドの違い",
+    title: "蓄電池の全負荷型と特定負荷型の違い｜ハイブリッド・単機能の選び分け",
     description: "容量の決め方、全負荷と特定負荷、ハイブリッド型と単機能型の違いを整理。",
-    intent: "蓄電池 選び方",
-    related: ["/battery", "/recommend/battery", "/guide/battery-cost"],
-    updatedAt: "2026-10-01",
+    intent: "蓄電池 全負荷 特定負荷 違い",
+    related: ["/battery", "/products/battery", "/guide/battery-cost"],
+    updatedAt: "2026-10-02",
   },
   {
     slug: "blackout",
@@ -81,7 +81,7 @@ export const guides: GuideEntry[] = [
     description: "自立運転の限界、蓄電池で使える範囲、水害リスクを踏まえた設置の考え方。",
     intent: "太陽光 停電時",
     related: ["/area/katsushika", "/battery", "/v2h"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
   {
     slug: "selling-electricity",
@@ -101,7 +101,7 @@ export const guides: GuideEntry[] = [
     description: "FIT期間終了後の売電単価の変化と、蓄電池やV2Hで自家消費に切り替える考え方。",
     intent: "卒FIT どうする",
     related: ["/guide/selling-electricity", "/battery", "/v2h"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
   {
     slug: "all-electric",
@@ -111,7 +111,7 @@ export const guides: GuideEntry[] = [
     description: "オール電化住宅で太陽光・蓄電池・エコキュートを組み合わせる考え方。",
     intent: "オール電化 太陽光 相性",
     related: ["/solar-battery", "/hems"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
   {
     slug: "roof-conditions",
@@ -131,7 +131,7 @@ export const guides: GuideEntry[] = [
     description: "定期点検の内容、パワコン交換、汚れや故障のサイン、保証の使い方。",
     intent: "太陽光 メンテナンス",
     related: ["/guide/solar-lifespan", "/flow"],
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
   },
 ];
 

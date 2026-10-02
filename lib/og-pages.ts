@@ -32,7 +32,7 @@ function eyebrowFor(path: string): string {
 export function ogPages(): OgPage[] {
   const pages: OgPage[] = STATIC_ROUTES.map((r) => ({ path: r.path, title: r.ogTitle, eyebrow: eyebrowFor(r.path) }));
   for (const g of guides) pages.push({ path: g.path, title: g.title, eyebrow: "導入ガイド" });
-  for (const a of areasWithPage) pages.push({ path: `/area/${a.slug}`, title: `${a.name}の太陽光発電・蓄電池｜補助金・住宅事情・災害リスクと備え`, eyebrow: "対応エリア" });
+  for (const a of areasWithPage) pages.push({ path: `/area/${a.slug}`, title: `${a.name}の太陽光・蓄電池業者｜対応エリアと相談の進め方`, eyebrow: "対応エリア" });
   for (const c of categoriesWithPosts()) pages.push({ path: `/blog/category/${c.slug}`, title: `${c.name}の記事一覧`, eyebrow: "ブログ" });
   for (const p of getAllPosts()) pages.push({ path: `/blog/${p.slug}`, title: p.title, eyebrow: p.categoryName });
   for (const p of publishedProducts) pages.push({ path: `/products/${p.slug}`, title: `${p.manufacturer} ${p.name}`, eyebrow: "取扱商品" });

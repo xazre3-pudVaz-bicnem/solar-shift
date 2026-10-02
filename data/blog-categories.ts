@@ -43,7 +43,7 @@ export const blogCategories: BlogCategory[] = [
     icon: "iconSunPanel",
     name: "太陽光発電",
     description: "住宅用太陽光発電の仕組み・費用・選び方・導入の考え方。",
-    lead: "住宅用太陽光発電を検討するときに出てくる疑問を、屋根の条件・費用の内訳・見積もりの読み方・契約前の確認点といった切り口で、1記事ずつ取り上げています。葛飾区のように隣家との距離が近い住宅地での考え方も扱います。基礎から知りたい方は「太陽光発電」のページもあわせてご覧ください。",
+    lead: "住宅用太陽光発電を検討するときに出てくる疑問を、屋根の条件・費用の内訳・見積もりの読み方・契約前の確認点といった切り口で、1記事ずつ取り上げています。隣の建物との距離が近い敷地での考え方も扱います。基礎から知りたい方は「太陽光発電」のページもあわせてご覧ください。",
     pillarLinks: ["/solar", "/guide/solar-cost"],
   },
   {
@@ -84,7 +84,7 @@ export const blogCategories: BlogCategory[] = [
     name: "商品比較",
     description: "太陽光パネル・蓄電池の比較軸と、メーカーごとの特徴の見方。",
     lead: "太陽光パネルや蓄電池を比べるときに見る項目（出力・容量・保証・設置条件など）を解説する記事です。メーカー公式情報で確認できた仕様だけをもとにし、根拠のないランキングは掲載していません。",
-    pillarLinks: ["/products", "/recommend/battery"],
+    pillarLinks: ["/products", "/products/battery"],
   },
   {
     slug: "install-maintenance",

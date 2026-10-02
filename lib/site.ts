@@ -19,6 +19,16 @@ export const siteConfig = {
   tagline: "葛飾区の太陽光発電・蓄電池・V2H",
   description:
     "SOLAR SHIFT（ソーラーシフト）は、東京都葛飾区を中心に住宅用太陽光発電・家庭用蓄電池・V2H・HEMSの導入と補助金活用をサポートするサービスです。株式会社サイプレスが運営しています。",
+  /**
+   * 本番ドメイン（2026-10-02 に運営者から連絡）。
+   * canonical・OG・sitemap.xml・robots.txt・RSS・構造化データの URL は、すべてここから作る。
+   * ドメインを変えるときは、ここだけを直す（ページやコンポーネントに URL を直接書かない）。
+   * 実際にどの URL が使われるかは next.config.ts が決める：
+   *   - 環境変数 NEXT_PUBLIC_SITE_URL があれば、それを優先
+   *   - 無ければ、Vercel の本番デプロイのときだけ、この productionUrl を使う
+   *   - プレビューや手元のビルドでは使わない（全ページ noindex になり、検索結果に出ない）
+   */
+  productionUrl: "https://www.solarshift.jp",
   /** 主要対応エリア（Local SEO の軸。data/areas.ts と一致させる） */
   primaryArea: {
     name: "葛飾区",
@@ -78,7 +88,7 @@ export const siteConfig = {
     /** 電話の受付時間（例: "平日 9:00〜18:00"）。決まったら記入すると電話番号の横に出る */
     hours: "",
     /** 問い合わせフォームの送信先（Resend 設定時に使用。未設定ならフォームは案内のみ） */
-    formNote: "フォーム送信後、通常2〜3営業日以内に担当者よりご連絡します。",
+    formNote: "フォーム送信後、内容を確認のうえ、担当者よりご連絡します。",
   },
 
   /**
@@ -103,10 +113,44 @@ export const siteConfig = {
     youtube: "",
   },
 
+  /**
+   * 信頼性に関わる情報（施工体制・保証・保険・資格など）。
+   * 証憑（契約書・保険証券・資格者証・メーカーの認定書など）を確認できたものだけを記入する。
+   * null の項目は、画面にも構造化データにも出ない（components/ui/TrustFacts.tsx が見ている）。
+   * 推測や「たぶんそうだろう」で埋めないこと。
+   *   記入例  construction: "提携する施工会社が施工します（◯◯株式会社・葛飾区）"
+   *           warranty: "工事保証◯年（施工に起因する雨漏りなど）。機器の保証はメーカーの保証書のとおり"
+   *           qualifications: "第二種電気工事士 ◯名"
+   */
+  trust: {
+    /** 施工体制（自社で施工するのか、提携する施工会社なのか） */
+    construction: null as string | null,
+    /** 施工会社（名称を出す場合は、先方の許可を得る） */
+    contractor: null as string | null,
+    /** 建設業許可・電気工事業の登録などの許認可（番号まで） */
+    licenses: null as string | null,
+    /** 有資格者（資格名と人数） */
+    qualifications: null as string | null,
+    /** メーカーの施工ID・認定（メーカー名と種類） */
+    manufacturerCertifications: null as string | null,
+    /** 保証（工事保証の年数と範囲。機器の保証はメーカーごと） */
+    warranty: null as string | null,
+    /** 工事保険（加入している保険の種類） */
+    insurance: null as string | null,
+    /** 導入後のサポート（点検の頻度・窓口） */
+    afterSupport: null as string | null,
+  },
+
+  /**
+   * サイトの文章を最後に見直した日（sitemap.xml の lastmod に使う）。
+   * 全体に関わる修正をしたら更新する。
+   */
+  contentUpdatedAt: "2026-10-02",
+
   /** 補助金情報の基準日。制度を更新したら data/subsidies 側の lastVerified と合わせて更新する */
   subsidyInfoDate: "2026-10-01",
 
-  /** 記事・補助金情報の監修表記 */
+  /** 記事・補助金情報の「編集・運営」の表記（「監修」とは書かない。資格のある第三者の監修ではないため） */
   editorial: {
     supervisor: "SOLAR SHIFT / 株式会社サイプレス",
     policyPath: "/editorial-policy",

@@ -1,3 +1,4 @@
+import { sources as verified } from "@/data/sources";
 import { ProseTable } from "@/components/ui/ProseTable";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -96,7 +97,7 @@ export default function Page() {
           body: (
             <>
               <p>電気を「売る」か「使う」かは、単価の比較で考えます。電力会社から買う電気の単価が、売電単価より高ければ、発電した電気は売るより自分で使うほうが得です。</p>
-              <p>2026年度の売電単価は1〜4年目が24円/kWhですが、5年目以降は8.3円/kWhまで下がります。買う電気の単価は契約プランや燃料費調整額で変わりますが、売電単価の後半より高いことが多いため、5年目以降は自家消費の重要性がさらに高まります。</p>
+              <p>2026年度の売電単価は1〜4年目が24円/kWhですが、5年目以降は8.3円/kWhまで下がります。買う電気の単価は、契約プランや燃料費調整額で変わります。売電単価が下がる5年目以降は、発電した電気を自宅で使うことの意味が大きくなります。</p>
               <p>自家消費を増やす方法は主に3つあります。</p>
               <ul>
                 <li><strong>昼間に電気を使う</strong>：洗濯機・食洗機・エコキュートの沸き上げを日中に動かす</li>
@@ -114,7 +115,7 @@ export default function Page() {
             <>
               <p>売電を始めるには、設備の設置とは別に手続きが必要です。おおまかな流れは次のとおりです。</p>
               <ol>
-                <li><strong>電力会社への系統連系申請</strong>：設備を電力網につなぐための申込み。設置する施工会社が代行することが一般的です。</li>
+                <li><strong>電力会社への系統連系申請</strong>：設備を電力網につなぐための申込み。だれが申請するか（施工会社が代行するか）を、契約の前に確認します。</li>
                 <li><strong>FITの事業計画認定（国）</strong>：経済産業省への認定申請。認定年度の買取価格が適用されます。</li>
                 <li><strong>売電契約と連系工事</strong>：電力会社との契約、スマートメーターの設置など。</li>
                 <li><strong>連系開始・売電開始</strong>：発電と売電が始まり、月ごとに買取代金が振り込まれます。</li>
@@ -128,7 +129,7 @@ export default function Page() {
           heading: "10年後の卒FITを見据える",
           body: (
             <>
-              <p>住宅用のFITは調達期間が10年です。期間が終わると「卒FIT」となり、固定価格での買取は終了します。その後の買取単価は各小売電気事業者が独自に設定するため、FIT期間中より低くなることが一般的です。</p>
+              <p>住宅用のFITは調達期間が10年です。期間が終わると「卒FIT」となり、固定価格での買取は終了します。その後の買取単価は、各小売電気事業者が独自に設定します。太陽光発電協会は、買取期間が終わったあとは、売電より自宅で使うほうが経済メリットが出る場合がある、と説明しています。</p>
               <p>卒FIT後は、売電を続けるか、蓄電池やV2Hを追加して自家消費に切り替えるか、エコキュートの昼間沸き上げなどで使い切るか、といった選択肢があります。10年後に慌てないよう、導入時点で「後から蓄電池を追加できる構成か」を確認しておくと選択の幅が広がります。</p>
               <p>選択肢の整理は<Link href="/guide/post-fit">卒FIT後の選択肢ガイド</Link>にまとめています。費用面の考え方は<Link href="/guide/solar-cost">太陽光発電の費用ガイド</Link>を、太陽光のサービス内容は<Link href="/solar">太陽光発電のページ</Link>をご覧ください。</p>
             </>
@@ -150,6 +151,8 @@ export default function Page() {
         },
       ]}
       sources={[
+        verified.jpeaSelling,
+        verified.jpeaSellUser,
         FIT_SOURCE,
         { name: kSolar.sourceName, url: kSolar.sourceUrl, verifiedAt: kSolar.lastVerified },
       ]}

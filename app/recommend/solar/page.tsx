@@ -1,3 +1,4 @@
+import { isHeldBack } from "@/lib/indexing";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -21,6 +22,8 @@ export const metadata: Metadata = buildMetadata({
   title: "おすすめ太陽光パネル｜葛飾区の屋根タイプ別の選び方",
   description: DESC,
   path: PATH,
+  // おすすめできる商品が登録されるまでは検索結果に出さない（中身の無いページを index させない）
+  noindex: isHeldBack(PATH),
   keywords: ["おすすめ 太陽光パネル", "太陽光パネル 選び方", "葛飾区 太陽光 おすすめ", "太陽光 メーカー おすすめ"],
 });
 
@@ -54,31 +57,31 @@ export default function RecommendSolarPage() {
             "広い屋根：総容量と補助金区分（葛飾区上限30万円、都の容量区分）を基準に",
             "寄棟・小さな面：変換効率とサイズで載せられる枚数を確保",
             "陸屋根：東京都の架台・防水の追加助成を含めて工法を検討",
-            "保証：出力保証25年前後が主流。製品保証と施工保証の条件もあわせて確認",
+            "保証：出力保証・製品保証・施工保証の年数と条件を確認（メーカー・製品によって異なる）",
           ]}
         />
         <section className="cv-block mt-12" aria-labelledby="roof-h">
-          <h2 id="roof-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">屋根タイプ別の選び方</h2>
+          <h2 id="roof-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">屋根タイプ別の選び方</h2>
           <div className="mt-5 grid gap-px bg-line sm:grid-cols-2">
             {ROOF_TYPES.map((r) => (
               <div key={r.title} className="bg-white p-6">
                 <h3 className="text-[16px] font-bold text-navy-900">{r.title}</h3>
-                <p className="mt-2 text-[14px] leading-[1.85] text-ink-2">{r.body}</p>
+                <p className="mt-2 text-[15px] leading-[1.85] text-ink-2">{r.body}</p>
               </div>
             ))}
           </div>
-          <p className="mt-4 text-[14px] text-ink-2">
+          <p className="mt-4 text-[15px] text-ink-2">
             屋根条件の詳しい見方は<Link href="/guide/roof-conditions" className="mx-1 text-navy-600 underline underline-offset-4">太陽光に向く屋根の条件</Link>をご覧ください。
           </p>
         </section>
         <section className="cv-block mt-14" aria-labelledby="rec-h">
-          <h2 id="rec-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">おすすめ機種</h2>
+          <h2 id="rec-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">おすすめ機種</h2>
           <div className="mt-5">
             <ProductCatalog products={products} category="solar" emptyTitle="おすすめ機種は順次掲載予定です" emptyBody="メーカー公式情報で仕様を確認し、屋根タイプごとに「なぜ勧めるのか」の理由を添えて掲載します。仕様からの自動判定や、根拠のないランキングは行いません。" />
           </div>
         </section>
         <section className="cv-block mt-14" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">よくある質問</h2>
+          <h2 id="faq-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">よくある質問</h2>
           <FaqSection items={faqsByIds(["solar-roof", "solar-lifespan", "cost-solar"])} withSchema className="mt-5" />
         </section>
       </Container>

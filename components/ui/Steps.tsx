@@ -27,7 +27,8 @@ const ICONS: Record<StepIcon, ReactNode> = {
 const DEFAULT_ORDER: StepIcon[] = ["mail", "search", "calc", "doc", "handshake", "tools", "check", "support"];
 
 /**
- * 番号付きの流れ。オレンジの丸アイコン＋「STEP.01」＋タイトル＋ベージュの説明ボックス。
+ * 番号付きの流れ（縦の時系列）。左にネイビーの丸（アイコン）と縦線、右に「STEP 01」・見出し・説明。
+ * 説明は箱に入れず、そのまま本文として置く。
  * li に直接 data-reveal を付ける（div で包むと ol > div > li になり無効なHTMLになる）。
  */
 export function Steps({ steps, className = "" }: { steps: Step[]; className?: string }) {
@@ -36,26 +37,22 @@ export function Steps({ steps, className = "" }: { steps: Step[]; className?: st
       {steps.map((s, i) => {
         const icon = s.icon ?? DEFAULT_ORDER[i % DEFAULT_ORDER.length];
         return (
-          <li key={i} className="relative grid grid-cols-[4.5rem_1fr] gap-4 pb-8 last:pb-0 sm:grid-cols-[6rem_1fr] sm:gap-6" {...reveal(Math.min(i, 4) * 60)}>
-            {i < steps.length - 1 && (
-              <span className="absolute top-[5.75rem] bottom-1 left-[2.2rem] w-0 border-l-[3px] border-dotted border-orange-300 sm:top-[6.75rem] sm:left-[2.95rem]" aria-hidden="true" />
-            )}
-            <div className="flex flex-col items-center">
-              <span className="font-en text-[11px] font-bold tracking-wide text-accent-text sm:text-[12px]">STEP.{String(i + 1).padStart(2, "0")}</span>
-              <span className="mt-1 flex h-16 w-16 items-center justify-center rounded-full bg-orange-600 text-white shadow-[0_8px_18px_-8px_rgba(219,117,18,0.8)] sm:h-20 sm:w-20">
-                <svg className="h-8 w-8 sm:h-9 sm:w-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  {ICONS[icon]}
-                </svg>
-              </span>
-            </div>
-            <div className="pt-5">
-              <h3 className="text-[18px] font-black text-navy-900 sm:text-[21px]">{s.title}</h3>
+          <li key={i} className="relative grid grid-cols-[3rem_1fr] gap-4 pb-9 last:pb-0 sm:grid-cols-[3.5rem_1fr] sm:gap-6" {...reveal(Math.min(i, 4) * 50)}>
+            {i < steps.length - 1 && <span className="absolute top-12 bottom-0 left-6 w-px bg-line-2 sm:top-14 sm:left-7" aria-hidden="true" />}
+            <span className="relative flex h-12 w-12 items-center justify-center rounded-full bg-navy-900 text-white sm:h-14 sm:w-14">
+              <svg className="h-6 w-6 sm:h-7 sm:w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                {ICONS[icon]}
+              </svg>
+            </span>
+            <div className="min-w-0 pt-0.5">
+              <p className="font-en text-[12px] font-bold tracking-[0.12em] text-accent-text">STEP {String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-0.5 text-[18px] leading-[1.5] font-black text-navy-900 sm:text-[20px]">{s.title}</h3>
               {s.meta && (
                 <p className="mt-1.5">
-                  <span className="inline-block rounded-md bg-green-600 px-2.5 py-[2px] text-[12px] font-bold text-white sm:text-[13px]">{s.meta}</span>
+                  <span className="inline-block rounded-sm border border-navy-200 bg-navy-50 px-2 py-[1px] text-[13px] font-bold text-navy-900">{s.meta}</span>
                 </p>
               )}
-              <div className="mt-3 rounded-2xl border-b-4 border-[#e2d9c8] bg-beige px-5 py-4 text-[15px] leading-[1.85] text-ink-2">{s.body}</div>
+              <div className="mt-2.5 text-base leading-[1.85] text-ink-2">{s.body}</div>
             </div>
           </li>
         );

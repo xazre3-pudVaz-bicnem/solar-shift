@@ -35,7 +35,7 @@ export function headline(s: Subsidy): Headline | null {
         : null;
     case "fixed":
       return s.amount.includes("一律")
-        ? { prefix: "一律", value: man(r.amount), decimals: dec(man(r.amount)), unit: "万円", note: "併せて導入する場合に加算" }
+        ? { prefix: "一律", value: man(r.amount), decimals: dec(man(r.amount)), unit: "万円", note: "併設する場合に加算" }
         : { value: man(r.amount), decimals: dec(man(r.amount)), unit: "万円", note: s.amount };
     case "perKwh":
       return { value: man(r.unit), decimals: dec(man(r.unit)), unit: "万円/kWh", note: s.maxAmount };

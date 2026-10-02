@@ -7,27 +7,29 @@ import { areasWithPage } from "@/data/areas";
 import { guides } from "@/data/guides";
 import { siteConfig } from "@/lib/site";
 import { STATIC_ROUTES } from "@/lib/routes";
+import { HELD_BACK } from "@/lib/indexing";
 
 /**
  * sitemap.xml。検索結果に出すページだけを載せる。
- * - 施工事例・お客様の声が0件の間は noindex にしているため載せない
+ * - 施工事例・お客様の声・おすすめ商品など、中身が無く noindex にしているページは載せない（lib/indexing.ts）
  * - 記事が少なく noindex にしているブログのカテゴリは載せない
  * - 一覧の2ページ目以降は載せない（記事そのものが載っている）
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!IS_PUBLIC || !SITE_URL) return [];
   const base = SITE_URL;
-  const infoDate = new Date(siteConfig.subsidyInfoDate);
+  // 固定ページの lastmod：補助金情報の基準日と、文章を最後に見直した日の、新しいほう
+  const infoDate = new Date(siteConfig.contentUpdatedAt > siteConfig.subsidyInfoDate ? siteConfig.contentUpdatedAt : siteConfig.subsidyInfoDate);
   const posts = getAllPosts();
   const latestPost = latestUpdate(posts);
   const latestGuide = guides.reduce<string>((max, g) => (g.updatedAt > max ? g.updatedAt : max), siteConfig.subsidyInfoDate);
 
-  const hidden = new Set<string>([...(publishedWorks.length === 0 ? ["/works"] : []), "/voice"]);
+  const hidden = HELD_BACK;
 
   const lastModifiedFor = (path: string): Date => {
     if (path === "/blog" && latestPost) return new Date(latestPost);
     if (path === "/guide") return new Date(latestGuide);
-    if (path === "/" && latestPost && latestPost > siteConfig.subsidyInfoDate) return new Date(latestPost);
+    if (path === "/" && latestPost && new Date(latestPost) > infoDate) return new Date(latestPost);
     return infoDate;
   };
 

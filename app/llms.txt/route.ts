@@ -25,7 +25,11 @@ export function GET() {
     ``,
     `### ${p.programName}（${p.issuer}・${p.fiscalYear}）`,
     `出典: ${p.menus[0]?.sourceUrl ?? ""}（${formatDateJa(p.menus[0]?.lastVerified ?? siteConfig.subsidyInfoDate)}確認）`,
-    ...p.menus.map((m) => `- ${m.name}: ${m.amount.replace(/\n/g, "／")}（${m.maxAmount}）。受付状況: ${statusLabel[m.status]}。${m.preApplicationRequired ? "事前手続きが必要。" : ""}`),
+    ...p.menus.map((m) => {
+      const pre = m.preApplicationRequired ? `事前手続きが必要${m.preApplicationNote ? `（${m.preApplicationNote}）` : ""}。` : "";
+      const conditions = m.conditions.length > 0 ? `主な条件: ${m.conditions.join("／")}。` : "";
+      return `- ${m.name}: ${m.amount.replace(/\n/g, "／")}（${m.maxAmount}）。受付状況: ${statusLabel[m.status]}。${pre}${conditions}`;
+    }),
   ]);
 
   const lines = [
@@ -43,7 +47,7 @@ export function GET() {
     `- 編集方針: ${url("/editorial-policy")}`,
     ``,
     `## 補助金（${date}時点の公式情報）`,
-    `葛飾区と東京都の助成は別の制度です。併用の可否は公式情報に明記が確認できていないため、当サイトでは金額を合算していません。`,
+    `葛飾区と東京都の助成は別の制度です。葛飾区の案内には「国や都の補助制度との併用も可能」と明記されていますが、補助金の合計は助成対象経費が上限のため、当サイトでは金額を合算していません。`,
     ...subsidyLines,
     ``,
     `## FIT（固定価格買取制度）`,
@@ -55,7 +59,7 @@ export function GET() {
     `- [国の補助制度](${url("/subsidy/national")}): DR補助金・CEV補助金・みらいエコ住宅の受付状況`,
     `- [補助金の総合ページ](${url("/subsidy")}): 区・都・国の3層の整理`,
     `- [補助金シミュレーター](${url("/simulation")}): 条件を選んで区・都それぞれの想定助成額を試算`,
-    `- [葛飾区の太陽光発電・蓄電池](${url("/area/katsushika")}): 補助金・住宅事情・水害リスクと備え`,
+    `- [葛飾区の太陽光・蓄電池業者](${url("/area/katsushika")}): 区内の対応エリア、業者を選ぶときの確認点、相談の進め方、住宅事情と水害リスク`,
     `- [太陽光発電](${url("/solar")}) / [家庭用蓄電池](${url("/battery")}) / [太陽光＋蓄電池](${url("/solar-battery")}) / [V2H](${url("/v2h")}) / [HEMS](${url("/hems")})`,
     `- [導入・施工の流れ](${url("/flow")}): 相談から申請・工事・運転開始まで`,
     `- [よくある質問](${url("/faq")}): ${faqs.length}問`,

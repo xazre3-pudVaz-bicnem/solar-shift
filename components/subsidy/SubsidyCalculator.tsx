@@ -50,9 +50,9 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-[23rem_minmax(0,1fr)] lg:gap-10">
       {/* 入力 */}
-      <form className="relative min-w-0 rounded-3xl border-[3px] border-orange-300 bg-white shadow-card lg:sticky lg:top-24 lg:self-start" onSubmit={(e) => e.preventDefault()} aria-label="シミュレーションの条件">
+      <form className="relative min-w-0 rounded-lg border-2 border-orange-300 bg-white lg:sticky lg:top-24 lg:self-start" onSubmit={(e) => e.preventDefault()} aria-label="シミュレーションの条件">
         <p className="absolute inset-x-0 -top-[1.15rem] z-[1] flex justify-center">
-          <span className="rounded-full bg-orange-500 px-5 py-1.5 font-heading text-[15px] font-bold text-navy-900 shadow-sm">条件を選んでください</span>
+          <span className="rounded-full bg-orange-500 px-5 py-1.5 font-heading text-[15px] font-bold text-navy-900">条件を選んでください</span>
         </p>
         <div className="space-y-6 p-5 pt-8 sm:p-6 sm:pt-9 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto lg:overscroll-contain">
 
@@ -61,7 +61,7 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
             aria-label="住所エリア"
             value={input.area}
             onChange={(e) => set("area", e.target.value as SimulationInput["area"])}
-            className="h-12 w-full rounded-xl border-2 border-line-2 bg-white px-3 text-[16px] font-bold text-navy-900"
+            className="h-12 w-full rounded-xl border border-line-2 bg-white px-3 text-[16px] font-bold text-navy-900"
           >
             <option value="katsushika">東京都葛飾区</option>
           </select>
@@ -74,7 +74,7 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
               <label
                 key={h}
                 className={`relative flex h-12 cursor-pointer items-center justify-center rounded-xl border-2 font-heading text-[15px] font-bold transition-colors ${
-                  input.housing === h ? "border-green-600 bg-green-600 text-white" : "border-line-2 bg-white text-navy-900 hover:border-green-400"
+                  input.housing === h ? "border-navy-900 bg-navy-900 text-white" : "border-line-2 bg-white text-navy-900 hover:border-navy-200"
                 }`}
               >
                 <input type="radio" name="housing" value={h} checked={input.housing === h} onChange={() => set("housing", h)} className="sr-only" />
@@ -117,7 +117,7 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
             setBatteryCost("");
             setV2hCost("");
           }}
-          className="text-[13px] text-ink-3 underline underline-offset-4"
+          className="min-h-11 px-1 text-[14px] text-ink-2 underline underline-offset-4"
         >
           条件をリセット
         </button>
@@ -128,31 +128,31 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
       <div className="min-w-0 space-y-8" aria-live="polite">
         <div className="flex items-end gap-3">
           <Image src={images.poseCalc.src} alt="" width={images.poseCalc.width} height={images.poseCalc.height} sizes="96px" className="h-auto w-20 shrink-0 sm:w-24" />
-          <p className="relative mb-3 flex-1 rounded-2xl border-2 border-green-500 bg-white px-4 py-3 font-heading text-[15px] leading-[1.6] font-bold text-navy-900 shadow-card sm:text-[17px]">
-            <span className="absolute bottom-5 -left-[9px] h-4 w-4 rotate-45 border-2 border-t-0 border-r-0 border-green-500 bg-white" aria-hidden="true" />
+          <p className="relative mb-3 flex-1 rounded-lg border-2 border-navy-900 bg-white px-4 py-3 font-heading text-[15px] leading-[1.6] font-bold text-navy-900 sm:text-[17px]">
+            <span className="absolute bottom-5 -left-[9px] h-4 w-4 rotate-45 border-2 border-t-0 border-r-0 border-navy-900 bg-white" aria-hidden="true" />
             この条件での<span className="marker">想定助成額</span>はこちらです
           </p>
         </div>
 
         <SubsidyBars result={result} caption={hasCapOnly ? "※ 経費を入力していない項目（葛飾区の蓄電池・V2H）は上限額で計算しています。" : undefined} />
 
-        <p className="rounded-2xl border-l-8 border-orange-500 bg-orange-50 px-4 py-3 text-[14px] leading-[1.8] text-ink">
-          葛飾区と東京都の金額は<strong>別々に表示し、合算していません</strong>。両制度の併用可否・併用時の上限は公式情報で明記が確認できていないため、申請前に各窓口へご確認ください。
+        <p className="rounded-lg border-l-8 border-orange-500 bg-orange-50 px-4 py-3 text-[15px] leading-[1.8] text-ink">
+          葛飾区と東京都の金額は<strong>別々に表示し、合算していません</strong>。区の助成は国や都の制度と併用できますが、補助金の合計は助成対象経費が上限です。見積もりの金額によって、受け取れる合計は変わります。
         </p>
 
         {result.areas.map((a, ai) => (
           <section key={a.area} aria-labelledby={`result-${a.area}`} className="cv-block space-y-4">
             <h2 id={`result-${a.area}`} className="flex items-center gap-3 text-[20px] font-black text-navy-900">
-              <span className={`shrink-0 rounded-full px-4 py-1 text-[15px] whitespace-nowrap ${ai === 0 ? "bg-orange-500 text-navy-900" : "bg-green-600 text-white"}`}>{a.label}</span>
+              <span className={`shrink-0 rounded-full px-4 py-1 text-[15px] whitespace-nowrap ${ai === 0 ? "bg-orange-500 text-navy-900" : "bg-navy-900 text-white"}`}>{a.label}</span>
               の内訳
             </h2>
             {a.lines.length === 0 ? (
-              <p className="rounded-2xl bg-beige px-4 py-3 text-[14px] text-ink-2">この条件で計算できる制度はありません。</p>
+              <p className="rounded-lg bg-paper-3 px-4 py-3 text-[15px] text-ink-2">この条件で計算できる制度はありません。</p>
             ) : (
               <TableScroll label={`${a.label}の内訳`}>
                 <table className="w-full min-w-[40rem] border-collapse text-[14px]">
                   <thead>
-                    <tr className={`text-left ${ai === 0 ? "bg-orange-500 text-navy-900" : "bg-green-600 text-white"}`}>
+                    <tr className={`text-left ${ai === 0 ? "bg-orange-500 text-navy-900" : "bg-navy-900 text-white"}`}>
                       <th className="px-3 py-2.5 font-bold">制度名</th>
                       <th className="px-3 py-2.5 font-bold">計算式</th>
                       <th className="px-3 py-2.5 font-bold">想定額</th>
@@ -210,7 +210,7 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
             <span className="shrink-0 rounded-full bg-navy-900 px-4 py-1 text-[15px] whitespace-nowrap text-white">国</span>
             の制度（参考・自動計算の対象外）
           </h2>
-          <ul className="divide-y divide-line rounded-2xl bg-white px-4 text-[14px] shadow-card">
+          <ul className="divide-y divide-line rounded-lg bg-white px-4 text-[14px] border border-line">
             {result.reference.map((s) => (
               <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <span>
@@ -220,7 +220,7 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
                     {s.amount}／{s.maxAmount}
                   </span>
                 </span>
-                <span className={`rounded-full px-3 py-[2px] text-[12px] font-bold ${s.status === "open" ? "bg-green-600 text-white" : "bg-paper-3 text-ink-3"}`}>{statusLabel[s.status]}</span>
+                <span className={`rounded-full px-3 py-[2px] text-[12px] font-bold ${s.status === "open" ? "bg-navy-900 text-white" : "bg-paper-3 text-ink-3"}`}>{statusLabel[s.status]}</span>
               </li>
             ))}
           </ul>
@@ -233,12 +233,12 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
           </p>
         </section>
 
-        <div className="rounded-3xl bg-beige p-5 text-[13px] leading-[1.8] text-ink-2">
+        <div className="rounded-lg bg-paper-3 p-5 text-[13px] leading-[1.8] text-ink-2">
           <p className="font-bold text-ink">この試算について</p>
           <ul className="mt-2 list-disc space-y-1 pl-5 marker:text-orange-600">
             <li>{formatDateJa(infoDate)}時点の公式情報をもとにした概算です。実際の対象可否・助成額は住宅条件、機器、申請時期等で異なります。</li>
-            <li>法律・制度上、併用の可否が確認できない組み合わせは自動的に合算していません。</li>
-            <li>予算の消化状況により、年度途中で受付が終了する場合があります。</li>
+            <li>補助金の合計は助成対象経費が上限のため、区と都の金額は自動的に合算していません。</li>
+            <li>東京都の助成金は、公社の予算の範囲内で交付されます。受付の状況は、各制度の公式サイトでご確認ください。</li>
             <li>この試算は交付を保証するものではありません。最新情報は必ず各自治体の公式サイトでご確認ください。</li>
           </ul>
         </div>
@@ -261,7 +261,7 @@ function Field({ label, hint, step, children }: { label: string; hint?: string; 
 }
 
 function NumberInput({ value, onChange, step, max, unit, label }: { value: number; onChange: (v: number) => void; step: number; max: number; unit: string; label: string }) {
-  const btn = "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500 text-[22px] font-bold text-navy-900 transition-transform hover:scale-105 active:scale-95";
+  const btn = "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500 text-[22px] font-bold text-navy-900 transition-transform active:scale-95";
   return (
     <div className="flex items-center gap-2">
       <button type="button" aria-label={`${label}を減らす`} onClick={() => onChange(Math.max(0, Math.round((value - step) * 100) / 100))} className={btn}>
@@ -280,7 +280,7 @@ function NumberInput({ value, onChange, step, max, unit, label }: { value: numbe
             const v = Number(e.target.value);
             onChange(Number.isFinite(v) ? Math.min(max, Math.max(0, v)) : 0);
           }}
-          className="num-xl h-12 w-full rounded-xl border-2 border-line-2 bg-white px-3 pr-14 text-right text-[24px] text-navy-900"
+          className="num-xl h-12 w-full rounded-xl border border-line-2 bg-white px-3 pr-14 text-right text-[24px] text-navy-900"
         />
         <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[13px] font-bold text-ink-3">{unit}</span>
       </div>
@@ -301,7 +301,7 @@ function CostInput({ value, onChange, placeholder, label }: { value: string; onC
         value={value}
         onChange={(e) => onChange(e.target.value.replace(/[^\d]/g, ""))}
         placeholder={placeholder}
-        className="h-12 w-full rounded-xl border-2 border-line-2 bg-white px-3 pr-10 text-right text-[16px] font-bold text-navy-900 placeholder:font-normal placeholder:text-ink-3"
+        className="h-12 w-full rounded-xl border border-line-2 bg-white px-3 pr-10 text-right text-[16px] font-bold text-navy-900 placeholder:font-normal placeholder:text-ink-3"
       />
       <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[13px] font-bold text-ink-3">円</span>
     </div>
@@ -310,10 +310,10 @@ function CostInput({ value, onChange, placeholder, label }: { value: string; onC
 
 function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
   return (
-    <label className="relative flex cursor-pointer items-center gap-3">
+    <label className="relative flex min-h-11 cursor-pointer items-center gap-3">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
       <span
-        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-navy-600 ${checked ? "bg-green-600" : "bg-line-2"}`}
+        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-navy-600 ${checked ? "bg-navy-900" : "bg-line-2"}`}
         aria-hidden="true"
       >
         <span className={`absolute top-[3px] left-[3px] h-[22px] w-[22px] rounded-full bg-white shadow transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`} />

@@ -6,10 +6,13 @@ import { allSubsidies } from "@/data/subsidies";
  *
  * 方針
  * - data/subsidies の rule だけを使って計算する。rule のない制度は「参考」として扱い金額を出さない。
- * - 自治体をまたいだ合算はしない。併用可否は公式情報で確認できていないため、
+ * - 自治体をまたいだ合算はしない。併用はできるが、合計は助成対象経費が上限で、経費によって変わるため、
  *   自治体ごとの小計のみを返す。
  * - 率ベース（対象経費×1/4 など）は経費が未入力なら「上限額（最大）」として提示し、
  *   isCapOnly=true を付けて UI 側で注記する。
+ * - 端数は公式資料のとおりに扱う。
+ *     助成額 … 1,000円未満を切り捨て（葛飾区の案内／東京都の手引き・実施要綱）
+ *     太陽光の出力（kW）… 小数点以下第3位を四捨五入（葛飾区の案内／東京都の手引き）
  */
 
 export interface SimulationInput {
@@ -61,12 +64,22 @@ function fmtYen(n: number): string {
   return `${n.toLocaleString("ja-JP")}円`;
 }
 
+/** 助成額の端数処理：1,000円未満を切り捨てる */
+export function floorToThousand(yen: number): number {
+  return Math.floor(yen / 1000) * 1000;
+}
+
+/** 太陽光の出力（kW）：小数点以下第3位を四捨五入する */
+export function roundKw(kw: number): number {
+  return Math.round(kw * 100) / 100;
+}
+
 function applyRule(rule: AmountRule, input: SimulationInput, s: Subsidy): LineResult {
   const base = { subsidy: s, capped: false, isCapOnly: false };
 
   switch (rule.kind) {
     case "perKw": {
-      const raw = Math.floor(input.solarKw * rule.unit);
+      const raw = floorToThousand(input.solarKw * rule.unit);
       const amount = rule.max !== undefined ? Math.min(raw, rule.max) : raw;
       return {
         ...base,
@@ -76,12 +89,12 @@ function applyRule(rule: AmountRule, input: SimulationInput, s: Subsidy): LineRe
       };
     }
     case "perKwh": {
-      const raw = Math.floor(input.batteryKwh * rule.unit);
+      const raw = floorToThousand(input.batteryKwh * rule.unit);
       let amount = rule.max !== undefined ? Math.min(raw, rule.max) : raw;
       let capped = rule.max !== undefined && raw > rule.max;
       // 助成対象経費（税抜）が上限になる制度：経費が入力されていれば経費も上限として扱う
       if (input.batteryCost && input.batteryCost > 0 && amount > input.batteryCost) {
-        amount = input.batteryCost;
+        amount = floorToThousand(input.batteryCost);
         capped = true;
       }
       return {
@@ -101,7 +114,7 @@ function applyRule(rule: AmountRule, input: SimulationInput, s: Subsidy): LineRe
           formula: `対象経費 × ${rule.rateLabel}${rule.max !== undefined ? `（上限${fmtYen(rule.max)}）` : ""}`,
         };
       }
-      const raw = Math.floor(cost * rule.rate);
+      const raw = floorToThousand(cost * rule.rate);
       const amount = rule.max !== undefined ? Math.min(raw, rule.max) : raw;
       return {
         ...base,
@@ -114,7 +127,7 @@ function applyRule(rule: AmountRule, input: SimulationInput, s: Subsidy): LineRe
       return { ...base, amount: rule.amount, formula: `一律 ${fmtYen(rule.amount)}` };
     case "tieredPerKw": {
       const tier = rule.tiers.find((t) => t.maxKw === null || input.solarKw <= t.maxKw) ?? rule.tiers[rule.tiers.length - 1];
-      const raw = Math.floor(input.solarKw * tier.unit);
+      const raw = floorToThousand(input.solarKw * tier.unit);
       const amount = tier.max !== undefined ? Math.min(raw, tier.max) : raw;
       const tierLabel =
         tier.maxKw === null
@@ -148,17 +161,18 @@ function isApplicable(s: Subsidy, input: SimulationInput): { ok: boolean; reason
     case "solar-battery-addon":
       return input.solarKw > 0 && input.batteryKwh > 0
         ? { ok: true }
-        : { ok: false, reason: "太陽光発電と蓄電池の両方を導入する場合に加算" };
+        : { ok: false, reason: "太陽光発電と蓄電池を併設する場合に加算（一方が既設の場合も対象）" };
     case "solar-hems-addon":
       return input.solarKw > 0 && input.hems
         ? { ok: true }
-        : { ok: false, reason: "太陽光発電とHEMSの両方を導入する場合に加算" };
+        : { ok: false, reason: "太陽光発電とHEMSを併設する場合に加算（一方が既設の場合も対象）" };
     default:
       return { ok: false, reason: "自動計算の対象外" };
   }
 }
 
-export function simulate(input: SimulationInput): SimulationResult {
+export function simulate(rawInput: SimulationInput): SimulationResult {
+  const input: SimulationInput = { ...rawInput, solarKw: roundKw(rawInput.solarKw) };
   const areasOrder: { area: SubsidyArea; label: string }[] = [
     { area: "katsushika", label: "葛飾区" },
     { area: "tokyo", label: "東京都" },

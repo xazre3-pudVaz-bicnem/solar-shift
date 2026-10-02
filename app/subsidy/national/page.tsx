@@ -48,7 +48,7 @@ export default function NationalSubsidyPage() {
         crumbs={crumbs}
         eyebrow="国の補助制度"
         title={<>国の太陽光・蓄電池関連補助制度<span className="block text-[0.7em] text-ink-2">DR家庭用蓄電池事業・CEV補助金（V2H）・みらいエコ住宅2026</span></>}
-        lead="国の補助金は、年度の途中で予算に達して受付が終わることが珍しくありません。このページでは、家庭の太陽光・蓄電池・V2Hに関係する国の制度の「今の状況」を整理します。"
+        lead="国の補助金は、年度の途中で受付が終わることがあります。2026年度は、家庭用蓄電池向けのDR家庭用蓄電池事業が、5月29日に予算に達して公募を終了しました。このページでは、家庭の太陽光・蓄電池・V2Hに関係する国の制度の「今の状況」を整理します。"
         image={images.peopleStaffWoman}
       >
         <LastUpdated updatedAt={siteConfig.subsidyInfoDate} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
@@ -70,7 +70,7 @@ export default function NationalSubsidyPage() {
         </StaffTip>
 
         <Callout tone="info" title="国の補助金は「今、申請できるか」で考える" className="mt-10">
-          国の補助金は公募期間が短く、予算に達すると締め切られます。検討のタイミングで受付が終わっていることも多いため、国の制度を前提に資金計画を組むのではなく、「申請できれば上乗せ」と位置づけ、区・都の制度を軸に考えることをおすすめします。
+          国の制度は、公募期間の途中で受付が終わることがあります。DR家庭用蓄電池事業は、交付申請額の合計が予算に達したため、当初の予定より早く公募を終了しました。国の制度を前提に資金計画を組むのではなく、「申請できれば上乗せ」と位置づけ、区・都の制度を軸に考えることをおすすめします。
         </Callout>
 
         <div className="mt-14 space-y-16">
@@ -80,8 +80,8 @@ export default function NationalSubsidyPage() {
         </div>
 
         <section className="cv-block mt-16" aria-labelledby="local">
-          <h2 id="local" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">今申請できる制度：葛飾区・東京都</h2>
-          <p className="mt-2 max-w-3xl text-[15px] leading-[1.9] text-ink-2">
+          <h2 id="local" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">今申請できる制度：葛飾区・東京都</h2>
+          <p className="mt-2 max-w-3xl text-base leading-[1.9] text-ink-2">
             国の制度が受付終了中でも、葛飾区の「かつしかエコ助成金」と東京都（クール・ネット東京）の家庭向け助成は{date}時点で受付中です。葛飾区の制度は工事着工4週間前までの事前協議が原則必要です。
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
@@ -91,7 +91,7 @@ export default function NationalSubsidyPage() {
         </section>
 
         <section className="cv-block mt-16" aria-labelledby="faq">
-          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">国の補助金についてよくある質問</h2>
+          <h2 id="faq" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">国の補助金についてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-6" />
         </section>
 
@@ -106,7 +106,7 @@ export default function NationalSubsidyPage() {
             { href: "/v2h", label: "V2Hについて" },
             { href: "/simulation", label: "補助金シミュレーター" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
+            <Link key={l.href} href={l.href} className="rounded-lg border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 duration-200 hover:border-orange-400 hover:bg-paper-2 transition-colors">
               {l.label} →
             </Link>
           ))}

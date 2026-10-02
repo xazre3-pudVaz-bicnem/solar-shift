@@ -3,7 +3,9 @@ import { siteConfig } from "@/lib/site";
 
 /**
  * 本番 URL は NEXT_PUBLIC_SITE_URL（または SITE_URL）だけから決める。
- * 未設定なら canonical / OG URL / sitemap を一切出さず、robots は noindex にする。
+ * この値は next.config.ts がビルド時に決めて埋め込む：環境変数があればそれを、無ければ Vercel の
+ * 本番デプロイのときだけ lib/site.ts の productionUrl（本番ドメイン）を使う。
+ * 空なら canonical / OG URL / sitemap を一切出さず、robots は noindex にする（プレビュー・手元のビルド）。
  * NODE_ENV は見ない（Vercel のプレビューも production ビルドのため）。
  *
  * このファイルはクライアントコンポーネントからも読み込まれる（formatDateJa）。
@@ -15,7 +17,7 @@ export const IS_PUBLIC = Boolean(SITE_URL);
 
 if (!IS_PUBLIC && process.env.NODE_ENV === "production" && typeof window === "undefined") {
   console.warn(
-    "[SOLAR SHIFT] NEXT_PUBLIC_SITE_URL が未設定です。canonical/OG/sitemap は出力されず、全ページ noindex になります。",
+    "[SOLAR SHIFT] 本番 URL が決まっていないビルドです（Vercel の本番デプロイではなく、NEXT_PUBLIC_SITE_URL も未設定）。canonical/OG/sitemap は出力されず、全ページ noindex になります。",
   );
 }
 

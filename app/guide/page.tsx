@@ -79,7 +79,7 @@ const GROUPS: { id: string; heading: string; lead: string; slugs: string[] }[] =
 
 const TONE = {
   orange: { ring: "border-orange-300", pill: "bg-orange-500 text-navy-900", num: "text-orange-600" },
-  green: { ring: "border-green-300", pill: "bg-green-600 text-white", num: "text-green-600" },
+  green: { ring: "border-navy-200", pill: "bg-navy-900 text-white", num: "text-navy-700" },
   navy: { ring: "border-navy-100", pill: "bg-navy-900 text-white", num: "text-navy-700" },
 } as const;
 
@@ -87,8 +87,8 @@ function GuideCard({ g, delay }: { g: GuideEntry; delay: number }) {
   const img = images[g.image];
   return (
     <li {...reveal(delay)}>
-      <Link href={g.path} className="group flex h-full gap-4 rounded-3xl border border-line bg-white p-4 shadow-card transition-transform duration-200 hover:-translate-y-1 hover:border-orange-300 sm:p-5">
-        <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-cream sm:h-24 sm:w-24">
+      <Link href={g.path} className="group flex h-full gap-4 rounded-lg border border-line bg-white p-4 duration-200 hover:border-orange-300 sm:p-5 hover:bg-paper-2 transition-colors">
+        <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg bg-paper-2 sm:h-24 sm:w-24">
           <Image src={img.src} alt="" width={img.width} height={img.height} sizes="96px" className="max-h-[4.25rem] w-auto max-w-[4.25rem] object-contain sm:max-h-20 sm:max-w-20" />
         </span>
         <span className="min-w-0 flex-1">
@@ -96,7 +96,7 @@ function GuideCard({ g, delay }: { g: GuideEntry; delay: number }) {
           <span className="mt-1.5 block text-[13px] leading-[1.75] text-ink-2">{g.description}</span>
           <span className="mt-2 flex items-center justify-between text-[12px] text-ink-3">
             <time dateTime={g.updatedAt}>{formatDateJa(g.updatedAt)} 更新</time>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-cream text-navy-900">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-paper-2 text-navy-900">
               <ArrowIcon className="h-3.5 w-3.5" />
             </span>
           </span>
@@ -131,19 +131,19 @@ export default function GuideIndexPage() {
             const t = TONE[r.tone];
             const img = images[r.image];
             return (
-              <li key={r.title} className={`flex flex-col rounded-3xl border-[3px] bg-white p-5 shadow-card sm:p-6 ${t.ring}`} {...reveal(i * 90, "zoom")}>
+              <li key={r.title} className={`flex flex-col rounded-lg border-2 bg-white p-5 sm:p-6 ${t.ring}`} {...reveal(i * 90, "zoom")}>
                 <div className="flex items-end justify-between gap-3">
-                  <h3 className={`rounded-full px-4 py-1.5 font-heading text-[15px] font-black ${t.pill}`}>{r.title}</h3>
+                  <h3 className={`rounded-full px-4 py-1.5 font-heading text-base font-black ${t.pill}`}>{r.title}</h3>
                   <Image src={img.src} alt="" width={img.width} height={img.height} sizes="96px" className="h-auto w-20 shrink-0" />
                 </div>
-                <p className="mt-4 text-[14px] leading-[1.85] text-ink-2">{r.lead}</p>
+                <p className="mt-4 text-[15px] leading-[1.85] text-ink-2">{r.lead}</p>
                 <ol className="mt-4 space-y-2">
                   {r.steps.map((slug, n) => {
                     const g = getGuide(slug);
                     if (!g) return null;
                     return (
                       <li key={slug}>
-                        <Link href={g.path} className="group flex items-center gap-3 rounded-2xl bg-beige px-3 py-2.5 hover:bg-cream">
+                        <Link href={g.path} className="group flex min-h-11 items-center gap-3 rounded-lg bg-paper-3 px-3 py-2.5 hover:bg-paper-2">
                           <span className={`font-en text-[22px] leading-none font-extrabold ${t.num}`}>{n + 1}</span>
                           <span className="flex-1 text-[14px] leading-[1.5] font-bold text-navy-900 group-hover:text-accent-text">{g.title.split("｜")[0]}</span>
                           <ArrowIcon className="h-3.5 w-3.5 text-navy-900" />
@@ -158,16 +158,16 @@ export default function GuideIndexPage() {
         </ul>
       </Container>
 
-      <section className="cv-auto bg-beige py-12 sm:py-16" aria-labelledby="all-guides">
+      <section className="cv-auto bg-paper-3 py-12 sm:py-16" aria-labelledby="all-guides">
         <Container>
           <SectionHeading id="all-guides" eyebrow="テーマ別" title="ガイドの一覧" lead={`全${guides.length}本。1ページで1つの疑問に答える構成です。`} align="center" color="green" />
           <div className="mt-10 space-y-12">
             {GROUPS.map((grp) => (
               <section key={grp.id} aria-labelledby={`g-${grp.id}`}>
-                <h3 id={`g-${grp.id}`} className="border-l-[8px] border-orange-500 pl-3 text-[20px] leading-[1.4] font-black text-navy-900 sm:text-[22px]">
+                <h3 id={`g-${grp.id}`} className="border-l-[5px] border-orange-500 pl-3 text-[20px] leading-[1.4] font-black text-navy-900 sm:text-[22px]">
                   {grp.heading}
                 </h3>
-                <p className="mt-1.5 pl-5 text-[14px] text-ink-2">{grp.lead}</p>
+                <p className="mt-1.5 pl-5 text-[15px] text-ink-2">{grp.lead}</p>
                 <ul className="mt-5 grid gap-4 md:grid-cols-2">
                   {grp.slugs.map((slug, i) => {
                     const g = getGuide(slug);
@@ -178,7 +178,7 @@ export default function GuideIndexPage() {
             ))}
             {others.length > 0 && (
               <section aria-labelledby="g-others">
-                <h3 id="g-others" className="border-l-[8px] border-orange-500 pl-3 text-[20px] leading-[1.4] font-black text-navy-900 sm:text-[22px]">
+                <h3 id="g-others" className="border-l-[5px] border-orange-500 pl-3 text-[20px] leading-[1.4] font-black text-navy-900 sm:text-[22px]">
                   そのほかのガイド
                 </h3>
                 <ul className="mt-5 grid gap-4 md:grid-cols-2">

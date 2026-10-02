@@ -2,16 +2,15 @@
 
 /*
   SOLAR SHIFT デザイントークン
-  ロゴ：ディープネイビー × ソーラーオレンジ。
-  トーンは「クリーム地に白い角丸パネル、大きなオレンジの数字、緑の補助アクセント、朱色のCTA」。
+  ブランドは「ディープネイビー × ソーラーオレンジ」。地の色は白とライトグレー。
+  緑は補助色で、使ってよいのは「受付中」などの状態表示・チェックマーク・エコの図だけ
+  （ボタン・見出し・枠線には使わない）。
 
-  コントラストの実測（白文字を載せるとき）
-    cta      #d2450e … 4.57:1（小さい文字もOK）
-    green-600 #14855d … 4.62:1（小さい文字もOK）
-    orange-600 #db7512 … 3.20:1（24px以上／19px以上の太字だけ）
-    orange-500 #f28c1c … 2.46:1（白文字NG。ネイビー文字なら 6.78:1）
-  白・クリーム・ベージュ地に載せるオレンジの文字は accent-text（#a84c0a、白地 5.67:1／クリーム地 5.24:1／ベージュ地 4.95:1）。
-  以前の #b4530b はベージュ地（#f4efe6）で 4.39:1 しかなく、出典一覧の番号などが基準を下回っていた。
+  コントラストの実測
+    orange-500 #f28c1c … 白文字は 2.46:1 で不可。ネイビー文字（navy-950）なら 7.5:1。主ボタンはこの組み合わせ
+    orange-700 #bd570b … 白文字で 4.64:1（「必須」などの小さなラベル用）
+    accent-text #a84c0a … 白地 5.67:1／ライトグレー地（paper-2）5.27:1。オレンジ色の「文字」はこれを使う
+    navy-900 #0b1f3a … 白文字で 16:1
 */
 @theme {
   --color-navy-950: #071428;
@@ -20,6 +19,8 @@
   --color-navy-700: #1b3a66;
   --color-navy-600: #1e4d8c;
   --color-navy-500: #2a63ad;
+  --color-navy-300: #9bb4d6;
+  --color-navy-200: #c3d3e8;
   --color-navy-100: #dbe6f3;
   --color-navy-50: #eef3f9;
 
@@ -33,9 +34,6 @@
   --color-orange-50: #fff6ea;
   --color-accent-text: #a84c0a;
 
-  --color-cta: #d2450e;
-  --color-cta-dark: #b53a0b;
-
   --color-green-800: #0c5a3e;
   --color-green-700: #0f6e4c;
   --color-green-600: #14855d;
@@ -46,19 +44,14 @@
   --color-green-100: #d7f3e7;
   --color-green-50: #ecf9f3;
 
-  --color-cream: #fdf6d6;
-  --color-cream-2: #fbefc2;
-  --color-marker: #ffe27a;
-  --color-beige: #f4efe6;
-
   --color-ink: #0f172a;
   --color-ink-2: #334155;
   --color-ink-3: #5b6779;
   --color-line: #e2e8f0;
   --color-line-2: #cbd5e1;
   --color-paper: #ffffff;
-  --color-paper-2: #f6f8fb;
-  --color-paper-3: #eef2f7;
+  --color-paper-2: #f5f7fa;
+  --color-paper-3: #e9eef4;
 
   --font-sans:
     "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic Medium", "YuGothic", "Meiryo",
@@ -71,49 +64,29 @@
   --container-content: 72rem;
   --container-prose: 46rem;
 
-  --shadow-card: 0 10px 30px -14px rgba(11, 31, 58, 0.22);
-  --shadow-pop: 0 18px 40px -18px rgba(11, 31, 58, 0.35);
-  --shadow-pill: 0 10px 22px -10px rgba(210, 69, 14, 0.65);
+  /*
+    角丸は控えめに（住宅設備の会社らしい、直線的で落ち着いた印象にする）。
+    Tailwind の既定より小さくしてあるので、rounded-2xl / 3xl と書いても丸くなりすぎない。
+  */
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.625rem;
+  --radius-3xl: 0.75rem;
+  --radius-4xl: 1rem;
+
+  /* 影は薄く。カードは影より罫線で区切る */
+  --shadow-card: 0 1px 2px rgba(11, 31, 58, 0.05), 0 10px 24px -18px rgba(11, 31, 58, 0.25);
+  --shadow-pop: 0 2px 4px rgba(11, 31, 58, 0.06), 0 18px 36px -20px rgba(11, 31, 58, 0.35);
 
   /*
-    ── アニメーション（すべて transform / opacity のみ。レイアウトを動かさない）
-    どれも無限には回さず、画面に入ってから十数秒で止まる回数にしてある。
-    動き続けるアニメーションが1つでも画面にあると、Chrome は IntersectionObserver と遅延読み込み画像の
-    判定のために、毎フレームのスタイル計算・描画準備をメインスレッドで回し続ける（スマホの電池と操作の反応に響く）。
-    画面に入り直すと最初から動き直す（components/layout/RevealObserver.tsx）。
-    終わったときに見た目が飛ばないよう、どのキーフレームも「何もしていない状態」で始まり、そこで終わる。
+    ── アニメーション
+    装飾のためだけに動き続けるもの（浮遊・点滅・光沢・揺れ）は置かない。
+    残しているのは、電気の流れを示す図の点線（意味のある動き）だけ。無限には回さない。
+    動き続けるアニメーションが画面にあると、Chrome は IntersectionObserver と遅延読み込み画像の
+    判定のために、毎フレームのスタイル計算をメインスレッドで回し続ける。
   */
-  --animate-float: float 6s ease-in-out 4;
-  --animate-float-slow: float 9s ease-in-out 3;
-  --animate-spin-slow: spin-slow 60s linear 1;
-  --animate-bob-x: bob-x 1.6s ease-in-out 8;
-  --animate-bob-y: bob-y 1.8s ease-in-out 8;
-  --animate-pulse-soft: pulse-soft 2.6s ease-in-out 5;
   --animate-flow-x: flow-x 0.9s linear 16;
   --animate-flow-y: flow-y 0.9s linear 16;
-  --animate-shine: shine 4.5s ease-in-out 4;
-  --animate-twinkle: twinkle 3.2s ease-in-out 6;
-  --animate-wiggle: wiggle 3.5s ease-in-out 4;
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-  }
-  @keyframes spin-slow {
-    to { transform: rotate(360deg); }
-  }
-  @keyframes bob-x {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(6px); }
-  }
-  @keyframes bob-y {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
-  }
-  @keyframes pulse-soft {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.04); }
-  }
   @keyframes flow-x {
     from { transform: translateX(-18px); }
     to { transform: translateX(0); }
@@ -121,20 +94,6 @@
   @keyframes flow-y {
     from { transform: translateY(-18px); }
     to { transform: translateY(0); }
-  }
-  @keyframes shine {
-    0%, 62% { transform: translateX(-140%) skewX(-18deg); }
-    100% { transform: translateX(260%) skewX(-18deg); }
-  }
-  @keyframes twinkle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.35; transform: scale(0.8); }
-  }
-  @keyframes wiggle {
-    0%, 88%, 100% { transform: rotate(0deg); }
-    91% { transform: rotate(-4deg); }
-    94% { transform: rotate(4deg); }
-    97% { transform: rotate(-2deg); }
   }
 }
 
@@ -168,11 +127,7 @@ body {
   font-feature-settings: "palt";
 }
 
-/*
-  登場アニメーションは要素を横にずらして待機させる（translateX）。そのままだと画面の外に
-  はみ出した分が「横スクロールできる領域」になり、スマホでページが左右に揺れる。
-  hidden ではなく clip を使う（clip はスクロールコンテナを作らないので position: sticky を壊さない）。
-*/
+/* 登場アニメーションで要素が横にはみ出しても、ページが左右に揺れないようにする（sticky は壊さない） */
 main {
   overflow-x: clip;
 }
@@ -212,13 +167,11 @@ main {
   /* 記事本文は h2 ごとに section に分けている（components/blog/ArticleBody.tsx）。余白は中の h2 が持つ */
   .prose-ss > section { margin-top: 0; }
   .prose-ss h2 {
-    position: relative;
-    margin-top: 3rem;
-    margin-bottom: 1rem;
-    padding: 0.55rem 1rem 0.55rem 1.1rem;
-    border-left: 8px solid var(--color-orange-500);
-    background: var(--color-cream);
-    border-radius: 0.35rem 1rem 1rem 0.35rem;
+    margin-top: 3.25rem;
+    margin-bottom: 1.1rem;
+    padding: 0.1rem 0 0.7rem 0.9rem;
+    border-left: 5px solid var(--color-orange-500);
+    border-bottom: 1px solid var(--color-line);
     font-size: 1.375rem;
     font-weight: 900;
     line-height: 1.5;
@@ -226,8 +179,8 @@ main {
   .prose-ss h3 {
     margin-top: 2.25rem;
     margin-bottom: 0.75rem;
-    padding-bottom: 0.3rem;
-    border-bottom: 3px dotted var(--color-green-400);
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-line-2);
     font-size: 1.125rem;
     line-height: 1.5;
   }
@@ -236,7 +189,7 @@ main {
   .prose-ss ul { list-style: disc; }
   .prose-ss ul > li::marker { color: var(--color-orange-600); }
   .prose-ss ol { list-style: decimal; }
-  .prose-ss ol > li::marker { color: var(--color-green-700); font-weight: 700; }
+  .prose-ss ol > li::marker { color: var(--color-navy-700); font-weight: 700; }
   .prose-ss li + li { margin-top: 0.35em; }
   .prose-ss a {
     color: var(--color-navy-600);
@@ -248,7 +201,6 @@ main {
   .prose-ss strong {
     font-weight: 700;
     color: var(--color-navy-900);
-    background: linear-gradient(transparent 62%, var(--color-marker) 62%);
   }
   .prose-ss blockquote {
     border-left: 3px solid var(--color-line-2);
@@ -258,8 +210,8 @@ main {
   /* 表は .table-scroll（components/ui/ProseTable.tsx・Markdown は ArticleBody）で包み、枠の中で横スクロールさせる */
   .prose-ss .table-scroll {
     overflow-x: auto;
-    border-radius: 1rem;
-    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
     background: #fff;
   }
   .prose-ss table {
@@ -275,7 +227,15 @@ main {
     min-width: 7rem;
     background: #fff;
   }
-  .prose-ss thead th { background: var(--color-green-600); color: #fff; font-weight: 700; border-color: var(--color-green-700); }
+  .prose-ss thead th { background: var(--color-navy-900); color: #fff; font-weight: 700; border-color: var(--color-navy-800); }
+  /*
+    4列以上の表は、スマホではどのみち横スクロールになる。7rem のままだと1行に5文字ほどしか入らず行が縦に伸びるので、
+    列を広げて読みやすくする（左端の列は項目名なので狭いまま）。3列以下の表は、画面に収まるよう 7rem のままにする。
+  */
+  @media (max-width: 639px) {
+    .prose-ss table:has(tr > :nth-child(4)) :is(th, td) { min-width: 9.5rem; }
+    .prose-ss table:has(tr > :nth-child(4)) :is(th, td):first-child { min-width: 5.5rem; }
+  }
   /*
     表が横にはみ出しているときだけ「横にスクロールできます」を出す。
     scroll() タイムラインは「スクロールできる量があるとき」だけ有効になるので、それを目印に使う
@@ -302,14 +262,14 @@ main {
       from, to { max-height: 2rem; }
     }
   }
-  .prose-ss tbody th { background: var(--color-cream); font-weight: 700; color: var(--color-navy-900); }
+  .prose-ss tbody th { background: var(--color-paper-2); font-weight: 700; color: var(--color-navy-900); }
   .prose-ss hr { border: 0; border-top: 1px solid var(--color-line); margin: 2.5rem 0; }
   .prose-ss input[type="checkbox"] {
     width: 1.1em;
     height: 1.1em;
     margin-right: 0.45em;
     vertical-align: -0.15em;
-    accent-color: var(--color-green-600);
+    accent-color: var(--color-navy-700);
   }
   .prose-ss li:has(> input[type="checkbox"]) { list-style: none; margin-left: -1.5em; }
   .prose-ss code {
@@ -364,10 +324,10 @@ main {
     text-wrap: pretty;
   }
 
-  /* 蛍光ペン風の下線（見出しの強調） */
+  /* 見出しの中で1語だけ強調するときの細い下線（蛍光ペンのような太い塗りは使わない） */
   .marker {
-    background: linear-gradient(transparent 60%, var(--color-marker) 60%);
-    padding: 0 0.1em;
+    background: linear-gradient(transparent 86%, var(--color-orange-400) 86%);
+    padding-bottom: 0.08em;
   }
 
   /*
@@ -402,64 +362,36 @@ main {
     animation: var(--animate-flow-y);
   }
 
-  /* ボタンの上を走る光 */
-  .shine { position: relative; overflow: hidden; isolation: isolate; }
-  .shine::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    width: 40%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
-    /* 動いていないとき（開始前・終了後・画面外）は左の外に隠しておく */
-    transform: translateX(-140%) skewX(-18deg);
-    animation: var(--animate-shine);
-    pointer-events: none;
-    z-index: 1;
-  }
-
   /*
-    スクロールで現れるアニメーション。
+    スクロールで現れるアニメーション（控えめなフェードだけ）。
     data-reveal を付けた要素は、components/layout/RevealObserver.tsx が画面に入った時点で
     data-revealed を付ける。JS が動かない環境では html[data-reveal-on] が付かないので常に表示される。
-  */
-  /*
-    transition は「現れた後」の状態にだけ付ける。
-    data-reveal そのものに付けると、読み込み直後に画面外の要素をいっせいに隠すところまでアニメーションになり、
-    数十個の要素が 0.75 秒かけて消えていく（すぐスクロールすると、消えかけの要素が見える）。
+    transition は「現れた後」の状態にだけ付ける（読み込み直後に画面外の要素を隠す動きまで見せないため）。
   */
   [data-reveal][data-revealed] {
     transition:
-      opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
-      transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+      opacity 0.5s ease-out var(--reveal-delay, 0ms),
+      transform 0.5s ease-out var(--reveal-delay, 0ms);
   }
   .grow-y { transform-origin: bottom; }
   .grow-x { transform-origin: left; }
   [data-revealed] .grow-y,
   [data-revealed] .grow-x {
-    transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) var(--grow-delay, 150ms);
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--grow-delay, 150ms);
   }
 }
 
-html[data-reveal-on] [data-reveal]:not([data-revealed]) { opacity: 0; transform: translateY(28px); }
-html[data-reveal-on] [data-reveal="left"]:not([data-revealed]) { transform: translateX(-36px); }
-html[data-reveal-on] [data-reveal="right"]:not([data-revealed]) { transform: translateX(36px); }
-html[data-reveal-on] [data-reveal="zoom"]:not([data-revealed]) { transform: scale(0.9); }
-html[data-reveal-on] [data-reveal="pop"]:not([data-revealed]) { transform: scale(0.55); }
+/* 横から・拡大などの派手な登場はやめ、すべて「少し下から」に統一している */
+html[data-reveal-on] [data-reveal]:not([data-revealed]) { opacity: 0; transform: translateY(14px); }
 html[data-reveal-on] [data-reveal="fade"]:not([data-revealed]) { transform: none; }
 html[data-reveal-on] [data-reveal]:not([data-revealed]) .grow-y { transform: scaleY(0); }
 html[data-reveal-on] [data-reveal]:not([data-revealed]) .grow-x { transform: scaleX(0); }
 
-/* 装飾アニメーションは、画面内にあるときだけ動かす（印は RevealObserver が付ける） */
+/* 図の点線アニメーションは、画面内にあるときだけ動かす（印は RevealObserver が付ける） */
 [data-anim]:not([data-inview]),
 [data-anim]:not([data-inview])::before,
 [data-anim]:not([data-inview])::after {
   animation: none;
-}
-
-/* overflow: clip が使えない古いブラウザでは、横からの登場を「下から」に置き換えて横スクロールを出さない */
-@supports not (overflow-x: clip) {
-  html[data-reveal-on] [data-reveal="left"]:not([data-revealed]),
-  html[data-reveal-on] [data-reveal="right"]:not([data-revealed]) { transform: translateY(28px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -470,7 +402,6 @@ html[data-reveal-on] [data-reveal]:not([data-revealed]) .grow-x { transform: sca
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
-  .shine::after { display: none; }
   html[data-reveal-on] [data-reveal]:not([data-revealed]) { opacity: 1; transform: none; }
   html[data-reveal-on] [data-reveal]:not([data-revealed]) .grow-y,
   html[data-reveal-on] [data-reveal]:not([data-revealed]) .grow-x { transform: none; }
