@@ -29,6 +29,11 @@ const BLOG_DIR = path.join(ROOT, "content", "blog");
 const DRY_RUN = process.env.DRY_RUN === "1";
 const FIXTURE = process.env.DRY_RUN_FIXTURE;
 const REVIEW_FIXTURE = process.env.DRY_RUN_REVIEW_FIXTURE;
+/**
+ * 持ち時間。GitHub Actions のジョブの上限（daily-blog.yml の timeout-minutes: 15）より手前で、自分から終える。
+ * 上限で打ち切られると実行が「失敗」になるが、時間切れは失敗ではない（その回は公開しないだけ）。
+ */
+const TIME_BUDGET_MS = 11 * 60_000;
 
 async function main() {
   const existing = readExistingPosts(BLOG_DIR);
@@ -41,7 +46,7 @@ async function main() {
     process.exit(1);
   }
 
-  const result = await generateArticle({ existing, fixture, reviewFixture, log: (m) => console.log(m) });
+  const result = await generateArticle({ existing, fixture, reviewFixture, deadlineAt: Date.now() + TIME_BUDGET_MS, log: (m) => console.log(m) });
 
   if (result.status === "skipped") {
     console.log(`公開しません: ${result.reason}`);

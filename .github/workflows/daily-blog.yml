@@ -87,4 +87,6 @@ jobs:
             exit 0
           fi
           git commit -m "blog: 記事を追加"
+          # 生成のあいだに main が進んでいても push できるように、先に取り込む
+          git pull --rebase origin "${GITHUB_REF_NAME}"
           git push

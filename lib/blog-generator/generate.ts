@@ -31,7 +31,7 @@ export const DEFAULT_MODEL = "claude-haiku-4-5";
 /**
  * 公開前の読み直しに使うモデルの既定値（ANTHROPIC_REVIEW_MODEL で変えられる）。
  * 書くモデルと同じ軽いモデルで読み直すと、根拠のない理由づけや、対応エリアを広げた書き方を見逃した（実際に試して分かった）。
- * 読み直しは出力が短く、ここが公開の最後の関門なので、書くモデルより上のモデルを使う。
+ * ここが公開の最後の関門なので、書くモデルより上のモデルを使う（そのぶん、読み直し1回の時間と費用は、書く1回より大きい）。
  * このモデルを呼べなかったとき（権限・名前の誤りなど）は、書くモデルで読み直す。
  */
 export const DEFAULT_REVIEW_MODEL = "claude-opus-5-5";
@@ -216,7 +216,23 @@ export interface ReviewResult {
    * 合格した記事には、この出典を足してから保存する（本文と参考資料の対応を、機械的にそろえる）。
    */
   missingSources: string[];
+  /**
+   * 読み直しそのものを終えられなかった（出力の上限に達した・返答を解析できなかった など）。
+   * 記事の出来とは関係が無いので、書き直しは求めずに、読み直しだけをやり直す。
+   */
+  incomplete?: boolean;
+  /** 制限時間が来て、読み直しを途中で打ち切った */
+  timedOut?: boolean;
+  /** 読み直しで使ったトークン数（ログに出して、上限と費用の見当をつける。fixture のときは無い） */
+  usage?: { input: number; output: number };
 }
+
+/**
+ * 読み直しの出力の上限。上位のモデルは、答えを書く前の思考も出力として数えるので、余裕を持たせる
+ * （4,096 のときは、思考だけで上限に達して、結果の JSON が途中で切れた）。
+ * 上限は「ここまでは使ってよい」という歯止めで、実際に使う量は記事の長さで決まる。
+ */
+const REVIEW_MAX_TOKENS = 16000;
 
 /** 読み直しで、運営者から確認した内容（事実シートの「サービス」の節。出典URLなし）を指すときの source の値 */
 export const OPERATOR_SOURCE = "operator";
@@ -264,6 +280,8 @@ function buildReviewPrompt(article: GeneratedArticle): string {
 - 誤字・脱字、日本語として存在しない語や活用（例：「急わせる」）
 - リンクの文言と、リンク先のページの内容が合っていない箇所（例：補助金の話なのに、業者選びのページへリンクしている）
 
+claims には、supported が false のものをすべて入れる。supported が true のものは、記事の要になる主張を20件まで（細かい言い換えを1つずつ挙げなくてよい）。
+
 次の形式のJSONだけを返してください。前後に説明文やコードフェンスを付けないでください。
 
 {
@@ -287,17 +305,53 @@ ${article.faq.map((f) => `Q. ${f.q}\nA. ${f.a}`).join("\n")}`;
  * 数値以外の主張を、別の呼び出しで事実シートと照らし合わせる。
  * 判定できなかった場合（呼び出しの失敗・JSON の解析失敗）は「不合格」として扱う（疑わしきは公開しない）。
  */
-export async function reviewArticle(opts: { client: Anthropic; model: string; facts: string; index: FactIndex; article: GeneratedArticle; fixture?: string }): Promise<ReviewResult> {
+export async function reviewArticle(opts: {
+  client: Anthropic;
+  model: string;
+  facts: string;
+  index: FactIndex;
+  article: GeneratedArticle;
+  fixture?: string;
+  /** この時間（ミリ秒）が過ぎたら、読み直しを打ち切る。実行時間に上限のある場所から呼ぶときに渡す */
+  timeoutMs?: number;
+}): Promise<ReviewResult> {
   let text = opts.fixture;
+  let usage: ReviewResult["usage"];
+  // 読み直しを終えられなかったときの結果（記事の出来とは関係が無い。呼び出し側が、読み直しだけをやり直す）
+  const unfinished = (message: string, timedOut = false): ReviewResult => ({ ok: false, claims: [], errors: [message], missingSources: [], incomplete: true, timedOut, usage });
+
   if (text === undefined) {
-    const response = await opts.client.messages.create({
+    // 出力の上限を大きく取るので、ストリーミングで受け取る（長い応答で接続が切れるのを避ける）。結果は finalMessage() でまとめて受け取る。
+    // 事実シートを含む system は読み直しのたびに同じなので、キャッシュさせる（同じ回の2度目からの読み直しが安く・速くなる）
+    const stream = opts.client.messages.stream({
       model: opts.model,
-      max_tokens: 4096,
-      system: `あなたは、公開前の記事を事実と照らし合わせる校閲者です。記事を良く見せる必要はありません。事実シートに書かれていない主張を、見逃さずに挙げてください。\n\n${opts.facts}`,
+      max_tokens: REVIEW_MAX_TOKENS,
+      system: [
+        {
+          type: "text",
+          text: `あなたは、公開前の記事を事実と照らし合わせる校閲者です。記事を良く見せる必要はありません。事実シートに書かれていない主張を、見逃さずに挙げてください。\n\n${opts.facts}`,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages: [{ role: "user", content: buildReviewPrompt(opts.article) }],
     });
+    const timer = opts.timeoutMs === undefined ? undefined : setTimeout(() => stream.abort(), Math.max(0, opts.timeoutMs));
+    let response: Anthropic.Message;
+    try {
+      response = await stream.finalMessage();
+    } catch (e) {
+      // 自分で打ち切ったとき。それ以外の失敗（権限・通信など）は、呼び出し側へそのまま伝える
+      if (e instanceof Anthropic.APIUserAbortError) return unfinished("読み直しが制限時間内に終わりませんでした", true);
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+    usage = {
+      input: response.usage.input_tokens + (response.usage.cache_creation_input_tokens ?? 0) + (response.usage.cache_read_input_tokens ?? 0),
+      output: response.usage.output_tokens,
+    };
     if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens") {
-      return { ok: false, claims: [], errors: [`読み直しを完了できませんでした（${response.stop_reason}）`], missingSources: [] };
+      return unfinished(`読み直しを完了できませんでした（${response.stop_reason}）`);
     }
     text = response.content
       .filter((b): b is Anthropic.TextBlock => b.type === "text")
@@ -309,9 +363,9 @@ export async function reviewArticle(opts: { client: Anthropic; model: string; fa
   try {
     parsed = extractJson<{ claims?: ReviewedClaim[]; wording?: unknown }>(text);
   } catch (e) {
-    return { ok: false, claims: [], errors: [`読み直しの結果を解析できませんでした: ${(e as Error).message}`], missingSources: [] };
+    return unfinished(`読み直しの結果を解析できませんでした: ${(e as Error).message}`);
   }
-  if (!Array.isArray(parsed.claims)) return { ok: false, claims: [], errors: ["読み直しの結果に claims がありません"], missingSources: [] };
+  if (!Array.isArray(parsed.claims)) return unfinished("読み直しの結果に claims がありません");
 
   const errors: string[] = [];
   const claims: Claim[] = [];
@@ -344,7 +398,7 @@ export async function reviewArticle(opts: { client: Anthropic; model: string; fa
       if (typeof w === "string" && w.trim()) errors.push(`文章の誤りがあります: ${w.trim().slice(0, 80)}`);
     }
   }
-  return { ok: errors.length === 0, claims, errors: errors.slice(0, 8), missingSources: [...missing] };
+  return { ok: errors.length === 0, claims, errors: errors.slice(0, 8), missingSources: [...missing], usage };
 }
 
 // ─────────────────────────────────────────────────────────────── 出力
@@ -402,9 +456,18 @@ export interface GenerateOptions {
   log?: (msg: string) => void;
 }
 
-/** 1回の執筆に見ておく時間・読み直しに見ておく時間（ミリ秒）。残りがこれより短ければ始めない */
+/**
+ * 1回の執筆に見ておく時間・読み直しに見ておく時間（ミリ秒）。残りがこれより短ければ始めない。
+ * 読み直しは、上位のモデルだと1分前後かかる（実測：出力 4,096 トークンで約35秒）。
+ * 始めたあとに制限時間が来たら、読み直しを打ち切って「この回は公開しない」で終える。
+ */
 const WRITE_BUDGET_MS = 80_000;
-const REVIEW_BUDGET_MS = 25_000;
+const REVIEW_BUDGET_MS = 60_000;
+/**
+ * 記事を書くときの出力の上限。既定のモデル（Haiku）は 5,000 トークン前後しか使わないが、
+ * ANTHROPIC_MODEL で思考を行うモデルに変えると、思考も出力として数えられる。途中で切れないように余裕を持たせる。
+ */
+const WRITE_MAX_TOKENS = 16000;
 
 export async function generateArticle(opts: GenerateOptions): Promise<GenerateResult> {
   const log = opts.log ?? (() => {});
@@ -450,7 +513,7 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
         return outOfTime(attempt - 1);
       }
       // 事実シートを含む system は試行のたびに同じなので、キャッシュさせる（書き直しの呼び出しが安く・速くなる）
-      const response = await client!.messages.create({ model, max_tokens: 8192, system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }], messages });
+      const response = await client!.messages.create({ model, max_tokens: WRITE_MAX_TOKENS, system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }], messages });
       if (response.stop_reason === "refusal") {
         return { status: "skipped", reason: "モデルが生成を拒否しました", topic, attempts: attempt, model };
       }
@@ -484,17 +547,45 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
       return outOfTime(attempt);
     }
     if (errors.length === 0 && (client || opts.reviewFixture !== undefined)) {
+      const reviewing = article;
+      const startedAt = Date.now();
+      // 制限時間があるときは、残り時間が尽きたところで読み直しを打ち切る
+      const runReview = (reviewWith: string) =>
+        reviewArticle({
+          client: client as Anthropic,
+          model: reviewWith,
+          facts,
+          index: factIndex,
+          article: reviewing,
+          fixture: opts.reviewFixture,
+          timeoutMs: opts.deadlineAt === undefined ? undefined : remaining(),
+        });
       let review: ReviewResult;
       try {
-        review = await reviewArticle({ client: client as Anthropic, model: reviewModel, facts, index: factIndex, article, fixture: opts.reviewFixture });
+        review = await runReview(reviewModel);
       } catch (e) {
         // 読み直し用のモデルを呼べなかった（権限が無い・名前が違うなど）。書くモデルで読み直す
         if (reviewModel === model) throw e;
         log(`読み直し: ${reviewModel} を呼べなかったため、${model} で読み直します（${(e as Error).message.slice(0, 120)}）`);
         reviewModel = model;
-        review = await reviewArticle({ client: client as Anthropic, model: reviewModel, facts, index: factIndex, article, fixture: opts.reviewFixture });
+        review = await runReview(reviewModel);
       }
-      reviewer = opts.reviewFixture !== undefined ? "fixture" : reviewModel;
+      // 読み直しを最後まで終えられなかった（出力が上限に達した・結果を解析できなかった）。記事の出来とは関係が無いので、
+      // 書き直しは求めずに、読み直しだけをもう一度行う
+      const live = opts.reviewFixture === undefined;
+      if (live && review.incomplete && !review.timedOut && remaining() >= REVIEW_BUDGET_MS) {
+        log(`読み直し: 最後まで終えられなかったため、やり直します（${review.errors[0]}）`);
+        review = await runReview(reviewModel);
+      }
+      reviewer = live ? reviewModel : "fixture";
+      const spent = review.usage ? `・入力 ${review.usage.input.toLocaleString("en-US")} / 出力 ${review.usage.output.toLocaleString("en-US")} トークン・${Math.round((Date.now() - startedAt) / 1000)}秒` : "";
+      // それでも終えられなければ、この回は公開しない（下位のモデルの読み直しで代えることはしない。読み直せていない記事は出さない）
+      if (live && review.incomplete) {
+        log(`読み直し: 終えられませんでした（${review.errors[0]}${spent}）`);
+        lastErrors = review.errors;
+        if (review.timedOut) return outOfTime(attempt);
+        return { status: "skipped", reason: "公開前の読み直しを終えられませんでした（この回は公開しません）", topic, errors: review.errors, attempts: attempt, model };
+      }
       if (!review.ok) errors = review.errors;
       else {
         claims = [...claims, ...review.claims];
@@ -502,7 +593,7 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
         for (const url of review.missingSources) article.sources.push({ name: sourceNameFor(url, facts), url });
         if (review.missingSources.length > 0) log(`読み直し: 本文の根拠になっている出典を sources に追加（${review.missingSources.length} 件）`);
       }
-      log(`読み直し: ${review.ok ? `合格（主張 ${review.claims.length} 件を確認）` : `不合格 ${review.errors.length} 件`}`);
+      log(`読み直し（${reviewer}）: ${review.ok ? `合格（主張 ${review.claims.length} 件を確認${spent}）` : `不合格 ${review.errors.length} 件${spent ? `（${spent.slice(1)}）` : ""}`}`);
     }
 
     if (errors.length === 0) {

@@ -14,6 +14,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import Anthropic from "@anthropic-ai/sdk";
 import { validate, type GeneratedArticle } from "../lib/blog-generator/validate";
 import { buildFactIndex } from "../lib/blog-generator/claims";
 import { loadFacts, allowedSourceUrls } from "../lib/blog-generator/facts";
@@ -127,6 +128,42 @@ async function main() {
   check("読み直し：確認できない主張が1つでもあれば不合格", !ng.ok && /確認できない主張/.test(ng.errors.join("\n")));
   const broken = await reviewArticle({ client, model: "fixture", facts, index: factIndex, article: good, fixture: "JSON ではない返答" });
   check("読み直し：結果を解析できなければ不合格（公開しない）", !broken.ok);
+  // 「読み直しを終えられなかった」と「記事に問題があった」を区別する（前者は書き直しを求めず、読み直しだけをやり直す）
+  check("読み直し：解析できない結果は「終えられなかった」として返す", broken.incomplete === true);
+  check("読み直し：確認できない主張での不合格は「終えられなかった」にしない", !ng.incomplete);
+
+  // 実際の呼び出しの代わりに、決まった返答を返すクライアントで確かめる
+  const usage = { input_tokens: 120, cache_creation_input_tokens: 0, cache_read_input_tokens: 21000, output_tokens: 16000 };
+  const replying = (message: unknown) => ({ messages: { stream: () => ({ abort() {}, finalMessage: async () => message }) } }) as unknown as Anthropic;
+  const cut = await reviewArticle({ client: replying({ stop_reason: "max_tokens", content: [], usage }), model: "stub", facts, index: factIndex, article: good });
+  check("読み直し：出力が上限に達したら「終えられなかった」として返す", !cut.ok && cut.incomplete === true && !cut.timedOut && cut.usage?.output === 16000, JSON.stringify(cut));
+  const full = await reviewArticle({
+    client: replying({ stop_reason: "end_turn", content: [{ type: "text", text: load("blog-review-ok.json") }], usage }),
+    model: "stub",
+    facts,
+    index: factIndex,
+    article: good,
+  });
+  check("読み直し：返答を最後まで受け取れたら、使ったトークン数も返す", full.ok && !full.incomplete && full.usage?.input === 21120, JSON.stringify(full.usage));
+  // 終わらない読み直しは、制限時間で打ち切る
+  const hanging = {
+    messages: {
+      stream: () => {
+        let stop: (e: Error) => void = () => {};
+        const pending = new Promise<never>((_, reject) => (stop = reject));
+        return { abort: () => stop(new Anthropic.APIUserAbortError()), finalMessage: () => pending };
+      },
+    },
+  } as unknown as Anthropic;
+  const timedOut = await reviewArticle({ client: hanging, model: "stub", facts, index: factIndex, article: good, timeoutMs: 20 });
+  check("読み直し：制限時間が来たら打ち切って「終えられなかった」として返す", !timedOut.ok && timedOut.incomplete === true && timedOut.timedOut === true);
+  // モデルを呼べなかったとき（権限・名前の誤り）は、そのまま呼び出し側へ伝える（書くモデルでの読み直しに切り替えるため）
+  const failing = { messages: { stream: () => ({ abort() {}, finalMessage: async () => Promise.reject(new Error("model not found")) }) } } as unknown as Anthropic;
+  const thrown = await reviewArticle({ client: failing, model: "stub", facts, index: factIndex, article: good }).then(
+    () => "",
+    (e: Error) => e.message,
+  );
+  check("読み直し：モデルを呼べなかった失敗は、握りつぶさずに伝える", thrown === "model not found", thrown);
   // 運営者から確認した内容（事実シートの「サービス」の節）は、出典URLが無くても通す
   const operatorOk = await reviewArticle({
     client,
