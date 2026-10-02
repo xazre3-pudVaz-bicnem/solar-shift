@@ -118,6 +118,8 @@ for (const s of scriptedAnswers) ok(checkReply(s.answer).length === 0, `案内�
 const BAD: [string, string][] = [
   ["SOLAR SHIFT に頼めば補助金は必ずもらえます。", "断定"],
   ["葛飾区と東京都の補助金は併用できます。", "併用の断定"],
+  ["5kWの場合、交付額は30万円となります。", "交付の言い切り"],
+  ["区の助成で30万円もらえます。", "交付の言い切り（もらえます）"],
   ["太陽光の相場は5kWで約150万円です。", "相場"],
   ["5kWなら年間 5,500kWh 発電します。", "発電量"],
   ["電気代を40%削減できます。", "削減率"],
@@ -139,6 +141,7 @@ const BAD: [string, string][] = [
 for (const [text, label] of BAD) ok(checkReply(text).length > 0, `落とすべき回答：${label}`, text);
 ok(checkReply("蓄電池の経費が150万円の場合でも、区の助成は上限20万円です。", "うちは蓄電池が150万円です").length === 0, "利用者が書いた金額の復唱は許す");
 ok(checkReply("葛飾区の窓口は葛飾区役所 環境部環境課 環境計画係（TEL 03-5654-8228）です。").length === 0, "公的窓口の電話番号は許す");
+ok(checkReply("葛飾区の太陽光は6万円/kW（上限30万円）です。5kWの場合、計算上の目安は上限の30万円です。").length === 0, "目安・上限としての金額は許す");
 ok(checkReply("所在地は 〒125-0061 東京都葛飾区亀有3丁目16-14 です。2026年10月1日時点の情報です。").length === 0, "郵便番号・番地・日付を電話番号と取り違えない");
 if (SITE_TEL) {
   ok(checkReply(`お電話（${SITE_TEL_DISPLAY}）またはお問い合わせフォームでご相談ください。`).length === 0, "サイトの電話番号は許す", checkReply(`お電話（${SITE_TEL_DISPLAY}）またはお問い合わせフォームでご相談ください。`).join(" / "));
