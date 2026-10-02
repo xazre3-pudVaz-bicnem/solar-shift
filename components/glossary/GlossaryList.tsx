@@ -74,9 +74,9 @@ export function GlossaryList({ groups }: { groups: GlossaryGroupView[] }) {
       )}
 
       <div className="mt-10 space-y-14">
-        {filtered.map((g) =>
+        {filtered.map((g, gi) =>
           g.terms.length === 0 ? null : (
-            <section key={g.key} id={g.key} aria-labelledby={`${g.key}-h`} className="scroll-mt-24">
+            <section key={g.key} id={g.key} aria-labelledby={`${g.key}-h`} className={`scroll-mt-24 ${gi > 0 ? "cv-block cv-tall" : ""}`}>
               <h2 id={`${g.key}-h`} className="flex items-center gap-3 text-[22px] leading-[1.35] font-black text-navy-900 sm:text-[26px]">
                 <Image src={g.icon.src} alt="" width={g.icon.width} height={g.icon.height} sizes="56px" className="h-12 w-12 shrink-0 object-contain sm:h-14 sm:w-14" />
                 {g.label}

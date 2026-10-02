@@ -121,18 +121,18 @@ export function HomeHero({ facts, infoDate }: { facts: HeroFact[]; infoDate: str
           </div>
           <p className="enter-pop absolute bottom-[4.5rem] left-36 origin-left rounded-2xl bg-white px-3 py-2 font-heading text-[12px] leading-[1.5] font-bold text-navy-900 shadow-card [--enter-delay:850ms] sm:bottom-24 sm:left-52 sm:text-[14px]">
             {/* 吹き出しの中身は、3つの疑問が順番に入れ替わる（2巡して、最初の文で止まる） */}
-            <span className="grid">
-              <span className="col-start-1 row-start-1 animate-bubble-a">
+            <span className="bubble-swap grid">
+              <span className="col-start-1 row-start-1">
                 うちの屋根でも、
                 <br />
                 補助金つかえる？
               </span>
-              <span className="col-start-1 row-start-1 animate-bubble-b opacity-0" aria-hidden="true">
+              <span className="invisible col-start-1 row-start-1" aria-hidden="true">
                 蓄電池も、
                 <br />
                 いっしょがいい？
               </span>
-              <span className="col-start-1 row-start-1 animate-bubble-c opacity-0" aria-hidden="true">
+              <span className="invisible col-start-1 row-start-1" aria-hidden="true">
                 申請は、
                 <br />
                 いつまでに？

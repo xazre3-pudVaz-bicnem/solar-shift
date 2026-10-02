@@ -104,10 +104,29 @@ export function RevealObserver() {
     };
     document.addEventListener("click", onClick, true);
     // URL に # が付いた状態で開いたとき（他ページからのリンクなど）
+    // PC 幅では、最初の描画のあとに日本語の書体を読み込む（app/layout.tsx）。書体が替わると文字の幅が変わり、
+    // 行き先より上の区画の高さが変わって、着地点がずれる。読み込みが終わったら、もう一度合わせる。
+    // 利用者が自分で動かしたあと（ホイール・タッチ・キー・ポインターの操作があったあと）は、何もしない。
     const initial = targetOf(window.location.hash);
+    let userMoved = false;
+    const onUserInput = () => {
+      userMoved = true;
+    };
+    const USER_INPUTS = ["wheel", "touchmove", "keydown", "pointerdown"] as const;
+    const alignTimers: number[] = [];
+    const align = () => {
+      if (initial) initial.scrollIntoView({ behavior: "instant", block: "start" });
+    };
+    const realign = () => {
+      if (!userMoved) align();
+    };
     if (initial) {
       showBefore(initial);
-      initial.scrollIntoView({ behavior: "instant", block: "start" });
+      align();
+      USER_INPUTS.forEach((type) => window.addEventListener(type, onUserInput, { passive: true, once: true }));
+      document.fonts?.addEventListener?.("loadingdone", realign);
+      // 書体の読み込みは、遅いと数秒後になる。画像で高さが変わる場合にも備えて、時間をおいて確かめる
+      for (const ms of [600, 1500, 4800]) alignTimers.push(window.setTimeout(realign, ms));
     }
 
     let raf = 0;
@@ -119,6 +138,9 @@ export function RevealObserver() {
 
     return () => {
       cancelAnimationFrame(raf);
+      alignTimers.forEach((t) => window.clearTimeout(t));
+      USER_INPUTS.forEach((type) => window.removeEventListener(type, onUserInput));
+      document.fonts?.removeEventListener?.("loadingdone", realign);
       document.removeEventListener("click", onClick, true);
       mo.disconnect();
       io.disconnect();

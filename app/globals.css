@@ -96,10 +96,6 @@
   --animate-shine: shine 4.5s ease-in-out 4;
   --animate-twinkle: twinkle 3.2s ease-in-out 6;
   --animate-wiggle: wiggle 3.5s ease-in-out 4;
-  /* 吹き出しの中身を3つ、順番に入れ替える（2巡したら、最初の文に戻って止まる） */
-  --animate-bubble-a: bubble-a 12s ease-in-out 2 both;
-  --animate-bubble-b: bubble-b 12s ease-in-out 2 both;
-  --animate-bubble-c: bubble-c 12s ease-in-out 2 both;
 
   @keyframes float {
     0%, 100% { transform: translateY(0); }
@@ -141,21 +137,6 @@
     91% { transform: rotate(-4deg); }
     94% { transform: rotate(4deg); }
     97% { transform: rotate(-2deg); }
-  }
-  @keyframes bubble-a {
-    0%, 30% { opacity: 1; transform: none; }
-    34%, 96% { opacity: 0; transform: translateY(-6px); }
-    100% { opacity: 1; transform: none; }
-  }
-  @keyframes bubble-b {
-    0%, 34% { opacity: 0; transform: translateY(6px); }
-    38%, 63% { opacity: 1; transform: none; }
-    67%, 100% { opacity: 0; transform: translateY(-6px); }
-  }
-  @keyframes bubble-c {
-    0%, 67% { opacity: 0; transform: translateY(6px); }
-    71%, 96% { opacity: 1; transform: none; }
-    100% { opacity: 0; transform: translateY(-6px); }
   }
 }
 
@@ -459,6 +440,41 @@ main {
   @keyframes enter-pop {
     from { opacity: 0; transform: scale(0.5); }
     to { opacity: 1; transform: none; }
+  }
+
+  /*
+    吹き出しの中身を3つ、順番に入れ替える（2巡したら、最初の文に戻って止まる）。
+    クラス名に animate- を付けていないのは、RevealObserver の「画面内だけ動かす」対象から外すため
+    （枠の外へ流れた文が「画面外」と判定されて、動きが止まってしまう）。
+  */
+  .bubble-swap { overflow: hidden; }
+  .bubble-swap > :nth-child(1) { animation: bubble-a 12s ease-in-out 2 both; }
+  .bubble-swap > :nth-child(2) { animation: bubble-b 12s ease-in-out 2 both; }
+  .bubble-swap > :nth-child(3) { animation: bubble-c 12s ease-in-out 2 both; }
+  /*
+    吹き出しの文は、上へ流れて入れ替わる（透明度は変えない。枠の外に出た文は、親の overflow: hidden で隠れる）。
+    出番でないあいだは visibility: hidden にして、読み上げにも検査にも出さない。
+  */
+  @keyframes bubble-a {
+    0%, 30% { visibility: visible; transform: translateY(0); }
+    34% { visibility: visible; transform: translateY(-130%); }
+    34.01%, 95.99% { visibility: hidden; transform: translateY(130%); }
+    96% { visibility: visible; transform: translateY(130%); }
+    100% { visibility: visible; transform: translateY(0); }
+  }
+  @keyframes bubble-b {
+    0%, 33.99% { visibility: hidden; transform: translateY(130%); }
+    34% { visibility: visible; transform: translateY(130%); }
+    38%, 63% { visibility: visible; transform: translateY(0); }
+    67% { visibility: visible; transform: translateY(-130%); }
+    67.01%, 100% { visibility: hidden; transform: translateY(130%); }
+  }
+  @keyframes bubble-c {
+    0%, 66.99% { visibility: hidden; transform: translateY(130%); }
+    67% { visibility: visible; transform: translateY(130%); }
+    71%, 96% { visibility: visible; transform: translateY(0); }
+    99.99% { visibility: visible; transform: translateY(-130%); }
+    100% { visibility: hidden; transform: translateY(130%); }
   }
 
   /* 蛍光ペンを左から引く（最初の画面の見出し用・1回だけ） */
