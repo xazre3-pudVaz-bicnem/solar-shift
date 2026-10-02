@@ -26,6 +26,7 @@ const src = (id: string, sourceType: SourceType, name: string, url: string, veri
 export const sources = {
   // ───────── 葛飾区
   katsushikaPage: src("katsushika-page", "municipality", "葛飾区公式サイト「令和8年度《個人住宅用》かつしかエコ助成金のご案内」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html", "2026-10-02"),
+  katsushikaConsumerCenter: src("katsushika-consumer-center", "municipality", "葛飾区公式サイト「消費生活相談はこちら」", "https://www.city.katsushika.lg.jp/kurashi/1000061/1003797/1003863.html", "2026-10-02"),
   katsushikaGuide: src("katsushika-guide", "municipality", "葛飾区「令和8年度 個人住宅用 かつしかエコ助成金のご案内（事前協議分）」", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/030/818/r8goannaishugo.pdf", "2026-10-02"),
   katsushikaSolarHandbook: src("katsushika-solar-handbook", "municipality", "葛飾区「太陽光発電システム手引き（個人住宅）」", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/036/259/r8taiyokokojin.pdf", "2026-10-02"),
   katsushikaBatteryHandbook: src("katsushika-battery-handbook", "municipality", "葛飾区「蓄電池手引き（個人住宅）」", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/036/354/r8chikudenchikojin.pdf", "2026-10-02"),
@@ -48,6 +49,9 @@ export const sources = {
 
   // ───────── 国
   enechoStandalone: src("enecho-standalone", "national", "資源エネルギー庁「停電時の住宅用太陽光発電パネルの自立運転機能について」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/dl/announce/20200706.pdf", "2026-10-02"),
+
+  caaDoorToDoorSales: src("caa-door-to-door-sales", "national", "消費者庁「特定商取引法ガイド 訪問販売」", "https://www.no-trouble.caa.go.jp/what/doortodoorsales/", "2026-10-02"),
+  caaHotline188: src("caa-hotline-188", "national", "消費者庁「消費者ホットライン」", "https://www.caa.go.jp/policies/policy/local_cooperation/local_consumer_administration/hotline/", "2026-10-02"),
 
   // ───────── 業界団体
   jpeaLifespan: src("jpea-lifespan", "industry", "太陽光発電協会（JPEA）よくある質問「機器の耐用年数はどれくらいですか？」", "https://www.jpea.gr.jp/faq/583/", "2026-10-02"),

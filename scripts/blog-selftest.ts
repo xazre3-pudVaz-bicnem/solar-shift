@@ -119,6 +119,8 @@ async function main() {
   check("落とす：根拠のない言い切り（〜と判断して間違いありません）", /根拠のない言い切り/.test(flatAssertion));
   const wideArea = validate({ ...good, body: `${good.body}\n\nSOLAR SHIFT では、葛飾区をはじめ東京都内で、現地調査と見積もりを無料で行っています。` }, ctx).errors.join("\n");
   check("落とす：対応エリアを「東京都内」と広げている", /対応エリアを、事実シートより広く/.test(wideArea));
+  const meta = validate({ ...good, body: `${good.body}\n\nこの記事では推測せず、書かれていることだけをお伝えします。` }, ctx).errors.join("\n");
+  check("落とす：記事の書き方についての断り（この記事では推測せず〜）", /書き方についての断り/.test(meta));
 
   // ── 読み直し（数値以外の主張）
   const client = null as never;

@@ -11,7 +11,7 @@
  *
  * 環境変数
  *   ANTHROPIC_API_KEY        … 必須（fixture 時は不要）
- *   ANTHROPIC_MODEL          … 記事を書くモデル（未設定なら claude-haiku-4-5）
+ *   ANTHROPIC_MODEL          … 記事を書くモデル（未設定なら claude-sonnet-5-5）
  *   ANTHROPIC_REVIEW_MODEL   … 公開前の読み直しに使うモデル（未設定なら claude-opus-5-5。呼べなければ、記事と同じモデルで読み直す）
  *   DRY_RUN=1                … 保存しない
  *   DRY_RUN_FIXTURE=path     … API を呼ばず、固定の JSON（記事）で機械の検査だけ試す
