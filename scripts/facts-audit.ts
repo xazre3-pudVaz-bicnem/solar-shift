@@ -19,7 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { buildFactIndex, extractNumTokens, isNeutralQuantity } from "../lib/blog-generator/claims";
 import { loadFacts, allowedYenAmounts } from "../lib/blog-generator/facts";
-import { extractYenAmounts } from "../lib/blog-generator/validate";
+import { extractYenAmounts, GENERALIZATION as GENERALIZATION_RE, HEARSAY as HEARSAY_RE, ATTRIBUTION } from "../lib/blog-generator/validate";
 
 const APP = path.join(process.cwd(), ".next", "server", "app");
 const only = process.argv.slice(2).find((a) => a.startsWith("/"));
@@ -37,9 +37,10 @@ for (const s of index.sections) {
   if (s.sources.length > 0) continue;
   for (const b of s.bullets) for (const y of extractYenAmounts(b.text)) operatorYen.add(y.value);
 }
-const GENERALIZATION = /一般的(に|です|な|で)|一般に|多くの(場合|機種|製品|家庭|住宅|方|業者|ケース)|ほとんどの|大半の|通常は|平均(的|して|で)|標準的(に|な)|ことが多(く|い)|がち(です|に|な|で)|傾向(が|に)あ/;
-const HEARSAY = /と(言|い)われています|と(言|い)われる|といわれ|とされています|だそうです|らしいです/;
-const NAMED_SOURCE = /葛飾区|区の|区は|区が|東京都|都の|都は|クール・ネット東京|国の|国は|経済産業省|資源エネルギー庁|環境省|国土交通省|SII|環境共創イニシアチブ|太陽光発電協会|JPEA|公式|手引き|案内|要綱|取扱説明書/;
+// 一般化・伝聞の言い回しと、「出どころを同じ文で示しているか」の判定は、記事の検査と同じものを使う（規則を1か所に置く）
+const GENERALIZATION = new RegExp(GENERALIZATION_RE.source);
+const HEARSAY = new RegExp(`${HEARSAY_RE.source}|といわれ`);
+const NAMED_SOURCE = ATTRIBUTION;
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {

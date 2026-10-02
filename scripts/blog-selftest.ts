@@ -102,6 +102,16 @@ async function main() {
   const realQuote = validate({ ...good, body: `${good.body}\n\n葛飾区の案内には、「国や都の補助制度との併用も可能」と明記されています。ただし、補助金の合計は助成対象経費が上限です。` }, ctx).errors.join("\n");
   check("通す：事実シートにある文言の引用", !/引用の形で書いた文/.test(realQuote), realQuote);
 
+  // 文のどこかに「葛飾区」や「案内」という字があるだけでは、一般化を通さない
+  const looseA = validate({ ...good, body: `${good.body}\n\n葛飾区の助成金を使う場合、申請の手続きは業者が手伝うことが多いです。` }, ctx).errors.join("\n");
+  check("落とす：「葛飾区」という語があるだけの一般化", /根拠を示さない一般化/.test(looseA));
+  const looseB = validate({ ...good, body: `${good.body}\n\n同じ容量でも、業者によって費用や提案内容が異なることが多いため、比較が欠かせません。` }, ctx).errors.join("\n");
+  check("落とす：「提案内容」の中の「案内」を出どころと数えない", /根拠を示さない一般化/.test(looseB));
+  const attributed = validate({ ...good, body: `${good.body}\n\n区の案内では、申請が集中した場合は、交付額確定通知書の送付までの期間が長くなることが多いとされています。` }, ctx).errors.join("\n");
+  check("通す：出どころを同じ文で示した言い方", !/根拠を示さない一般化|出典元を示さない伝聞/.test(attributed), attributed);
+  const accusation = validate({ ...good, tags: [...good.tags.slice(0, 3), "詐欺注意"] }, ctx).errors.join("\n");
+  check("落とす：タグの「詐欺」（区の資料に無い、断定的な非難の言葉）", /詐欺/.test(accusation));
+
   // ── 読み直し（数値以外の主張）
   const client = null as never;
   const ok = await reviewArticle({ client, model: "fixture", facts, index: factIndex, article: good, fixture: load("blog-review-ok.json") });
