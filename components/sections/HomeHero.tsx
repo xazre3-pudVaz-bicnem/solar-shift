@@ -110,6 +110,7 @@ export function HomeHero({ facts, infoDate }: { facts: HeroFact[]; infoDate: str
               height={photo.height}
               sizes="(max-width: 1023px) 100vw, 46vw"
               preload
+              fetchPriority="high"
               quality={60}
               className="aspect-[16/10] h-auto w-full object-cover"
             />
