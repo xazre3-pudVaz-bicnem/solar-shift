@@ -37,7 +37,7 @@ export default function FlowPage() {
     {
       icon: "mail" as const,
       title: "お問い合わせ・ヒアリング",
-      meta: "フォームからご連絡ください",
+      meta: siteConfig.contact.telDisplay ? "フォーム・お電話でご連絡ください" : "フォームからご連絡ください",
       body: (
         <>
           <p>屋根の形状・築年数、現在の電気代、気になっている設備（太陽光・蓄電池・V2H・HEMS）、ご希望の時期を伺います。この段階で、住宅区分（既存・新築）と導入する設備から、対象になり得る補助金を区・都・国の順に整理します。</p>

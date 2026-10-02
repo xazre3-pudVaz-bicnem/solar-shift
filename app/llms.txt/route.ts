@@ -1,5 +1,5 @@
 import { SITE_URL, IS_PUBLIC, formatDateJa } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
+import { siteConfig, addressWithPostal, contactEmail } from "@/lib/site";
 import { subsidyPrograms, statusLabel } from "@/data/subsidies";
 import { guides } from "@/data/guides";
 import { faqs } from "@/data/faq";
@@ -37,9 +37,9 @@ export function GET() {
     ``,
     `## 運営`,
     `- 運営会社: ${c.name}（${c.representativeTitle} ${c.representative}、設立 ${c.founded}）`,
-    `- 所在地: ${c.address.full}`,
+    `- 所在地: ${addressWithPostal()}`,
     `- 主要対応エリア: ${siteConfig.primaryArea.prefecture}${siteConfig.primaryArea.name}（周辺: 足立区・江戸川区・墨田区）`,
-    `- 連絡先: お問い合わせフォーム ${url("/contact")}`,
+    `- 連絡先: お問い合わせフォーム ${url("/contact")}${siteConfig.contact.telDisplay ? `／電話 ${siteConfig.contact.telDisplay}` : ""}${contactEmail() ? `／メール ${contactEmail()}` : ""}`,
     `- 編集方針: ${url("/editorial-policy")}`,
     ``,
     `## 補助金（${date}時点の公式情報）`,

@@ -6,6 +6,7 @@ import Image from "next/image";
 import type { ChatLink, ChatMode, ChatReply, ChatTurn } from "@/lib/chat/types";
 import { CHAT_LIMITS } from "@/lib/chat/types";
 import { CHAT_GREETING, CHAT_INITIAL_SUGGESTIONS } from "@/lib/chat/initial";
+import { PhoneIcon } from "@/components/ui/PhoneIcon";
 
 /**
  * チャット（自動応答）の本体。開いたときに初めて読み込まれる（components/layout/FloatingDock.tsx が遅延読み込みする）。
@@ -181,16 +182,26 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
                       <ul className="mt-2.5 flex flex-wrap gap-1.5">
                         {m.links.map((l) => (
                           <li key={l.href}>
-                            <Link
-                              href={l.href}
-                              onClick={onClose}
-                              className="inline-flex min-h-8 items-center gap-1 rounded-full bg-green-600 px-3 py-1 text-[12px] font-bold text-white hover:bg-green-700"
-                            >
-                              {l.label}
-                              <svg className="h-3 w-3" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                                <path d="M4 10h11m0 0-4-4m4 4-4 4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            </Link>
+                            {l.href.startsWith("tel:") ? (
+                              <a
+                                href={l.href}
+                                className="inline-flex min-h-8 items-center gap-1 rounded-full border-2 border-navy-900 bg-white px-3 py-0.5 text-[12px] font-bold text-navy-900 hover:bg-cream"
+                              >
+                                <PhoneIcon className="h-3 w-3 text-orange-600" />
+                                {l.label}
+                              </a>
+                            ) : (
+                              <Link
+                                href={l.href}
+                                onClick={onClose}
+                                className="inline-flex min-h-8 items-center gap-1 rounded-full bg-green-600 px-3 py-1 text-[12px] font-bold text-white hover:bg-green-700"
+                              >
+                                {l.label}
+                                <svg className="h-3 w-3" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                  <path d="M4 10h11m0 0-4-4m4 4-4 4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              </Link>
+                            )}
                           </li>
                         ))}
                       </ul>

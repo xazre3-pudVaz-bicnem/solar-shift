@@ -34,7 +34,7 @@ export default function AreaIndexPage() {
         ]}
         eyebrow="対応エリア"
         title="葛飾区を中心に、周辺エリアへ。"
-        lead="SOLAR SHIFT の拠点は葛飾区白鳥です。主要対応エリアは葛飾区、周辺対応エリアは足立区・江戸川区・墨田区です。地域ごとの補助金・住宅事情・災害リスクを踏まえてご提案します。"
+        lead={`SOLAR SHIFT の拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}です。主要対応エリアは葛飾区、周辺対応エリアは足立区・江戸川区・墨田区です。地域ごとの補助金・住宅事情・災害リスクを踏まえてご提案します。`}
       />
       <Container className="py-10 sm:py-14">
         <KeyPoints

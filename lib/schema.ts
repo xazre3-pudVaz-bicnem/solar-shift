@@ -1,4 +1,4 @@
-import { siteConfig, contactEmail, companyMapUrl } from "@/lib/site";
+import { siteConfig, contactEmail, companyMapUrl, contactTelIntl } from "@/lib/site";
 import { absoluteUrl, ogImagePath, SITE_URL } from "@/lib/seo";
 import { servedAreaNames } from "@/data/areas";
 
@@ -50,15 +50,17 @@ export function organizationSchema(): JsonLd {
     url: absoluteUrl("/"),
     logo: absoluteUrl("/logo.png"),
     email,
+    telephone: contactTelIntl(),
     founder: { "@type": "Person", name: siteConfig.company.representative, jobTitle: siteConfig.company.representativeTitle },
     foundingDate: "2026-05-13",
     address: postalAddress(),
     areaServed: areaServed(),
     knowsAbout: KNOWS_ABOUT,
-    // 連絡先はフォームとメールのみ（電話は未確定のため出さない）
+    // 電話番号は siteConfig に入っているときだけ出る（空なら compact が落とす）。受付時間は未確定のため出さない
     contactPoint: compact({
       "@type": "ContactPoint",
       contactType: "customer service",
+      telephone: contactTelIntl(),
       email,
       url: absoluteUrl("/contact"),
       availableLanguage: "ja",
@@ -79,7 +81,7 @@ export function localBusinessSchema(): JsonLd {
     image: absoluteUrl(ogImagePath("/")),
     logo: absoluteUrl("/logo.png"),
     email: contactEmail(),
-    telephone: siteConfig.contact.tel || undefined,
+    telephone: contactTelIntl(),
     parentOrganization: { "@id": ORG_ID },
     address: postalAddress(),
     areaServed: areaServed(),

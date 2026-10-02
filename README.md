@@ -87,7 +87,7 @@ scripts/             generate-blog-post.ts / chat-selftest.ts / check-links.mjs 
 - 葛飾区と東京都の助成を合算しない（併用可否が公式情報で確認できていないため）
 - 架空の施工事例・お客様の声・削減率・施工写真を作らない。0件の間は「順次掲載予定」
 - 「創業○年」「施工○件」「地域No.1」「正規取扱店」「自社施工」「有資格者」など未確認の表現を使わない
-- 電話番号・LINE・営業時間は `lib/site.ts` に値が入るまで出さない
+- LINE・営業時間は `lib/site.ts` に値が入るまで出さない（電話番号・メール・所在地は 2026-10-02 に確定して記入済み）
 - **TOP のヒーローには CTA ボタンを置かない**（固定バー・チャットの入口もスクロール後に出す）
 
 ## 補助金データの更新
@@ -193,10 +193,11 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run
 
 ## 未確定で空欄にしている情報（lib/site.ts）
 
-- 電話番号・LINE・営業時間（`contact.*`）
-- 郵便番号（`company.address.postalCode`）
+- LINE・営業時間（`contact.lineUrl` / `contact.hours`。電話の受付時間が決まったら `hours` に入れると電話番号の横に出る）
 - 法人番号（`company.corporateNumber`）
-- Googleビジネスプロフィール（`gbp.*`）
+- Googleビジネスプロフィール（`gbp.*`）。`gbp.embedUrl` にプロフィールの埋め込み用 URL を入れると、運営会社ページに地図が出る（住所だけで埋め込むと建物名のカードが出るため、プロフィール登録までは地図を出さない）
 - SNS（`social.*`）
 
 空のままでも画面・構造化データには出ない。
+
+電話番号（`contact.tel` / `contact.telDisplay`）・メール・所在地は記入済み。変えるときは `lib/site.ts` と `docs/VERIFIED_FACTS.md` の両方を直す。画面（CTA・固定バーの「電話する」・メニュー・フッター・運営会社の地図）、構造化データ（`telephone` / `PostalAddress`）、チャットの案内、`/llms.txt` は `lib/site.ts` から自動で変わる。

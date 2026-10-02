@@ -10,7 +10,7 @@ export function AuthorBox() {
       <div className="text-[14px] leading-[1.8] text-ink-2">
         <p className="font-bold text-navy-900">監修・運営：{siteConfig.editorial.supervisor}</p>
         <p className="mt-1">
-          {siteConfig.company.address.full}に本社を置く{siteConfig.company.name}が運営する、{siteConfig.primaryArea.name}の太陽光発電・蓄電池サービスです。補助金・制度に関する記述は、自治体・国の一次情報を確認したうえで掲載し、確認日を明記しています。
+          {siteConfig.company.address.full}の{siteConfig.company.name}が運営する、{siteConfig.primaryArea.name}の太陽光発電・蓄電池サービスです。補助金・制度に関する記述は、自治体・国の一次情報を確認したうえで掲載し、確認日を明記しています。
         </p>
         <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
           <Link href="/company" className="inline-block py-0.5 font-bold text-navy-600 underline underline-offset-4">運営会社</Link>

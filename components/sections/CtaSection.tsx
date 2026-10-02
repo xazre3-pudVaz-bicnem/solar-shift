@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Container } from "@/components/ui/Container";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { siteConfig } from "@/lib/site";
+import { PhoneIcon } from "@/components/ui/PhoneIcon";
 import { images } from "@/data/images";
 import { reveal } from "@/lib/reveal";
 
@@ -52,9 +53,18 @@ export function CtaSection({
                 </LinkButton>
               )}
               {siteConfig.contact.telDisplay && (
-                <a href={`tel:${siteConfig.contact.tel}`} className="mt-1 text-center text-[14px] font-bold text-navy-900">
-                  お電話：{siteConfig.contact.telDisplay}
-                  {siteConfig.contact.hours && <span className="ml-2 text-[12px] font-normal text-ink-3">（{siteConfig.contact.hours}）</span>}
+                <a
+                  href={`tel:${siteConfig.contact.tel}`}
+                  className="flex min-h-14 items-center justify-center gap-3 rounded-full border-2 border-navy-900 bg-white px-5 py-1.5 text-navy-900 transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-cream"
+                >
+                  <PhoneIcon className="h-5 w-5 shrink-0 text-orange-600" />
+                  <span className="text-left leading-none">
+                    <span className="block text-[11px] font-bold text-ink-2">
+                      お電話でのご相談
+                      {siteConfig.contact.hours && <span className="ml-1 font-normal">（{siteConfig.contact.hours}）</span>}
+                    </span>
+                    <span className="mt-1 block font-en text-[20px] font-extrabold tracking-[0.02em]">{siteConfig.contact.telDisplay}</span>
+                  </span>
                 </a>
               )}
               {siteConfig.contact.lineUrl && (

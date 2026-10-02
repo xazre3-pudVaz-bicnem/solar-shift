@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { headerNav } from "@/lib/nav";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { PhoneIcon } from "@/components/ui/PhoneIcon";
+import { siteConfig } from "@/lib/site";
 
 /**
  * ヘッダー。PCはCSSのみのドロップダウン（hover / focus-within）、スマホは MobileNav（client）。
@@ -60,6 +62,16 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* 電話番号は、ナビとボタンの間に余白が残る幅（1344px 以上）でだけ出す */}
+          {siteConfig.contact.telDisplay && (
+            <a href={`tel:${siteConfig.contact.tel}`} className="mr-2 hidden flex-col items-end leading-none min-[1344px]:flex">
+              <span className="text-[10px] font-bold tracking-wide text-ink-3">お電話でのご相談</span>
+              <span className="mt-1.5 flex items-center gap-1.5 font-en text-[17px] font-extrabold tracking-[0.02em] text-navy-900">
+                <PhoneIcon className="h-[15px] w-[15px] text-orange-600" />
+                {siteConfig.contact.telDisplay}
+              </span>
+            </a>
+          )}
           <Link
             href="/simulation"
             className="hidden h-11 items-center gap-1.5 rounded-full bg-green-600 px-5 font-heading text-[14px] font-bold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:bg-green-700 md:inline-flex"

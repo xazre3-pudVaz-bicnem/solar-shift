@@ -21,8 +21,10 @@ export interface RespondDeps {
   log?: (msg: string) => void;
 }
 
-const FALLBACK_TEXT =
-  "申し訳ありません。そのご質問には、このチャットでは正確にお答えできません。下の候補から選ぶか、お問い合わせフォームからご相談ください。ご相談・現地調査・お見積もりは無料です。";
+const SITE_TEL: string = siteConfig.contact.tel;
+const SITE_TEL_DISPLAY: string = siteConfig.contact.telDisplay;
+
+const FALLBACK_TEXT = `申し訳ありません。そのご質問には、このチャットでは正確にお答えできません。下の候補から選ぶか、お問い合わせフォーム${SITE_TEL_DISPLAY ? `またはお電話（${SITE_TEL_DISPLAY}）で` : "から"}ご相談ください。ご相談・現地調査・お見積もりは無料です。`;
 
 const FALLBACK_LINKS: ChatLink[] = [
   { href: "/contact", label: "お問い合わせ・無料相談" },
@@ -110,6 +112,13 @@ function resolveLinks(paths: string[], extra: ChatLink[] = []): ChatLink[] {
   return out.slice(0, 3);
 }
 
+/** 回答に SOLAR SHIFT の電話番号が出ているときは、押すと発信できるリンクを先頭に足す */
+function withTelLink(reply: string, links: ChatLink[]): ChatLink[] {
+  if (!SITE_TEL || !SITE_TEL_DISPLAY) return links;
+  if (!reply.includes(SITE_TEL_DISPLAY) && !reply.includes(SITE_TEL)) return links;
+  return [{ href: `tel:${SITE_TEL}`, label: "電話をかける" }, ...links].slice(0, 3);
+}
+
 /** 補助金の金額に触れているのに時点の記載が無い回答には、時点と確認の一言を足す */
 function ensureDisclaimer(answer: string): string {
   const mentionsMoney = /(補助|助成)/.test(answer) && /[\d０-９.]+\s*万?円/.test(answer);
@@ -121,19 +130,19 @@ function fromFaq(id: string): ChatReply | null {
   const faq = getFaq(id);
   if (!faq) return null;
   const links = resolveLinks([], [...(faq.link ? [faq.link] : []), ...(faq.scope === "service" ? [{ href: "/contact", label: "お問い合わせ・無料相談" }] : [])]);
-  return { reply: faq.a, links, mode: "faq", suggestions: nextSuggestions(id) };
+  return { reply: faq.a, links: withTelLink(faq.a, links), mode: "faq", suggestions: nextSuggestions(id) };
 }
 
 function fromScripted(id: string): ChatReply | null {
   const s = getScripted(id);
   if (!s) return null;
-  return { reply: s.answer, links: resolveLinks([], s.links), mode: "scripted", suggestions: nextSuggestions(id) };
+  return { reply: s.answer, links: withTelLink(s.answer, resolveLinks([], s.links)), mode: "scripted", suggestions: nextSuggestions(id) };
 }
 
 function fallback(): ChatReply {
   return {
     reply: FALLBACK_TEXT,
-    links: FALLBACK_LINKS,
+    links: withTelLink(FALLBACK_TEXT, FALLBACK_LINKS),
     mode: "fallback",
     suggestions: INITIAL_SUGGESTIONS.slice(0, 4)
       .map((id) => ({ id, label: suggestionLabel(id) ?? id }))
@@ -193,7 +202,7 @@ export async function respond(req: ChatRequest, deps: RespondDeps = {}): Promise
         const related = matchFaq(message);
         return {
           reply: answer,
-          links: resolveLinks(parsed.links),
+          links: withTelLink(answer, resolveLinks(parsed.links)),
           mode: "ai",
           suggestions: nextSuggestions(related ? related.faq.id : null),
         };

@@ -78,7 +78,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
             "補助金：区（太陽光6万円/kW 上限30万円、蓄電池1/4 上限20万円、併設加算5万円、HEMS、V2H）＋都（太陽光・蓄電池）。併用可否は各窓口で確認",
             "住宅事情：戸建が多く、隣家との距離が近い。屋根の形・影の影響を現地で確認",
             "災害リスク：海抜ゼロメートル地帯。機器の設置高さと在宅避難の備えを検討",
-            `SOLAR SHIFT の拠点は${area.name}白鳥。区内全域が主要対応エリア`,
+            `SOLAR SHIFT の拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}。区内全域が主要対応エリア`,
           ]}
         />
 
@@ -196,7 +196,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
 
       <CtaSection
         title={`${area.name}の住まいに合わせた、太陽光・蓄電池の計画を。`}
-        body={`拠点は${area.name}白鳥。区内の住宅事情と水害リスクを踏まえ、区と都の補助金を整理した提案を行います。現地調査・お見積もりは無料です。`}
+        body={`拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}。区内の住宅事情と水害リスクを踏まえ、区と都の補助金を整理した提案を行います。現地調査・お見積もりは無料です。`}
       />
       <JsonLd data={graph(articleSchema({ path, title: `${area.name}の太陽光発電・蓄電池｜補助金・住宅事情・水害リスクと備え`, description: page.lead, datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate, keywords: [`${area.name} 太陽光`, `${area.name} 蓄電池`] }))} />
     </>

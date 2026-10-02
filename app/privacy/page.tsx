@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { siteConfig, contactEmail } from "@/lib/site";
+import { siteConfig, contactEmail, addressWithPostal, companyMapEmbedUrl } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { LastUpdated } from "@/components/ui/LastUpdated";
@@ -25,11 +25,11 @@ export default function PrivacyPage() {
         title="プライバシーポリシー"
         lead={`${siteConfig.company.name}（以下「当社」）は、当社が運営する「${siteConfig.name}」のWebサイト（以下「当サイト」）において取得する個人情報を、以下の方針に基づいて取り扱います。`}
       >
-        <LastUpdated updatedAt="2026-10-01" showSupervisor={false} className="mt-5" />
+        <LastUpdated updatedAt="2026-10-02" showSupervisor={false} className="mt-5" />
       </PageHeader>
       <Container size="prose" className="prose-ss py-10 sm:py-14">
         <h2>1. 事業者の名称・所在地</h2>
-        <p>{siteConfig.company.name}（{siteConfig.company.representativeTitle} {siteConfig.company.representative}）<br />{siteConfig.company.address.full}</p>
+        <p>{siteConfig.company.name}（{siteConfig.company.representativeTitle} {siteConfig.company.representative}）<br />{addressWithPostal()}</p>
 
         <h2>2. 取得する情報</h2>
         <p>当サイトでは、お問い合わせフォームの送信時に、お名前、メールアドレス、電話番号（任意）、ご住所のエリア、ご相談内容を取得します。チャット（自動応答）に入力された内容の扱いは、下記「8. チャット（自動応答）について」をご覧ください。また、サイトの利用状況を把握するため、アクセス解析ツールによりCookieや閲覧履歴等の情報を取得する場合があります。</p>
@@ -59,6 +59,9 @@ export default function PrivacyPage() {
 
         <h2>7. Cookie・アクセス解析</h2>
         <p>当サイトでは、利用状況の把握のためにアクセス解析ツールを使用する場合があります。これらのツールはCookieを利用して情報を収集しますが、個人を特定する情報は含まれません。ブラウザの設定によりCookieを無効にすることができます。</p>
+        {companyMapEmbedUrl() && (
+          <p>運営会社のページでは、所在地を示すために Google マップ（Google LLC が提供する地図サービス）を利用しています。地図を表示すると、Google が Cookie などを利用して閲覧に関する情報を取得する場合があります。取得された情報は、Google のプライバシーポリシーに基づいて取り扱われます。</p>
+        )}
 
         <h2>8. チャット（自動応答）について</h2>
         <p>当サイトのチャットは、入力された質問に自動で回答する機能です。担当者が対応するものではありません。</p>
@@ -81,12 +84,17 @@ export default function PrivacyPage() {
               <br />メール：<a href={`mailto:${email}`}>{email}</a>
             </>
           )}
+          {siteConfig.contact.telDisplay && (
+            <>
+              <br />電話：<a href={`tel:${siteConfig.contact.tel}`}>{siteConfig.contact.telDisplay}</a>
+            </>
+          )}
         </p>
 
         <h2>11. 本ポリシーの変更</h2>
         <p>本ポリシーの内容は、法令の改正やサービスの変更に応じて改定することがあります。改定後の内容は当サイトに掲載した時点から適用されます。</p>
 
-        <p>制定日：2026年10月1日</p>
+        <p>制定日：2026年10月1日<br />最終改定日：2026年10月2日（所在地・連絡先の更新）</p>
       </Container>
     </>
   );

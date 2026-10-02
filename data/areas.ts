@@ -7,6 +7,8 @@
  *   地域名を置換しただけのページは作らない（薄い地域ページの量産は禁止）。
  */
 
+import { siteConfig } from "../lib/site";
+
 export type AreaStatus = "primary" | "secondary" | "planned";
 
 export interface AreaFaq {
@@ -50,7 +52,7 @@ export const areas: Area[] = [
     summary: "SOLAR SHIFT の拠点がある主要対応エリア。かつしかエコ助成金と東京都の助成を踏まえた提案を行います。",
     page: {
       lead:
-        "葛飾区で太陽光発電・蓄電池を導入する場合、区の「かつしかエコ助成金」と東京都の助成制度の両方を検討対象にできます。区の制度は工事着工4週間前までの事前協議が原則必要で、申請の順番を間違えると対象外になるため、計画段階からの逆算が重要です。SOLAR SHIFT は葛飾区白鳥を拠点に、区内の住宅事情に合わせた提案を行います。",
+        `葛飾区で太陽光発電・蓄電池を導入する場合、区の「かつしかエコ助成金」と東京都の助成制度の両方を検討対象にできます。区の制度は工事着工4週間前までの事前協議が原則必要で、申請の順番を間違えると対象外になるため、計画段階からの逆算が重要です。SOLAR SHIFT は${siteConfig.company.address.city}${siteConfig.company.address.town}を拠点に、区内の住宅事情に合わせた提案を行います。`,
       subsidyProgramIds: ["katsushika-eco-r8", "tokyo-solar-r8", "tokyo-battery-r8"],
       housing: [
         {

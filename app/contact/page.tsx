@@ -2,7 +2,8 @@ import { OpenChatButton } from "@/components/chat/OpenChatButton";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
-import { siteConfig, contactEmail } from "@/lib/site";
+import { siteConfig, contactEmail, addressWithPostal } from "@/lib/site";
+import { PhoneIcon } from "@/components/ui/PhoneIcon";
 import { faqsByIds } from "@/data/faq";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -14,7 +15,7 @@ import { graph, webPageSchema } from "@/lib/schema";
 import { images } from "@/data/images";
 
 const PATH = "/contact";
-const DESC = "SOLAR SHIFTへのお問い合わせ。葛飾区の太陽光発電・蓄電池・V2H・HEMS・補助金についての無料相談、現地調査・お見積もりの依頼はこちら。訪問販売・電話営業はしていません。";
+const DESC = `SOLAR SHIFTへのお問い合わせ・無料相談。葛飾区の太陽光発電・蓄電池・V2H・補助金のご相談、現地調査・お見積もりの依頼を、フォーム・メール${siteConfig.contact.telDisplay ? `・お電話（${siteConfig.contact.telDisplay}）` : ""}で受け付けています。訪問販売・電話営業はしていません。`;
 
 export const metadata: Metadata = buildMetadata({
   title: "お問い合わせ・無料相談｜葛飾区の太陽光・蓄電池",
@@ -43,10 +44,42 @@ export default function ContactPage() {
             <h2 className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">お問い合わせフォーム</h2>
             <p className="mt-2 text-[14px] text-ink-2">{siteConfig.contact.formNote}</p>
             <div className="mt-6">
-              <ContactForm fallbackEmail={email} />
+              <ContactForm fallbackEmail={email} tel={siteConfig.contact.tel} telDisplay={siteConfig.contact.telDisplay} />
             </div>
           </div>
           <aside className="space-y-8">
+            <div className="rounded-3xl bg-white p-5 text-[14px] leading-[1.8] shadow-card">
+              <h2 className="text-[16px] font-bold text-navy-900">{siteConfig.contact.telDisplay ? "お電話・メールでのお問い合わせ" : "メールでのお問い合わせ"}</h2>
+              {siteConfig.contact.telDisplay && (
+                <a
+                  href={`tel:${siteConfig.contact.tel}`}
+                  className="mt-3 flex items-center gap-2.5 rounded-2xl border-2 border-navy-900 bg-cream px-3.5 py-3 text-navy-900 transition-colors duration-200 hover:bg-orange-50 min-[400px]:gap-3 min-[400px]:px-4"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-500 text-navy-900">
+                    <PhoneIcon className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0 leading-none">
+                    <span className="block text-[12px] font-bold text-ink-2">
+                      お電話でのご相談
+                      {siteConfig.contact.hours && <span className="ml-1 font-normal">（{siteConfig.contact.hours}）</span>}
+                    </span>
+                    <span className="mt-1.5 block font-en text-[20px] font-extrabold tracking-[0.02em] min-[400px]:text-[24px]">{siteConfig.contact.telDisplay}</span>
+                  </span>
+                </a>
+              )}
+              {email && (
+                <p className="mt-3">
+                  {siteConfig.contact.telDisplay && <span className="mr-1 text-ink-2">メール：</span>}
+                  <a href={`mailto:${email}?subject=${encodeURIComponent("【SOLAR SHIFT】お問い合わせ")}`} className="inline-block py-0.5 font-bold break-all text-navy-600 underline underline-offset-4">{email}</a>
+                </p>
+              )}
+              {siteConfig.contact.lineUrl && (
+                <p className="mt-3">
+                  <a href={siteConfig.contact.lineUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-navy-600 underline underline-offset-4">LINEで相談する</a>
+                </p>
+              )}
+              <p className="mt-3 text-[13px] text-ink-3">運営：{siteConfig.company.name}（{addressWithPostal()}）</p>
+            </div>
             <div className="rounded-3xl bg-beige p-5">
               <h2 className="text-[16px] font-bold text-navy-900">お問い合わせ後の流れ</h2>
               <div className="mt-4">
@@ -59,26 +92,6 @@ export default function ContactPage() {
                   ]}
                 />
               </div>
-            </div>
-            <div className="rounded-3xl bg-white p-5 text-[14px] leading-[1.8] shadow-card">
-              <h2 className="text-[16px] font-bold text-navy-900">メールでのお問い合わせ</h2>
-              {email && (
-                <p className="mt-2">
-                  <a href={`mailto:${email}?subject=${encodeURIComponent("【SOLAR SHIFT】お問い合わせ")}`} className="font-bold text-navy-600 underline underline-offset-4">{email}</a>
-                </p>
-              )}
-              {siteConfig.contact.telDisplay && (
-                <p className="mt-3">
-                  お電話：<a href={`tel:${siteConfig.contact.tel}`} className="font-bold text-navy-600 underline underline-offset-4">{siteConfig.contact.telDisplay}</a>
-                  {siteConfig.contact.hours && <span className="ml-1 text-ink-3">（{siteConfig.contact.hours}）</span>}
-                </p>
-              )}
-              {siteConfig.contact.lineUrl && (
-                <p className="mt-3">
-                  <a href={siteConfig.contact.lineUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-navy-600 underline underline-offset-4">LINEで相談する</a>
-                </p>
-              )}
-              <p className="mt-3 text-[13px] text-ink-3">運営：{siteConfig.company.name}（{siteConfig.company.address.full}）</p>
             </div>
             <div className="rounded-3xl border-2 border-green-200 bg-white p-5 text-[14px] leading-[1.8]">
               <h2 className="text-[16px] font-bold text-navy-900">まずチャットで聞いてみる</h2>

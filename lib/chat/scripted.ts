@@ -1,11 +1,13 @@
 import { faqs, type FaqItem } from "../../data/faq";
+import { siteConfig, addressWithPostal, contactEmail } from "../site";
 import type { ChatLink } from "./types";
 
 /**
  * AI を呼ばずに返す「決まった案内文」と、よくある質問（data/faq.ts）との照合。
  *
  * - ここに書く文章は docs/VERIFIED_FACTS.md と公開ページの記載の範囲に限る。
- *   電話番号・LINE・営業時間・実績・価格など、未確定のことは書かない。
+ *   連絡先（電話・メール・所在地）は lib/site.ts に入っているものだけを書く。
+ *   LINE・営業時間・実績・価格など、未確定のことは書かない。
  * - ANTHROPIC_API_KEY が無い環境でも、チャットはこのファイルだけで動く。
  */
 
@@ -19,21 +21,57 @@ export interface ScriptedAnswer {
   links: ChatLink[];
 }
 
+const TEL: string = siteConfig.contact.telDisplay;
+const LINE_URL: string = siteConfig.contact.lineUrl;
+const HOURS: string = siteConfig.contact.hours;
+const OFFICE_NOTE = "なお、葛飾区の助成制度そのものについては、葛飾区役所 環境部環境課 環境計画係（410番窓口）TEL 03-5654-8228 が窓口です。";
+
+/** 連絡先の案内。電話・LINE・受付時間は lib/site.ts に入っているものだけを書く */
+function contactInfoAnswer(): string {
+  if (!TEL) {
+    return `SOLAR SHIFT へのご連絡は、お問い合わせフォームで承っています。フォーム送信後、通常2〜3営業日以内に担当者よりご連絡します。${OFFICE_NOTE}`;
+  }
+  const email = contactEmail();
+  const notListed = [LINE_URL ? "" : "LINEでの受付", HOURS ? "" : "電話の受付時間"].filter(Boolean).join("と");
+  return [
+    `SOLAR SHIFT へのご連絡は、お電話（${TEL}${HOURS ? `・${HOURS}` : ""}）${email ? `、メール（${email}）` : ""}、お問い合わせフォームで承っています。`,
+    notListed ? `${notListed}は、現時点でこのサイトに掲載していません。` : "",
+    "フォーム送信後は、通常2〜3営業日以内に担当者よりご連絡します。",
+    OFFICE_NOTE,
+  ].join("");
+}
+
+/** 相談・見積もりの頼み方 */
+function consultAnswer(): string {
+  const how = TEL ? `お問い合わせフォーム、またはお電話（${TEL}）でご連絡ください。フォーム送信後は、` : "お問い合わせフォームからご連絡ください。フォーム送信後、";
+  return `ご相談・現地調査・お見積もりは無料です。${how}通常2〜3営業日以内に担当者よりご連絡します。訪問販売や電話営業は行っていません。`;
+}
+
 export const scriptedAnswers: ScriptedAnswer[] = [
   {
     id: "tel",
     label: "連絡先を知りたい",
-    pattern: /電話|でんわ|tel|ＴＥＬ|番号|line|ＬＩＮＥ|ライン|営業時間|何時(から|まで)|定休|休み/i,
-    answer:
-      "SOLAR SHIFT へのご連絡は、お問い合わせフォームで承っています。フォーム送信後、通常2〜3営業日以内に担当者よりご連絡します。なお、葛飾区の助成制度そのものについては、葛飾区役所 環境部環境課 環境計画係（410番窓口）TEL 03-5654-8228 が窓口です。",
+    // 「ガイドライン」「オンライン」「hotel」などに反応しないよう、前後の文字を見る
+    pattern: /電話|でんわ|(?<![a-z])tel(?![a-z])|ＴＥＬ|番号|(?<![a-z])line(?![a-z])|ＬＩＮＥ|(?<!ガイド|オン|アウト|パイプ|ボーダー)ライン|メール|営業時間|受付時間|何時(から|まで)|定休|休み/i,
+    answer: contactInfoAnswer(),
     links: [{ href: "/contact", label: "お問い合わせ・無料相談" }],
+  },
+  {
+    id: "address",
+    label: "所在地を知りたい",
+    // 「設置場所」「申請窓口はどこ」などに反応しないよう、会社・事業所の話に限る
+    pattern: /(会社|事務所|事業所|御社|そちら|solar ?shift|ソーラーシフト|サイプレス|運営会社|拠点)[^。？?対エ補申窓設]{0,8}(住所|所在地|場所|どこ|地図|マップ|アクセス)|所在地(は|を|って)|(住所|所在地)(を)?(教えて|知りたい)/i,
+    answer: `SOLAR SHIFT（運営：${siteConfig.company.name}）の所在地は、${addressWithPostal()} です。会社概要は運営会社のページでご覧いただけます。現地調査・お見積もりは無料で、葛飾区を中心に足立区・江戸川区・墨田区にも対応しています。`,
+    links: [
+      { href: "/company", label: "運営会社" },
+      { href: "/area", label: "対応エリア" },
+    ],
   },
   {
     id: "contact",
     label: "相談・見積もりを頼みたい",
     pattern: /相談(し|を|の|で|は)|問い?合わ?せ|見積|申し?込み(たい|は|方法)|依頼|頼みたい|来てほしい|担当(者)?と|スタッフと|人と話/,
-    answer:
-      "ご相談・現地調査・お見積もりは無料です。お問い合わせフォームからご連絡ください。フォーム送信後、通常2〜3営業日以内に担当者よりご連絡します。訪問販売や電話営業は行っていません。",
+    answer: consultAnswer(),
     links: [
       { href: "/contact", label: "お問い合わせ・無料相談" },
       { href: "/flow", label: "導入までの流れ" },

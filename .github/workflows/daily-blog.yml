@@ -3,6 +3,7 @@ name: 毎日のブログ記事を生成（GitHub Actions 版）
 # Vercel Cron（vercel.json + /api/cron/generate-post）の代わりに GitHub Actions で回す場合に使う。
 # 両方を同時に有効にしない（二重投稿になる）。
 # 必要な Secrets: ANTHROPIC_API_KEY（任意: ANTHROPIC_MODEL）
+# ANTHROPIC_API_KEY が未登録の間は、警告を出して何もせずに終わる（失敗にはしない）。
 
 on:
   schedule:
@@ -32,23 +33,31 @@ jobs:
           persist-credentials: true
           fetch-depth: 0
 
+      # シークレットが無いときは失敗にせず、警告を出して終わる
+      # （Vercel Cron の側で動かしているリポジトリで、毎朝このワークフローが赤くならないように）
+      - name: APIキーの確認
+        id: key
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::warning::シークレット ANTHROPIC_API_KEY が未設定のため、記事の生成をスキップしました。GitHub Actions で自動投稿するには、Settings → Secrets and variables → Actions に登録してください。"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-node@v4
+        if: steps.key.outputs.ready == 'true'
         with:
           node-version: "22"
           cache: npm
 
       - run: npm ci
-
-      - name: APIキーの確認
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          if [ -z "$ANTHROPIC_API_KEY" ]; then
-            echo "::error::シークレット ANTHROPIC_API_KEY が設定されていません。"
-            exit 1
-          fi
+        if: steps.key.outputs.ready == 'true'
 
       - name: 記事を生成
+        if: steps.key.outputs.ready == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
@@ -56,7 +65,7 @@ jobs:
         run: npm run blog:generate
 
       - name: コミットして push
-        if: ${{ !inputs.dry_run }}
+        if: ${{ steps.key.outputs.ready == 'true' && !inputs.dry_run }}
         run: |
           git config user.name "solar-shift-blog-bot"
           git config user.email "bot@users.noreply.github.com"

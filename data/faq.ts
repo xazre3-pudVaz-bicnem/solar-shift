@@ -6,6 +6,8 @@
  * 数値を書く場合は lastVerified と同じ基準日の情報だけを使う。
  */
 
+import { siteConfig } from "../lib/site";
+
 export type FaqCategory =
   | "subsidy"
   | "cost"
@@ -198,7 +200,7 @@ export const faqs: FaqItem[] = [
     category: "service",
     scope: "service",
     q: "SOLAR SHIFT はどんな会社が運営していますか？",
-    a: "東京都葛飾区白鳥に本社を置く株式会社サイプレスが運営する、太陽光発電・蓄電池事業のブランドです。葛飾区を中心に、足立区・江戸川区・墨田区など周辺エリアに対応しています。",
+    a: `${siteConfig.company.address.locality}の${siteConfig.company.name}が運営する、太陽光発電・蓄電池事業のブランドです。葛飾区を中心に、足立区・江戸川区・墨田区など周辺エリアに対応しています。`,
     link: { href: "/company", label: "運営会社を見る" },
   },
   {

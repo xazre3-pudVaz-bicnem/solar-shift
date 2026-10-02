@@ -50,7 +50,7 @@ const REASONS = [
   {
     n: "04",
     title: "葛飾区を中心とした地域密着",
-    body: "SOLAR SHIFT の拠点は葛飾区白鳥です。隣家との距離が近い住宅地の影の影響、海抜ゼロメートル地帯の水害リスクと機器の設置場所など、区内の住宅事情を踏まえた提案を行います。足立区・江戸川区・墨田区など周辺エリアにも対応します。",
+    body: `SOLAR SHIFT の拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}です。隣家との距離が近い住宅地の影の影響、海抜ゼロメートル地帯の水害リスクと機器の設置場所など、区内の住宅事情を踏まえた提案を行います。足立区・江戸川区・墨田区など周辺エリアにも対応します。`,
     link: { href: "/area/katsushika", label: "葛飾区の太陽光発電" },
   },
   {
@@ -62,7 +62,7 @@ const REASONS = [
   {
     n: "06",
     title: "株式会社サイプレスが運営しています",
-    body: "SOLAR SHIFT は、東京都葛飾区白鳥に本社を置く株式会社サイプレス（代表取締役 織田春樹）の太陽光発電・蓄電池事業です。運営会社・所在地・代表者を明記し、記事や補助金情報の編集方針も公開しています。",
+    body: `SOLAR SHIFT は、${siteConfig.company.address.locality}の${siteConfig.company.name}（${siteConfig.company.representativeTitle} ${siteConfig.company.representative.replace(/\s/g, "")}）が運営する、太陽光発電・蓄電池事業です。運営会社・所在地・代表者・連絡先を明記し、記事や補助金情報の編集方針も公開しています。`,
     link: { href: "/company", label: "運営会社" },
   },
 ] as const;

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
+import { siteConfig, addressWithPostal } from "@/lib/site";
 import { katsushikaProgram, tokyoSolarProgram, tokyoBatteryProgram, getSubsidy } from "@/data/subsidies";
 import { areas } from "@/data/areas";
 import { faqsByIds } from "@/data/faq";
@@ -143,7 +143,7 @@ const VALUES = [
   },
   {
     title: "葛飾区を中心に、地域密着で。",
-    tag: "拠点は葛飾区白鳥",
+    tag: `拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}`,
     body: "区内の住宅事情や水害リスクを踏まえた提案を行い、足立区・江戸川区・墨田区など周辺にも対応します。導入前の相談から導入後の不具合まで、同じ窓口で相談できます。",
     image: images.katsushikaStreetSunset,
     href: "/area/katsushika",
@@ -792,7 +792,7 @@ export default function HomePage() {
         <Container>
           <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
             <div>
-              <SectionHeading eyebrow="運営会社" title={<span id="company">株式会社サイプレスが運営しています</span>} lead="SOLAR SHIFT は、東京都葛飾区白鳥に本社を置く株式会社サイプレスの太陽光発電・蓄電池事業です。" />
+              <SectionHeading eyebrow="運営会社" title={<span id="company">株式会社サイプレスが運営しています</span>} lead={`SOLAR SHIFT は、${siteConfig.company.address.locality}の${siteConfig.company.name}が運営する、太陽光発電・蓄電池事業です。`} />
               <div className="mt-6 flex items-center gap-4" {...reveal(100)}>
                 <Image src="/logo.png" alt="" width={96} height={96} className="h-20 w-20 rounded-2xl bg-white object-contain p-1 shadow-card" />
                 <LinkButton href="/company" variant="secondary">
@@ -807,7 +807,19 @@ export default function HomePage() {
                   { term: "サービス名", description: `${siteConfig.name}（${siteConfig.nameJa}）` },
                   { term: "運営会社", description: siteConfig.company.name },
                   { term: "代表者", description: `${siteConfig.company.representativeTitle} ${siteConfig.company.representative}` },
-                  { term: "所在地", description: siteConfig.company.address.full },
+                  { term: "所在地", description: addressWithPostal() },
+                  ...(siteConfig.contact.telDisplay
+                    ? [
+                        {
+                          term: "電話番号",
+                          description: (
+                            <a href={`tel:${siteConfig.contact.tel}`} className="inline-block py-0.5 font-en text-[17px] font-extrabold tracking-[0.02em] text-navy-900 underline decoration-orange-400 decoration-2 underline-offset-4">
+                              {siteConfig.contact.telDisplay}
+                            </a>
+                          ),
+                        },
+                      ]
+                    : []),
                   { term: "設立", description: siteConfig.company.founded },
                   { term: "事業内容", description: siteConfig.company.businessDescription },
                 ]}

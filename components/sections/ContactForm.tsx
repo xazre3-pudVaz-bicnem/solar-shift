@@ -6,6 +6,7 @@ import Link from "next/link";
 /**
  * お問い合わせフォーム。入力項目は最小限（名前・メール・エリア・相談内容）。
  * 送信先は /api/contact（Resend 設定時のみメール送信。未設定なら案内メッセージを返す）。
+ * 未設定のときは、入力済みの内容を本文に入れたメール（mailto）と電話番号を案内する（入力し直させない）。
  * バリデーションエラー時も入力値は state に残す。
  */
 
@@ -13,7 +14,7 @@ type Status = "idle" | "sending" | "done" | "error" | "unconfigured";
 
 const TOPICS = ["太陽光発電について", "蓄電池について", "太陽光＋蓄電池について", "V2H・HEMSについて", "補助金について", "現地調査・見積もり", "その他"];
 
-export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
+export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fallbackEmail: string; tel?: string; telDisplay?: string }) {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
   const [values, setValues] = useState({ name: "", email: "", tel: "", area: "葛飾区", topic: TOPICS[0], message: "", website: "" });
@@ -52,12 +53,26 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
     }
   }
 
+  const mailSubject = encodeURIComponent("【SOLAR SHIFT】お問い合わせ");
+  const mailBody = [`お名前：${values.name}`, `メールアドレス：${values.email}`, `電話番号：${values.tel || "（未入力）"}`, `ご住所のエリア：${values.area}`, `ご相談の種類：${values.topic}`, "", "ご相談内容：", values.message.slice(0, 1500)].join("\r\n");
+
   if (status === "done") {
     return (
       <div className="rounded-3xl border-2 border-green-500 bg-white p-6 shadow-card">
         <p className="text-[18px] font-bold text-navy-900">お問い合わせを受け付けました</p>
         <p className="mt-2 text-[15px] leading-[1.8] text-ink-2">
-          内容を確認のうえ、通常2〜3営業日以内に担当者よりご連絡します。お急ぎの場合は、メールでも受け付けています。
+          内容を確認のうえ、通常2〜3営業日以内に担当者よりご連絡します。
+          {telDisplay ? (
+            <>
+              お急ぎの場合は、お電話（
+              <a href={`tel:${tel}`} className="font-bold text-navy-600 underline underline-offset-4">
+                {telDisplay}
+              </a>
+              ）でも受け付けています。
+            </>
+          ) : (
+            "お急ぎの場合は、メールでも受け付けています。"
+          )}
         </p>
       </div>
     );
@@ -67,13 +82,34 @@ export function ContactForm({ fallbackEmail }: { fallbackEmail: string }) {
     return (
       <div className="rounded-3xl border-2 border-orange-200 bg-orange-50 p-6">
         <p className="text-[16px] font-bold text-navy-900">フォーム送信は現在準備中です</p>
-        <p className="mt-2 text-[15px] leading-[1.8] text-ink-2">
-          お手数ですが、下記メールアドレス宛に「お名前・ご住所（市区）・ご相談内容」をお送りください。
+        <p className="mt-2 text-[15px] leading-[1.8] text-ink-2">お手数ですが、下のボタンからメールでお送りください。ご入力いただいた内容は、メールの本文にそのまま入ります。</p>
+        <p className="mt-4">
+          <a
+            href={`mailto:${fallbackEmail}?subject=${mailSubject}&body=${encodeURIComponent(mailBody)}`}
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-cta px-6 py-2 text-center font-heading text-[15px] leading-[1.35] font-bold text-white shadow-pill hover:bg-cta-dark"
+          >
+            入力した内容をメールで送る
+          </a>
         </p>
-        <p className="mt-3">
-          <a href={`mailto:${fallbackEmail}?subject=${encodeURIComponent("【SOLAR SHIFT】お問い合わせ")}`} className="text-[16px] font-bold text-navy-600 underline underline-offset-4">
+        <p className="mt-4 text-[14px] leading-[1.9] text-ink-2">
+          メール：
+          <a href={`mailto:${fallbackEmail}?subject=${mailSubject}`} className="inline-block py-0.5 font-bold break-all text-navy-600 underline underline-offset-4">
             {fallbackEmail}
           </a>
+          {telDisplay && (
+            <>
+              <br />
+              お電話：
+              <a href={`tel:${tel}`} className="inline-block py-0.5 font-bold text-navy-600 underline underline-offset-4">
+                {telDisplay}
+              </a>
+            </>
+          )}
+        </p>
+        <p className="mt-2">
+          <button type="button" onClick={() => setStatus("idle")} className="py-1 text-[13px] font-bold text-navy-600 underline underline-offset-4">
+            入力内容に戻る
+          </button>
         </p>
       </div>
     );

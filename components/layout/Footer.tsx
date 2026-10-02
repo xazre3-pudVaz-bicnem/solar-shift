@@ -30,7 +30,15 @@ export function Footer() {
               </div>
               <div className="flex gap-3">
                 <dt className="w-16 shrink-0 text-navy-100/70">所在地</dt>
-                <dd>{siteConfig.company.address.full}</dd>
+                <dd>
+                  {siteConfig.company.address.postalCode && (
+                    <>
+                      〒{siteConfig.company.address.postalCode}
+                      <br />
+                    </>
+                  )}
+                  {siteConfig.company.address.full}
+                </dd>
               </div>
               {email && (
                 <div className="flex gap-3">
@@ -44,7 +52,8 @@ export function Footer() {
                 <div className="flex gap-3">
                   <dt className="w-16 shrink-0 text-navy-100/70">電話</dt>
                   <dd>
-                    <a href={`tel:${siteConfig.contact.tel}`} className="hover:text-white">{siteConfig.contact.telDisplay}</a>
+                    <a href={`tel:${siteConfig.contact.tel}`} className="-my-1 inline-block py-1 font-en text-[15px] leading-[1.4] font-bold tracking-[0.03em] text-white hover:text-orange-300">{siteConfig.contact.telDisplay}</a>
+                    {siteConfig.contact.hours && <span className="ml-2">（{siteConfig.contact.hours}）</span>}
                   </dd>
                 </div>
               )}

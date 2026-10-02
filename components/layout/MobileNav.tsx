@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { NavGroup } from "@/lib/nav";
+import { PhoneIcon } from "@/components/ui/PhoneIcon";
+import { siteConfig } from "@/lib/site";
 
 /**
  * スマホ用メニュー。開閉の状態管理だけを client で行う。
@@ -56,6 +58,16 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
                 無料相談
               </Link>
             </div>
+            {siteConfig.contact.telDisplay && (
+              <a
+                href={`tel:${siteConfig.contact.tel}`}
+                className="mb-1 flex h-12 items-center justify-center gap-2 rounded-full border-2 border-navy-900 bg-white font-heading text-[14px] font-bold text-navy-900"
+              >
+                <PhoneIcon className="h-4 w-4 shrink-0 text-orange-600" />
+                電話で相談
+                <span className="font-en text-[17px] font-extrabold tracking-[0.02em]">{siteConfig.contact.telDisplay}</span>
+              </a>
+            )}
             {groups.map((g) => (
               <section key={g.label} className="mt-3 rounded-2xl bg-white px-4 py-3 shadow-card">
                 <h2 className="mb-1 flex items-center gap-2 text-[13px] font-bold text-accent-text">
