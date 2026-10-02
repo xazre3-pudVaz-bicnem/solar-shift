@@ -32,7 +32,7 @@ export function PageHeader({
   const isWhite = image?.white;
   return (
     <header className="relative overflow-hidden bg-cream">
-      <span className="absolute top-10 right-[6%] h-3 w-3 animate-twinkle rounded-full bg-orange-400" aria-hidden="true" />
+      <span className="absolute top-10 right-[6%] hidden h-3 w-3 animate-twinkle rounded-full bg-orange-400 sm:block" aria-hidden="true" />
       <span className="absolute top-24 right-[32%] hidden h-2 w-2 animate-twinkle rounded-full bg-green-400 [animation-delay:1.4s] lg:block" aria-hidden="true" />
       <Container className="relative pt-5 pb-12 sm:pt-6 sm:pb-16">
         <Breadcrumb crumbs={crumbs} />
