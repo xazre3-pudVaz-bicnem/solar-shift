@@ -1,13 +1,14 @@
 /**
  * 対応エリアの定義。
- * - status: "primary"   … 主要対応エリア（専用ページあり）
- *           "secondary" … 周辺対応エリア（専用ページは独自コンテンツが揃ってから）
+ * - status: "primary"   … 主要対応エリア（専用ページあり。葛飾区の業者としての案内）
+ *           "secondary" … 周辺対応エリア（区の補助金を公式ページで確かめた区だけ、専用ページあり。data/ward-programs.ts）
  *           "planned"   … 対応予定・要確認（対応可能と確定するまで「対応エリア」と断定しない）
  * - 専用ページを作るときは page に独自コンテンツ（補助金・住宅事情・災害リスク・FAQ）を必ず入れる。
  *   地域名を置換しただけのページは作らない（薄い地域ページの量産は禁止）。
  */
 
 import { siteConfig } from "../lib/site";
+import { wardPrograms } from "./ward-programs";
 
 export type AreaStatus = "primary" | "secondary" | "planned";
 
@@ -39,6 +40,8 @@ export interface Area {
   slug: string;
   name: string;
   prefecture: string;
+  /** Wikidata の項目（構造化データで、どの自治体を指すのかを実体で伝える） */
+  wikidata?: string;
   status: AreaStatus;
   /** 一覧での短い説明 */
   summary: string;
@@ -50,6 +53,7 @@ export const areas: Area[] = [
     slug: "katsushika",
     name: "葛飾区",
     prefecture: "東京都",
+    wikidata: "Q232628",
     status: "primary",
     summary: "SOLAR SHIFT の拠点がある主要対応エリアです。区内は全域に対応しています。",
     page: {
@@ -137,22 +141,25 @@ export const areas: Area[] = [
     slug: "adachi",
     name: "足立区",
     prefecture: "東京都",
+    wikidata: "Q213464",
     status: "secondary",
-    summary: "葛飾区に隣接する周辺対応エリア。足立区独自の助成制度の確認を含めてご相談いただけます。",
+    summary: "葛飾区に隣接する周辺対応エリアです。足立区の補助金は、設置したあとに申請します。",
   },
   {
     slug: "edogawa",
     name: "江戸川区",
     prefecture: "東京都",
+    wikidata: "Q214056",
     status: "secondary",
-    summary: "葛飾区に隣接する周辺対応エリア。江戸川区の助成制度の確認を含めてご相談いただけます。",
+    summary: "葛飾区に隣接する周辺対応エリアです。太陽光・蓄電池だけを対象にした区の補助は、令和7年度で終了しています。",
   },
   {
     slug: "sumida",
     name: "墨田区",
     prefecture: "東京都",
+    wikidata: "Q235135",
     status: "secondary",
-    summary: "葛飾区の周辺対応エリア。墨田区の助成制度の確認を含めてご相談いただけます。",
+    summary: "葛飾区の周辺対応エリアです。墨田区の助成は、工事を始める前に窓口で申請します。",
   },
   {
     slug: "matsudo",
@@ -166,10 +173,27 @@ export const areas: Area[] = [
 export const primaryAreas = areas.filter((a) => a.status === "primary");
 export const secondaryAreas = areas.filter((a) => a.status === "secondary");
 export const plannedAreas = areas.filter((a) => a.status === "planned");
-export const areasWithPage = areas.filter((a) => a.page);
+/** 専用ページがあるエリア。葛飾区（業者としての案内）と、区の補助金を公式ページで確かめた周辺の区 */
+export const areasWithPage = areas.filter((a) => a.page || wardPrograms.some((w) => w.slug === a.slug));
+
+/** エリアページのタイトル（「｜SOLAR SHIFT」を付ける前）。ページ・OG画像・一覧で同じものを使う */
+export function areaPageTitle(a: Area): string {
+  const ward = wardPrograms.find((w) => w.slug === a.slug);
+  return ward ? ward.title : `${a.name}の太陽光・蓄電池業者｜対応エリアと相談の進め方`;
+}
+
+/** リンクに出す短い名前 */
+export function areaPageLabel(a: Area): string {
+  return wardPrograms.some((w) => w.slug === a.slug) ? `${a.name}の太陽光・蓄電池の補助金` : `${a.name}の太陽光・蓄電池業者`;
+}
 
 export function getArea(slug: string): Area | undefined {
   return areas.find((a) => a.slug === slug);
+}
+
+/** 対応と言い切れるエリア（主要・周辺）。構造化データの areaServed に使う */
+export function servedAreas(): Area[] {
+  return areas.filter((a) => a.status !== "planned");
 }
 
 /** LocalBusiness.areaServed 用（対応と言い切れるエリアのみ） */

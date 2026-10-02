@@ -145,10 +145,10 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
         role="dialog"
         aria-modal="false"
         aria-labelledby="chat-title"
-        className="pointer-events-auto relative flex h-[88dvh] w-full flex-col overflow-hidden rounded-t-xl border border-line bg-paper-2 md:h-[min(40rem,calc(100dvh-2rem))] md:w-[24rem] md:rounded-xl md:border-2 md:border-navy-900"
+        className="pointer-events-auto relative flex h-[88dvh] w-full flex-col overflow-hidden rounded-t-[1.75rem] bg-cream shadow-pop md:h-[min(40rem,calc(100dvh-2rem))] md:w-[24rem] md:rounded-[1.75rem] md:border-2 md:border-green-600"
       >
-        <header className="flex items-center gap-3 bg-navy-900 px-4 py-3 text-white">
-          <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-white bg-paper-2">
+        <header className="flex items-center gap-3 bg-green-600 px-4 py-3 text-white">
+          <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-white bg-cream">
             <Image src="/images/illustrations/pose-laptop.webp" alt="" width={349} height={362} sizes="72px" className="absolute top-0 left-1/2 w-[165%] max-w-none -translate-x-[52%]" />
           </span>
           <div className="min-w-0 flex-1">
@@ -157,7 +157,7 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
             </h2>
             <p className="text-[12px] leading-[1.4] text-white">自動応答｜補助金・太陽光・蓄電池</p>
           </div>
-          <button type="button" onClick={reset} className="min-h-11 rounded-md px-2.5 text-[13px] font-bold text-white underline underline-offset-2 hover:bg-white/15">
+          <button type="button" onClick={reset} className="min-h-11 rounded-full px-2.5 text-[13px] font-bold text-white underline underline-offset-2 hover:bg-white/15">
             最初から
           </button>
           <button type="button" onClick={onClose} aria-label="チャットを閉じる" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25">
@@ -171,13 +171,13 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
           {messages.map((m) =>
             m.role === "user" ? (
               <div key={m.id} className="flex justify-end">
-                <p className="max-w-[85%] rounded-lg rounded-br-md bg-navy-900 px-3.5 py-2.5 text-[15px] leading-[1.7] whitespace-pre-line text-white">{m.content}</p>
+                <p className="max-w-[85%] rounded-2xl rounded-br-md bg-navy-900 px-3.5 py-2.5 text-[14px] leading-[1.7] whitespace-pre-line text-white">{m.content}</p>
               </div>
             ) : (
               <div key={m.id} className="flex justify-start">
                 <div className="max-w-[92%]">
-                  <div className="rounded-lg rounded-bl-md border border-line bg-white px-3.5 py-3">
-                    <p className="text-[15px] leading-[1.8] whitespace-pre-line text-ink">{m.content}</p>
+                  <div className="rounded-2xl rounded-bl-md border border-green-200 bg-white px-3.5 py-3 shadow-card">
+                    <p className="text-[14px] leading-[1.8] whitespace-pre-line text-ink">{m.content}</p>
                     {m.links && m.links.length > 0 && (
                       <ul className="mt-3 flex flex-wrap gap-2">
                         {m.links.map((l) => (
@@ -185,7 +185,7 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
                             {l.href.startsWith("tel:") ? (
                               <a
                                 href={l.href}
-                                className="inline-flex min-h-11 items-center gap-1.5 rounded-md border-2 border-navy-900 bg-white px-3.5 py-1 text-[14px] font-bold text-navy-900 hover:bg-paper-2"
+                                className="inline-flex min-h-8 items-center gap-1 rounded-full border-2 border-navy-900 bg-white px-3 text-[12px] font-bold text-navy-900 hover:bg-cream min-h-11"
                               >
                                 <PhoneIcon className="h-3 w-3 text-orange-600" />
                                 {l.label}
@@ -194,7 +194,7 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
                               <Link
                                 href={l.href}
                                 onClick={onClose}
-                                className="inline-flex min-h-11 items-center gap-1.5 rounded-md bg-navy-900 px-3.5 py-1 text-[14px] leading-[1.4] font-bold text-white hover:bg-navy-700"
+                                className="inline-flex min-h-8 items-center gap-1 rounded-full bg-green-600 px-3 text-[12px] font-bold text-white hover:bg-green-700 min-h-11"
                               >
                                 {l.label}
                                 <svg className="h-3 w-3" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -214,10 +214,10 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
           )}
           {busy && (
             <div className="flex justify-start" aria-label="回答を作成中です">
-              <p className="flex items-center gap-1.5 rounded-lg rounded-bl-md border border-line bg-white px-4 py-3.5">
-                <span className="h-2 w-2 rounded-full bg-navy-900" />
-                <span className="h-2 w-2 rounded-full bg-navy-900 [animation-delay:0.3s]" />
-                <span className="h-2 w-2 rounded-full bg-navy-900 [animation-delay:0.6s]" />
+              <p className="flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-green-200 bg-white px-4 py-3.5 shadow-card">
+                <span className="h-2 w-2 animate-twinkle rounded-full bg-green-600" />
+                <span className="h-2 w-2 animate-twinkle rounded-full bg-green-600 [animation-delay:0.3s]" />
+                <span className="h-2 w-2 animate-twinkle rounded-full bg-green-600 [animation-delay:0.6s]" />
               </p>
             </div>
           )}
@@ -228,7 +228,7 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
                   <button
                     type="button"
                     onClick={() => void send({ quick: s.id }, s.label)}
-                    className="min-h-11 rounded-md border-2 border-orange-300 bg-white px-3.5 py-1.5 text-left text-[14px] leading-[1.4] font-bold text-navy-900 hover:border-orange-500 hover:bg-orange-50"
+                    className="min-h-11 rounded-full border-2 border-orange-300 bg-white px-4 py-1.5 text-left text-[14px] leading-[1.4] font-bold text-navy-900 hover:border-orange-500 hover:bg-orange-50"
                   >
                     {s.label}
                   </button>
@@ -264,13 +264,13 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
                   submit();
                 }
               }}
-              className="min-h-[3.25rem] flex-1 resize-none rounded-lg border border-line-2 bg-white px-3 py-2 text-[16px] leading-[1.5] text-ink placeholder:text-ink-3 focus:border-navy-900 focus:outline-none"
+              className="min-h-[3.25rem] flex-1 resize-none rounded-2xl border-2 border-line-2 bg-white px-3 py-2 text-[16px] leading-[1.5] text-ink placeholder:text-ink-3 focus:border-green-600 focus:outline-none"
             />
             <button
               type="submit"
               disabled={busy || input.trim().length === 0}
               aria-label="送信"
-              className="flex h-[3.25rem] w-[3.25rem] shrink-0 items-center justify-center rounded-full bg-orange-500 text-navy-950 transition-colors hover:bg-orange-400 disabled:bg-line-2 disabled:text-navy-950"
+              className="flex h-[3.25rem] w-[3.25rem] shrink-0 items-center justify-center rounded-full bg-cta text-white transition-colors hover:bg-cta-dark disabled:bg-line-2 disabled:text-white"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M4 12 20 4l-5 16-3.5-6.5L4 12Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />

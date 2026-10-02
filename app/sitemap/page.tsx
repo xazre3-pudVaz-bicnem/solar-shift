@@ -3,7 +3,7 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { footerNav, legalNav } from "@/lib/nav";
 import { guides } from "@/data/guides";
-import { areasWithPage } from "@/data/areas";
+import { areasWithPage, areaPageLabel } from "@/data/areas";
 import { publishedProducts } from "@/data/products";
 import { publishedWorks } from "@/data/works";
 import { getAllPosts, categoriesWithPosts } from "@/lib/blog";
@@ -25,10 +25,10 @@ function Group({ title, links }: { title: string; links: { href: string; label: 
   return (
     <section>
       <h2 className="text-[16px] font-bold text-navy-900">{title}</h2>
-      <ul className="mt-2 text-[15px] leading-[1.6]">
+      <ul className="mt-3 space-y-0.5 text-[14px]">
         {links.map((l) => (
           <li key={l.href}>
-            <Link href={l.href} className="inline-flex min-h-11 min-w-11 items-center py-1 text-navy-600 underline underline-offset-4 hover:text-accent-text">{l.label}</Link>
+            <Link href={l.href} className="inline-flex text-navy-600 underline underline-offset-4 hover:text-accent-text items-center min-h-11 min-w-11">{l.label}</Link>
           </li>
         ))}
       </ul>
@@ -48,7 +48,7 @@ export default function HtmlSitemapPage() {
             <Group key={g.label} title={g.label} links={g.links} />
           ))}
           <Group title="導入ガイド（全ページ）" links={[{ href: "/guide", label: "導入ガイド一覧" }, ...guides.map((g) => ({ href: g.path, label: g.title }))]} />
-          <Group title="エリアページ" links={areasWithPage.map((a) => ({ href: `/area/${a.slug}`, label: `${a.name}の太陽光・蓄電池業者` }))} />
+          <Group title="エリアページ" links={areasWithPage.map((a) => ({ href: `/area/${a.slug}`, label: areaPageLabel(a) }))} />
           <Group title="商品詳細" links={publishedProducts.map((p) => ({ href: `/products/${p.slug}`, label: `${p.manufacturer} ${p.name}` }))} />
           <Group title="施工事例" links={publishedWorks.map((w) => ({ href: `/works/${w.slug}`, label: w.title }))} />
           <Group title="ブログカテゴリ" links={categoriesWithPosts().map((c) => ({ href: `/blog/category/${c.slug}`, label: c.name }))} />
@@ -56,15 +56,15 @@ export default function HtmlSitemapPage() {
         </div>
         <section className="mt-12">
           <h2 className="text-[16px] font-bold text-navy-900">ブログ記事（{posts.length}件）</h2>
-          <ul className="mt-2 grid gap-x-6 text-[15px] leading-[1.6] sm:grid-cols-2">
+          <ul className="mt-3 grid gap-x-6 gap-y-0.5 text-[14px] sm:grid-cols-2">
             {posts.slice(0, RECENT_POSTS).map((p) => (
               <li key={p.slug}>
-                <Link href={`/blog/${p.slug}`} className="inline-flex min-h-11 min-w-11 items-center py-1 text-navy-600 underline underline-offset-4 hover:text-accent-text">{p.title}</Link>
+                <Link href={`/blog/${p.slug}`} className="inline-flex text-navy-600 underline underline-offset-4 hover:text-accent-text items-center min-h-11 min-w-11">{p.title}</Link>
               </li>
             ))}
           </ul>
           {posts.length > RECENT_POSTS && (
-            <p className="mt-4 text-[15px] text-ink-2">
+            <p className="mt-4 text-[14px] text-ink-2">
               新しい順に{RECENT_POSTS}件を表示しています。それ以前の記事は
               <Link href="/blog" className="mx-1 text-navy-600 underline underline-offset-4">ブログ一覧</Link>
               からご覧いただけます。

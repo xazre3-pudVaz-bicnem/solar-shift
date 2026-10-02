@@ -33,7 +33,7 @@ export function sourceTypeOf(url: string): SourceType | null {
   } catch {
     return null;
   }
-  if (host.endsWith("city.katsushika.lg.jp")) return "municipality";
+  if (host.endsWith("city.katsushika.lg.jp") || host.endsWith("city.adachi.tokyo.jp") || host.endsWith("city.sumida.lg.jp") || host.endsWith("city.edogawa.tokyo.jp")) return "municipality";
   if (host.endsWith("tokyo-co2down.jp") || host.endsWith("kuroco-img.app") || host.endsWith("metro.tokyo.lg.jp")) return "tokyo";
   if (host.endsWith("sii.or.jp") || host.endsWith("zehweb.jp")) return "sii";
   if (host.endsWith(".go.jp") || host.endsWith("cev-pc.or.jp")) return "national";

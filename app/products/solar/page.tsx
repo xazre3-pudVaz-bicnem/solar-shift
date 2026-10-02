@@ -24,14 +24,14 @@ const DESC =
   "太陽光パネル（太陽電池モジュール）を比べるときに見る項目をまとめました。公称最大出力、変換効率、サイズと形、認証、保証、設置方法。葛飾区・東京都の助成の対象になるモジュールの条件も確認できます。";
 
 export const metadata: Metadata = buildMetadata({
-  title: "太陽光パネルの比べ方｜出力・変換効率・認証・保証の見方",
+  title: "太陽光パネルを比較するときの見方｜出力・変換効率・認証・保証",
   description: DESC,
   path: PATH,
   keywords: ["太陽光パネル 比較 見方", "太陽光パネル 出力 変換効率 見方"],
 });
 
-const H2 = "border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900";
-const TEXT_LINK = "font-bold text-navy-700 underline underline-offset-4 hover:text-accent-text";
+const H2 = "border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900";
+const TEXT_LINK = "font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text";
 
 export default function ProductsSolarPage() {
   const products = productsByCategory("solar");
@@ -95,7 +95,7 @@ export default function ProductsSolarPage() {
                 },
               ]}
             />
-            <p className="mt-4 text-[15px] leading-[1.8] text-ink-2">
+            <p className="mt-4 text-base leading-[1.8] text-ink-2">
               屋根の条件は
               <Link href="/guide/roof-conditions" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
                 太陽光に向く屋根の条件

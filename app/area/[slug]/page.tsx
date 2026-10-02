@@ -1,3 +1,4 @@
+import { BigNumbers } from "@/components/subsidy/BigNumbers";
 import { WorksCard } from "@/components/works/WorksCard";
 import { worksInCity, WORK_BILL_NOTE } from "@/data/works";
 import { TrustFacts } from "@/components/ui/TrustFacts";
@@ -7,7 +8,10 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
 import { siteConfig, addressWithPostal, companyMapUrl, companyMapEmbedUrl } from "@/lib/site";
-import { areasWithPage, getArea, secondaryAreas } from "@/data/areas";
+import { areasWithPage, areaPageTitle, getArea, secondaryAreas } from "@/data/areas";
+import { getWardProgram } from "@/data/ward-programs";
+import { NeighborAreaPage } from "@/components/area/NeighborAreaPage";
+import { PublicSolarFigure } from "@/components/area/PublicSolarFigure";
 import { getSubsidy } from "@/data/subsidies";
 import { KATSUSHIKA_PRE_CONSULTATION_WEEKS } from "@/data/subsidies/katsushika-details";
 import { sources as verified } from "@/data/sources";
@@ -32,8 +36,11 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webPageSchema, serviceSchema } from "@/lib/schema";
 
 /**
- * エリアページ（いまは葛飾区だけ）。
- * 検索意図：「葛飾区 太陽光 業者」「葛飾区 太陽光 施工」「葛飾区 太陽光 会社」「葛飾区 蓄電池 業者」
+ * エリアページ。
+ *   - 葛飾区 … 業者としての案内（このファイルの本体）
+ *   - 足立区・墨田区・江戸川区 … 区の補助金の要点（components/area/NeighborAreaPage.tsx。内容は data/ward-programs.ts）
+ *
+ * 葛飾区の検索意図：「葛飾区 太陽光 業者」「葛飾区 太陽光 施工」「葛飾区 太陽光 会社」「葛飾区 蓄電池 業者」
  * ＝ 葛飾区で頼める業者（会社）と、対応している地域・進め方を知りたい。
  *
  * ほかのページとの役割分担（lib/seo-map.ts）
@@ -52,9 +59,6 @@ export function generateStaticParams() {
   return areasWithPage.map((a) => ({ slug: a.slug }));
 }
 
-function titleOf(name: string) {
-  return `${name}の太陽光・蓄電池業者｜対応エリアと相談の進め方`;
-}
 function descriptionOf(name: string) {
   return `${name}で太陽光発電・蓄電池の業者をお探しの方へ。SOLAR SHIFT は${siteConfig.company.address.city}${siteConfig.company.address.town}の${siteConfig.company.name}が運営し、区内全域に対応しています。対応地域、相談から施工までの進め方、業者を選ぶときに確かめたい点をまとめました。`;
 }
@@ -62,9 +66,19 @@ function descriptionOf(name: string) {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const area = getArea(slug);
+  const ward = getWardProgram(slug);
+  if (area && ward) {
+    return buildMetadata({
+      title: ward.title,
+      description: ward.description,
+      path: `/area/${area.slug}`,
+      keywords: [`${area.name} 太陽光 補助金`, `${area.name} 蓄電池 補助金`, `${area.name} 太陽光発電 補助金`, `${area.name} 太陽光 業者`],
+      modifiedTime: ward.sources[0].verifiedAt,
+    });
+  }
   if (!area?.page) return {};
   return buildMetadata({
-    title: titleOf(area.name),
+    title: areaPageTitle(area),
     description: descriptionOf(area.name),
     path: `/area/${area.slug}`,
     keywords: [`${area.name} 太陽光 業者`, `${area.name} 太陽光 施工`, `${area.name} 太陽光 会社`, `${area.name} 蓄電池 業者`],
@@ -72,18 +86,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   });
 }
 
-const H2 = "border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900 sm:text-[28px]";
+const H2 = "border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]";
 const LEAD = "mt-4 max-w-3xl text-base leading-[1.9] text-ink-2";
-const TEXT_LINK = "font-bold text-navy-700 underline underline-offset-4 hover:text-accent-text";
+const TEXT_LINK = "font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text";
 
 export default async function AreaDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const area = getArea(slug);
+  const ward = getWardProgram(slug);
+  if (area && ward) return <NeighborAreaPage area={area} program={ward} />;
   if (!area?.page) notFound();
   const page = area.page;
   const path = `/area/${area.slug}`;
   const c = siteConfig.company;
-  const posts = getPostsForPillar(["install-maintenance", "katsushika-subsidy"], 3);
+  const posts = getPostsForPillar(["install-maintenance", "katsushika-subsidy"], 3, { path: `/area/${area.slug}` });
 
   const solar = getSubsidy("katsushika-solar")!;
   const battery = getSubsidy("katsushika-battery")!;
@@ -98,6 +114,8 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
   const pageSources = [
     ...page.officialLinks.map((l) => ({ name: l.name, url: l.url, verifiedAt: siteConfig.subsidyInfoDate })),
     verified.katsushikaGuide,
+    verified.katsushikaEcoIndex,
+    verified.katsushikaPublicSolar,
   ];
   const embedUrl = companyMapEmbedUrl();
 
@@ -117,7 +135,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
     },
     {
       title: "申請の順番を説明できるか",
-      body: `区の助成は、着工の${KATSUSHIKA_PRE_CONSULTATION_WEEKS}週間前までに事前協議を申し込み、回答書が届いてから工事を始めます。この順番と日程を、契約の前に説明してもらいます。`,
+      body: `区の助成は、着工の${KATSUSHIKA_PRE_CONSULTATION_WEEKS}週間前までに事前協議を申し込み、回答書が届いてから工事を始めます。この順番と日程を、契約の前に説明してもらいます。区は、事前協議書を出す前に設備を導入するなど、要件に反した手続代行者・施工業者を、助成の対象外にする措置をとり、公式サイトで公表しています。`,
     },
     {
       title: "機器が助成の要件を満たしているか",
@@ -216,7 +234,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
                   : []),
               ]}
             />
-            <p className="mt-4 text-[15px] leading-[1.8] text-ink-2">
+            <p className="mt-4 text-base leading-[1.8] text-ink-2">
               会社の詳しい情報は
               <Link href="/company" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
                 運営会社
@@ -299,7 +317,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
             <p className={LEAD}>
               SOLAR SHIFT に限らず、どの業者に頼むときにも役に立つ確認点です。{area.name}の案内と手引きにある内容をもとにしています。
             </p>
-            <ol className="mt-6 max-w-3xl divide-y divide-line overflow-hidden rounded-lg border border-line bg-white">
+            <ol className="mt-6 max-w-3xl divide-y divide-dashed divide-line overflow-hidden rounded-3xl bg-white shadow-card">
               {checkpoints.map((cp, i) => (
                 <li key={cp.title} className="flex gap-3 px-4 py-4 sm:gap-4 sm:px-5">
                   <span className="mt-[3px] w-7 shrink-0 font-en text-[15px] font-extrabold text-accent-text" aria-hidden="true">
@@ -312,7 +330,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
                 </li>
               ))}
             </ol>
-            <p className="mt-4 max-w-3xl text-[15px] leading-[1.8] text-ink-2">
+            <p className="mt-4 max-w-3xl text-base leading-[1.8] text-ink-2">
               見積書の読み方は
               <Link href="/blog/solar-quote-how-to-read" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
                 太陽光の見積書の見方
@@ -356,19 +374,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
             <p className={LEAD}>
               {area.name}の「かつしかエコ助成金」の、主な金額です（{formatDateJa(solar.lastVerified)}時点）。東京都の助成と併用できますが、合計は助成対象経費が上限です。
             </p>
-            <ul className="mt-6 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-3">
-              {numbers.map(({ label, s, h }) => (
-                <li key={s.id} className="bg-white px-5 py-5">
-                  <p className="font-heading text-[14px] font-bold text-ink-2">{label}</p>
-                  <p className="mt-1.5 flex flex-wrap items-baseline gap-x-1 text-navy-900">
-                    {h.prefix && <span className="text-[14px] font-bold">{h.prefix}</span>}
-                    <span className="num-xl text-[38px] text-orange-600">{h.value}</span>
-                    <span className="font-heading text-[15px] font-black">{h.unit}</span>
-                  </p>
-                  <p className="mt-1.5 text-[13px] leading-[1.6] text-ink-2">{h.note}</p>
-                </li>
-              ))}
-            </ul>
+            <BigNumbers className="mt-6" items={numbers.map(({ label, s }) => ({ subsidy: s, label }))} />
             <div className="mt-6 flex flex-wrap gap-3">
               <LinkButton href="/subsidy/katsushika" variant="primary" size="lg">
                 金額・条件・必要書類を詳しく見る <ArrowIcon />
@@ -400,7 +406,14 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
                 </div>
               ))}
             </div>
-            <p className="mt-8 text-[15px] leading-[1.8] text-ink-2">
+            <h3 className="mt-12 text-[19px] leading-[1.5] font-black text-navy-900" {...reveal()}>
+              {area.name}では、どのくらい発電する？ 区の公共施設の例
+            </h3>
+            <p className="mt-2 max-w-3xl text-base leading-[1.9] text-ink">
+              {area.name}は、太陽光発電システムを設置した区の公共施設について、出力と年間の想定発電量を公表しています。住宅に近い規模の施設もあります。屋根の向きや影によって変わるため、わが家の発電量は、現地調査のうえで見積もります。
+            </p>
+            <PublicSolarFigure className="mt-6" />
+            <p className="mt-8 text-base leading-[1.8] text-ink-2">
               屋根の条件は
               <Link href="/guide/roof-conditions" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
                 太陽光に向く屋根の条件
@@ -437,8 +450,8 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
       />
       <JsonLd
         data={graph(
-          webPageSchema({ path, name: titleOf(area.name), description: descriptionOf(area.name), dateModified: UPDATED, sources: pageSources.map((s) => ({ name: s.name, url: s.url })) }),
-          serviceSchema({ path, name: `${area.name}の太陽光発電・蓄電池の導入`, description: descriptionOf(area.name), serviceType: "住宅用太陽光発電・家庭用蓄電池の導入" }),
+          webPageSchema({ path, mainEntity: "service", name: areaPageTitle(area), description: descriptionOf(area.name), dateModified: UPDATED, sources: pageSources.map((s) => ({ name: s.name, url: s.url })) }),
+          serviceSchema({ path, areaNames: [area.name], name: `${area.name}の太陽光発電・蓄電池の導入`, description: descriptionOf(area.name), serviceType: "住宅用太陽光発電・家庭用蓄電池の導入" }),
         )}
       />
     </>

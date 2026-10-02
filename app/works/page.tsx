@@ -1,3 +1,4 @@
+import { reveal } from "@/lib/reveal";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -54,8 +55,8 @@ export default function WorksPage() {
         {has ? (
           <>
             <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {publishedWorks.map((w) => (
-                <li key={w.slug}>
+              {publishedWorks.map((w, i) => (
+                <li key={w.slug} {...reveal((i % 3) * 90)}>
                   <WorksCard work={w} level={2} />
                 </li>
               ))}
@@ -69,26 +70,26 @@ export default function WorksPage() {
             </Callout>
             <p className="mt-8 text-base leading-[1.9] text-ink-2">
               ご自宅の条件での想定助成額は
-              <Link href="/simulation" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">
+              <Link href="/simulation" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">
                 補助金シミュレーター
               </Link>
               で試算できます。相談から工事までの順番は
-              <Link href="/flow" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">
+              <Link href="/flow" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">
                 導入・施工の流れ
               </Link>
               にまとめています。
             </p>
           </>
         ) : (
-          <div className="rounded-md border border-l-4 border-line border-l-navy-900 bg-paper-2 px-5 py-6 sm:px-8 sm:py-8">
+          <div className="rounded-[2rem] border-[3px] border-dashed border-orange-200 bg-white px-5 py-6 sm:px-8 sm:py-8">
             <p className="text-[20px] leading-[1.45] font-black text-navy-900">施工事例は順次掲載予定です</p>
             <p className="mt-3 max-w-3xl text-base leading-[1.9] text-ink-2">
               施工が完了し、お客様の掲載許可をいただいた事例から、次の項目とともにご紹介していきます。
             </p>
-            <ul className="mt-5 grid gap-x-6 gap-y-1.5 text-base text-ink sm:grid-cols-2">
+            <ul className="mt-5 grid gap-x-6 gap-y-1.5 text-[14px] text-ink sm:grid-cols-2">
               {FIELDS.map((f) => (
                 <li key={f} className="flex items-center gap-2">
-                  <span className="h-[5px] w-[5px] bg-orange-500" aria-hidden="true" />
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-orange-500" aria-hidden="true" />
                   {f}
                 </li>
               ))}

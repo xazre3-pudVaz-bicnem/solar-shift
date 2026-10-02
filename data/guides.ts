@@ -19,6 +19,8 @@ export interface GuideEntry {
   intent: string;
   /** 関連する固定ページ */
   related: string[];
+  /** 最初に公開した日 */
+  publishedAt: string;
   updatedAt: string;
 }
 
@@ -31,6 +33,7 @@ export const guides: GuideEntry[] = [
     description: "設置費用の内訳、費用が変わる要因、補助金を差し引いた考え方を整理します。",
     intent: "太陽光発電 費用",
     related: ["/subsidy/katsushika", "/simulation", "/solar"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -41,6 +44,7 @@ export const guides: GuideEntry[] = [
     description: "電気代・停電対策・売電の利点と、費用・屋根・メンテナンスの注意点を両面から解説。",
     intent: "太陽光発電 メリット デメリット",
     related: ["/solar", "/guide/solar-cost", "/guide/roof-conditions"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -51,6 +55,7 @@ export const guides: GuideEntry[] = [
     description: "パネル・パワーコンディショナ・架台それぞれの寿命の目安と、保証の読み方。",
     intent: "太陽光パネル 寿命",
     related: ["/guide/maintenance", "/solar"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -61,6 +66,7 @@ export const guides: GuideEntry[] = [
     description: "蓄電池の価格を決める要素、容量と費用のバランス、助成を踏まえた考え方。",
     intent: "蓄電池 費用",
     related: ["/subsidy/tokyo", "/battery", "/simulation"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -71,6 +77,7 @@ export const guides: GuideEntry[] = [
     description: "容量の決め方、全負荷と特定負荷、ハイブリッド型と単機能型の違いを整理。",
     intent: "蓄電池 全負荷 特定負荷 違い",
     related: ["/battery", "/products/battery", "/guide/battery-cost"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -81,6 +88,7 @@ export const guides: GuideEntry[] = [
     description: "自立運転の限界、蓄電池で使える範囲、水害リスクを踏まえた設置の考え方。",
     intent: "太陽光 停電時",
     related: ["/area/katsushika", "/battery", "/v2h"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -91,6 +99,7 @@ export const guides: GuideEntry[] = [
     description: "FIT制度の仕組み、2026年度の買取価格、自家消費とのバランスの考え方。",
     intent: "太陽光 売電 価格",
     related: ["/guide/post-fit", "/solar", "/guide/solar-cost"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-01",
   },
   {
@@ -101,6 +110,7 @@ export const guides: GuideEntry[] = [
     description: "FIT期間終了後の売電単価の変化と、蓄電池やV2Hで自家消費に切り替える考え方。",
     intent: "卒FIT どうする",
     related: ["/guide/selling-electricity", "/battery", "/v2h"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -111,6 +121,7 @@ export const guides: GuideEntry[] = [
     description: "オール電化住宅で太陽光・蓄電池・エコキュートを組み合わせる考え方。",
     intent: "オール電化 太陽光 相性",
     related: ["/solar-battery", "/hems"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-02",
   },
   {
@@ -121,6 +132,7 @@ export const guides: GuideEntry[] = [
     description: "設置の可否を左右する屋根の条件と、葛飾区の住宅で多い確認ポイント。",
     intent: "太陽光 屋根 条件",
     related: ["/solar", "/flow", "/area/katsushika"],
+    publishedAt: "2026-10-01",
     updatedAt: "2026-10-01",
   },
   {
@@ -131,6 +143,18 @@ export const guides: GuideEntry[] = [
     description: "定期点検の内容、パワコン交換、汚れや故障のサイン、保証の使い方。",
     intent: "太陽光 メンテナンス",
     related: ["/guide/solar-lifespan", "/flow"],
+    publishedAt: "2026-10-01",
+    updatedAt: "2026-10-02",
+  },
+  {
+    slug: "solar-payback",
+    image: "iconGBillDown",
+    path: "/guide/solar-payback",
+    title: "太陽光発電は何年で元が取れる？回収年数の計算の考え方",
+    description: "回収年数の式、1年あたりの効果額の出し方、国の想定値を使った試算。確かめたい前提も整理します。",
+    intent: "太陽光発電 元が取れる 何年",
+    related: ["/guide/solar-cost", "/guide/selling-electricity", "/guide/solar-merit-demerit"],
+    publishedAt: "2026-10-02",
     updatedAt: "2026-10-02",
   },
 ];

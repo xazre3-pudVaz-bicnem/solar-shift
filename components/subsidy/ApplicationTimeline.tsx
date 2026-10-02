@@ -11,7 +11,7 @@ export interface TimelineStep {
   label: string;
   title: string;
   note?: string;
-  /** 注意が必要な段階（オレンジの枠で強調） */
+  /** 注意が必要な段階（朱色で強調） */
   alert?: boolean;
 }
 
@@ -25,17 +25,30 @@ export const KATSUSHIKA_TIMELINE: TimelineStep[] = [
 
 export function ApplicationTimeline({ steps = KATSUSHIKA_TIMELINE, className = "" }: { steps?: TimelineStep[]; className?: string }) {
   return (
-    <ol className={`grid gap-px overflow-hidden rounded-xl border border-line bg-line lg:grid-cols-5 ${className}`} {...reveal()}>
-      {steps.map((s, i) => (
-        <li key={s.title} className={`flex items-start gap-4 px-4 py-4 lg:flex-col lg:gap-2 lg:px-4 lg:py-5 ${s.alert ? "bg-orange-50" : "bg-white"}`}>
-          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-en text-[15px] font-extrabold ${s.alert ? "bg-orange-500 text-navy-950" : "bg-navy-900 text-white"}`}>{i + 1}</span>
-          <div className="min-w-0">
-            <p className={`text-[13px] font-bold ${s.alert ? "text-accent-text" : "text-ink-2"}`}>{s.label}</p>
-            <p className="mt-0.5 font-heading text-[16px] leading-[1.45] font-black text-navy-900">{s.title}</p>
-            {s.note && <p className="mt-1 text-[13px] leading-[1.6] text-ink-2">{s.note}</p>}
-          </div>
-        </li>
-      ))}
+    <ol className={`grid gap-3 lg:grid-cols-5 lg:gap-0 ${className}`}>
+      {steps.map((s, i) => {
+        const last = i === steps.length - 1;
+        return (
+          <li key={s.title} className="relative flex lg:block" {...reveal(i * 110, "left")}>
+            {/* つなぎの矢印（PC: 右向き／スマホ: 下向き） */}
+            {!last && (
+              <span className="absolute top-full left-7 z-10 -mt-0.5 hidden h-3 w-3 lg:top-9 lg:right-[-7px] lg:left-auto lg:mt-0 lg:block" aria-hidden="true">
+                <svg className="h-4 w-4 text-navy-900" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M5 2l7 6-7 6z" />
+                </svg>
+              </span>
+            )}
+            <div className={`flex w-full items-center gap-4 rounded-2xl px-4 py-4 lg:mx-1.5 lg:h-full lg:flex-col lg:items-center lg:gap-2 lg:px-3 lg:text-center ${s.alert ? "bg-cta text-white shadow-pill" : "bg-white text-navy-900 shadow-card"}`}>
+              <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full font-en text-[18px] font-extrabold ${s.alert ? "bg-white text-cta" : "bg-orange-500 text-navy-900"}`}>{i + 1}</span>
+              <div>
+                <p className={`inline-block rounded-full px-2.5 py-[1px] text-[12px] font-bold ${s.alert ? "bg-white text-cta" : "bg-green-600 text-white"}`}>{s.label}</p>
+                <p className={`mt-1 font-heading text-[16px] leading-[1.4] font-black ${s.alert ? "text-white" : "text-navy-900"}`}>{s.title}</p>
+                {s.note && <p className={`mt-0.5 text-[13px] leading-[1.5] ${s.alert ? "text-white" : "text-ink-2"}`}>{s.note}</p>}
+              </div>
+            </div>
+          </li>
+        );
+      })}
     </ol>
   );
 }

@@ -44,7 +44,7 @@ export function MapEmbed({ src, address, title, mapUrl, className = "" }: { src:
 
   return (
     <div className={className}>
-      <div ref={ref} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-paper-2 sm:aspect-[16/9] border border-line">
+      <div ref={ref} className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-green-50 shadow-card sm:aspect-[16/9]">
         {active ? (
           <iframe src={src} title={title} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen className="absolute inset-0 h-full w-full border-0" />
         ) : (

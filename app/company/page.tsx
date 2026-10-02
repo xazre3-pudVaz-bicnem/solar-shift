@@ -19,7 +19,9 @@ const PATH = "/company";
 const DESC = `SOLAR SHIFT（ソーラーシフト）の運営会社情報。${siteConfig.company.name}（${siteConfig.company.address.full}、${siteConfig.company.representativeTitle} ${siteConfig.company.representative}、設立${siteConfig.company.founded}）。葛飾区の太陽光発電・蓄電池事業。`;
 
 export const metadata: Metadata = buildMetadata({
-  title: "運営会社｜株式会社サイプレス",
+  // 会社名で探す人に、何の事業かが伝わるよう、タイトルに「太陽光発電・蓄電池」を入れる
+  title: "運営会社｜株式会社サイプレス｜太陽光発電・蓄電池の SOLAR SHIFT",
+  rawTitle: true,
   description: DESC,
   path: PATH,
   keywords: ["株式会社サイプレス 太陽光", "SOLAR SHIFT 運営会社"],
@@ -41,7 +43,7 @@ export default function CompanyPage() {
         <>
           {c.address.postalCode && <>〒{c.address.postalCode}<br /></>}
           {c.address.full}
-          <a href={companyMapUrl()} target="_blank" rel="noopener noreferrer" className="ml-3 inline-flex min-h-11 items-center text-[14px] font-bold text-navy-600 underline underline-offset-4">
+          <a href={companyMapUrl()} target="_blank" rel="noopener noreferrer" className="ml-3 inline-flex text-[13px] font-bold text-navy-600 underline underline-offset-4 items-center min-h-11">
             Googleマップで見る
           </a>
         </>
@@ -55,7 +57,7 @@ export default function CompanyPage() {
             term: "電話番号",
             description: (
               <>
-                <a href={`tel:${siteConfig.contact.tel}`} className="inline-flex min-h-11 items-center font-en text-[17px] font-extrabold tracking-[0.02em] text-navy-900 underline decoration-orange-400 decoration-2 underline-offset-4">
+                <a href={`tel:${siteConfig.contact.tel}`} className="inline-flex font-en text-[17px] font-extrabold tracking-[0.02em] text-navy-900 underline decoration-orange-400 decoration-2 underline-offset-4 items-center min-h-11">
                   {siteConfig.contact.telDisplay}
                 </a>
                 {siteConfig.contact.hours && <span className="ml-2 text-[13px] text-ink-2">（{siteConfig.contact.hours}）</span>}
@@ -84,14 +86,14 @@ export default function CompanyPage() {
         <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-16">
           <div className="space-y-6">
             <ImagePlaceholder src={images.consultationDesk.src} alt={images.consultationDesk.alt} ratio="4/3" label="会社・拠点の写真（差し替え）" priority />
-            <div className="rounded-md border border-l-4 border-line border-l-navy-900 bg-paper-2 p-5 text-[15px] leading-[1.85] text-ink-2">
+            <div className="rounded-3xl bg-beige p-5 text-[14px] leading-[1.8] text-ink-2">
               <p className="font-bold text-navy-900">SOLAR SHIFT の位置づけ</p>
               <p className="mt-2">{c.name}は、Webマーケティング支援を中心に事業を行ってきた会社です。SOLAR SHIFT は、拠点のある葛飾区で、住宅の太陽光発電・蓄電池の導入を補助金の整理からサポートする事業として2026年に開始しました。</p>
               <p className="mt-2">
                 {publishedWorks.length > 0 ? (
                   <>
                     導入されたお客様の事例は、掲載の許可をいただいたものを
-                    <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">
+                    <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">
                       施工事例
                     </Link>
                     で公開しています。確認できていない実績を掲載することはありません。
@@ -103,11 +105,11 @@ export default function CompanyPage() {
             </div>
           </div>
           <div>
-            <h2 className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">会社概要</h2>
+            <h2 className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">会社概要</h2>
             <DefinitionList rows={rows} className="mt-5" />
             {mapEmbedUrl && (
               <>
-                <h2 className="mt-12 border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">
+                <h2 className="mt-12 border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">
                   所在地の地図（{c.address.city}{c.address.town}）
                 </h2>
                 <p className="mt-4 text-base leading-[1.9] text-ink-2">
@@ -117,7 +119,7 @@ export default function CompanyPage() {
                 <MapEmbed src={mapEmbedUrl} address={c.address.full} title={`${siteConfig.name}（${c.name}）の所在地の地図`} mapUrl={companyMapUrl()} className="mt-4" />
               </>
             )}
-            <h2 className="mt-12 border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">SOLAR SHIFT の事業内容</h2>
+            <h2 className="mt-12 border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">SOLAR SHIFT の事業内容</h2>
             <ul className="mt-5 grid gap-2 sm:grid-cols-2">
               {[
                 "住宅用太陽光発電の提案・設置",
@@ -130,15 +132,15 @@ export default function CompanyPage() {
                 "現地調査・見積もり（無料）",
                 "導入後サポート",
               ].map((s) => (
-                <li key={s} className="flex items-center gap-2 border-b border-line py-2.5 text-base font-bold text-navy-900">
+                <li key={s} className="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 text-[14px] font-bold text-navy-900 shadow-card">
                   <span className="h-[6px] w-[6px] shrink-0 bg-orange-500" aria-hidden="true" />
                   {s}
                 </li>
               ))}
             </ul>
-            <h2 className="mt-12 border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">施工体制・保証について</h2>
+            <h2 className="mt-12 border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">施工体制・保証について</h2>
             <TrustFacts className="mt-4" showEmptyNote />
-            <h2 className="mt-12 border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">情報の取り扱い</h2>
+            <h2 className="mt-12 border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">情報の取り扱い</h2>
             <p className="mt-4 text-base leading-[1.9] text-ink-2">
               補助金・費用・売電など金銭判断に関わる情報は、自治体・国の一次情報を確認し、確認日を明記して掲載しています。記事の作成・更新の基準は
               <Link href="/editorial-policy" className="mx-1 text-navy-600 underline underline-offset-4">記事・補助金情報の編集方針</Link>
@@ -150,7 +152,7 @@ export default function CompanyPage() {
         </div>
       </Container>
       <CtaSection title="葛飾区の会社として、葛飾区の住まいに向き合います。" body="現地調査・お見積もりは無料です。お問い合わせいただいた内容に応じて、ご案内します。" />
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "運営会社", description: DESC, type: "AboutPage" }))} />
+      <JsonLd data={graph(webPageSchema({ path: PATH, name: "運営会社", description: DESC, type: "AboutPage", mainEntity: "organization" }))} />
     </>
   );
 }

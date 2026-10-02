@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { footerNav, legalNav } from "@/lib/nav";
 import { siteConfig, contactEmail } from "@/lib/site";
-import { secondaryAreas, primaryAreas } from "@/data/areas";
+import { secondaryAreas, primaryAreas, areasWithPage } from "@/data/areas";
 
 /**
  * フッター。運営会社の名称・所在地・電話・メール・対応エリア（NAP）を、全ページで同じ表記で出す。
@@ -70,7 +70,24 @@ export function Footer() {
                   {primaryAreas.map((area) => (
                     <Link key={area.slug} href={`/area/${area.slug}`} className="underline decoration-white/30 underline-offset-4 hover:text-white">{area.name}</Link>
                   ))}
-                  {secondaryAreas.length > 0 && <>（周辺：{secondaryAreas.map((area) => area.name).join("・")}）</>}
+                  {secondaryAreas.length > 0 && (
+                    <>
+                      （周辺：
+                      {secondaryAreas.map((area, i) => (
+                        <span key={area.slug}>
+                          {i > 0 && "・"}
+                          {areasWithPage.some((a) => a.slug === area.slug) ? (
+                            <Link href={`/area/${area.slug}`} className="underline decoration-white/30 underline-offset-4 hover:text-white">
+                              {area.name}
+                            </Link>
+                          ) : (
+                            area.name
+                          )}
+                        </span>
+                      ))}
+                      ）
+                    </>
+                  )}
                 </dd>
               </div>
             </dl>

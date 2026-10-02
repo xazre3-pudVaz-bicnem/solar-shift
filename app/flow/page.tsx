@@ -1,3 +1,5 @@
+import { getPostsForPillar } from "@/lib/blog";
+import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
@@ -24,13 +26,14 @@ const DESC =
   "太陽光発電・蓄電池の導入・施工の流れ。お問い合わせ→現地調査（無料）→見積もり→葛飾区の事前協議（着工4週間前まで）・東京都の事前申込→設置工事→完了報告・交付申請→導入後サポート。申請と工事の順番を間違えないためのスケジュールの考え方。";
 
 export const metadata: Metadata = buildMetadata({
-  title: "導入・施工の流れ｜相談から申請・工事・運転開始まで",
+  title: "太陽光発電・蓄電池の導入の流れ｜相談・申請・工事から運転開始まで",
   description: DESC,
   path: PATH,
   keywords: ["太陽光 施工 流れ", "太陽光 導入 流れ", "葛飾区 太陽光 施工", "太陽光 補助金 申請 流れ"],
 });
 
 export default function FlowPage() {
+  const posts = getPostsForPillar(["install-maintenance", "katsushika-subsidy"], 3, { path: PATH, prefer: ["katsushika-eco-subsidy-solar-procedure-2026"] });
   const k = getSubsidy("katsushika-solar")!;
   const t = getSubsidy("tokyo-solar-existing")!;
   const steps = [
@@ -117,7 +120,7 @@ export default function FlowPage() {
           { name: "導入・施工の流れ", href: PATH },
         ]}
         eyebrow="導入・施工の流れ"
-        title={<>導入・施工の流れ<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">相談から運転開始まで。申請の順番を間違えない進め方</span></>}
+        title={<>太陽光発電・蓄電池の導入の流れ<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">相談から運転開始まで。申請の順番を間違えない進め方</span></>}
         lead="太陽光・蓄電池の導入で最も多い失敗は「工事を始めてから補助金を申請しようとした」ケースです。葛飾区の助成は着工4週間前までの事前協議が原則。契約日ではなく着工日から逆算して、申請と工事を組み立てます。"
         image={images.peopleCoupleClipboard}
       />
@@ -141,7 +144,7 @@ export default function FlowPage() {
           <Steps steps={steps} />
         </div>
 
-        <section className="mt-16 rounded-lg bg-paper-2 p-5 sm:p-8" aria-labelledby="timeline-h">
+        <section className="mt-16 rounded-[2rem] bg-cream p-5 sm:p-8" aria-labelledby="timeline-h">
           <h2 id="timeline-h" className="text-center text-[22px] font-black text-navy-900 sm:text-[26px]">
             葛飾区の助成を使うときの<span className="marker">申請の時系列</span>
           </h2>
@@ -163,7 +166,7 @@ export default function FlowPage() {
         </Callout>
 
         <section className="cv-block mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">流れについてよくある質問</h2>
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">流れについてよくある質問</h2>
           <FaqSection items={faqsByIds(["install-period", "install-survey", "subsidy-pre-consultation", "subsidy-combination"])} withSchema className="mt-6" />
         </section>
 
@@ -175,19 +178,25 @@ export default function FlowPage() {
             { href: "/subsidy/tokyo", label: "東京都の補助金" },
             { href: "/guide/solar-cost", label: "太陽光発電の費用" },
           ].map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-lg border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 duration-200 hover:border-orange-400 hover:bg-paper-2 transition-colors">
+            <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
               {l.label} →
             </Link>
           ))}
         </nav>
       </Container>
+      {posts.length > 0 && (
+        <Container className="pb-14">
+          <RelatedArticles posts={posts} title="申請と工事の進め方に関する記事" />
+        </Container>
+      )}
+
       <CtaSection
         title="いつまでに何をすればいいか。最初の相談で整理します。"
         body={`ご希望の時期から逆算して、申請と工事のスケジュールを組み立てます。現地調査・お見積もりは無料です。${siteConfig.primaryArea.name}を中心に周辺エリアにも対応しています。`}
       />
       <JsonLd
         data={graph(
-          webPageSchema({ path: PATH, name: "導入・施工の流れ", description: DESC, dateModified: siteConfig.subsidyInfoDate }),
+          webPageSchema({ path: PATH, name: "導入・施工の流れ", description: DESC, dateModified: siteConfig.contentUpdatedAt }),
           howToSchema({
             path: PATH,
             name: "太陽光発電・蓄電池を導入する流れ（相談から運転開始まで）",

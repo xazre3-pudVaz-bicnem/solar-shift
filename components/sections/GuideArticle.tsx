@@ -1,5 +1,5 @@
-import { Toc } from "@/components/ui/Toc";
 import type { ReactNode } from "react";
+import { Toc } from "@/components/ui/Toc";
 import Link from "next/link";
 import type { GuideEntry } from "@/data/guides";
 import { guides } from "@/data/guides";
@@ -60,7 +60,7 @@ export function GuideArticle({
   cta: { title: string; body: string };
 }) {
   const related = guides.filter((g) => entry.related.includes(g.path) || (g.slug !== entry.slug && g.related.includes(entry.path))).slice(0, 4);
-  const posts = getPostsForPillar(relatedCategories, 3);
+  const posts = getPostsForPillar(relatedCategories, 3, { path: entry.path });
   const crumbs = [
     { name: "ホーム", href: "/" },
     { name: "導入ガイド", href: "/guide" },
@@ -70,19 +70,19 @@ export function GuideArticle({
   return (
     <>
       <PageHeader crumbs={crumbs} eyebrow="導入ガイド" title={entry.title} lead={entry.description} image={images[entry.image]}>
-        <LastUpdated updatedAt={entry.updatedAt} className="mt-5" />
+        <LastUpdated updatedAt={entry.updatedAt} publishedAt={entry.publishedAt} className="mt-5" />
       </PageHeader>
 
       <Container size="prose" className="py-10 sm:py-14">
         <KeyPoints conclusion={conclusion} points={points} />
 
         {tip && (
-          <StaffTip className="mt-8" title={tip.title} image={tip.image ?? images.poseIdea}>
+          <StaffTip className="mt-8" title={tip.title} image={tip.image ?? images.poseIdea} tone="orange">
             {tip.body}
           </StaffTip>
         )}
 
-        <Toc className="mt-8" items={[...sections.map((s) => ({ id: s.id, label: s.heading })), ...(faq.length > 0 ? [{ id: "faq", label: "よくある質問" }] : [])]} />
+        <Toc className="mt-8" title="目次" items={[...sections.map((x) => ({ id: x.id, label: x.heading })), ...(faq.length > 0 ? [{ id: "faq", label: "よくある質問" }] : [])]} />
 
         {/* 図解は .prose-ss の外に置く（中に入れると ul や table に本文用のスタイルが当たる） */}
         <div className="mt-6">
@@ -99,7 +99,7 @@ export function GuideArticle({
 
         {faq.length > 0 && (
           <section id="faq" className="cv-block mt-14 scroll-mt-24">
-            <h2 className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">よくある質問</h2>
+            <h2 className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">よくある質問</h2>
             <FaqSection items={faq} withSchema className="mt-5" />
           </section>
         )}
@@ -114,16 +114,18 @@ export function GuideArticle({
 
         {related.length > 0 && (
           <section className="cv-block mt-12" aria-label="関連ガイド">
-            <h2 className="text-[20px] leading-[1.4] font-black text-navy-900">関連ガイド</h2>
-            <ul className="mt-4 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2" {...reveal()}>
-              {related.map((g) => (
-                <li key={g.slug} className="bg-white">
-                  <Link href={g.path} className="group flex h-full min-h-14 items-center gap-3 px-4 py-3 hover:bg-paper-2">
+            <h2 className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">関連ガイド</h2>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {related.map((g, i) => (
+                <li key={g.slug} {...reveal((i % 2) * 80)}>
+                  <Link href={g.path} className="group flex h-full items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 shadow-card hover:border-orange-400">
                     <span className="flex-1">
-                      <span className="block text-base font-bold text-navy-900">{g.title}</span>
-                      <span className="mt-1 block text-[13px] leading-[1.6] text-ink-2">{g.description}</span>
+                      <span className="block text-[14px] font-bold text-navy-900">{g.title}</span>
+                      <span className="mt-1 block text-[12px] leading-[1.6] text-ink-3">{g.description}</span>
                     </span>
-                    <ArrowIcon className="h-4 w-4 text-accent-text" />
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream text-navy-900">
+                      <ArrowIcon />
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -146,7 +148,7 @@ export function GuideArticle({
             path: entry.path,
             title: entry.title,
             description: entry.description,
-            datePublished: entry.updatedAt,
+            datePublished: entry.publishedAt,
             dateModified: entry.updatedAt,
             type: "Article",
             section: "導入ガイド",

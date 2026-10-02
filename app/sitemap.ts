@@ -4,6 +4,7 @@ import { getAllPosts, getPostsByCategory, categoriesWithPosts, isCategoryIndexab
 import { publishedProducts } from "@/data/products";
 import { publishedWorks } from "@/data/works";
 import { areasWithPage } from "@/data/areas";
+import { getWardProgram } from "@/data/ward-programs";
 import { guides } from "@/data/guides";
 import { siteConfig } from "@/lib/site";
 import { STATIC_ROUTES } from "@/lib/routes";
@@ -47,12 +48,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const areaPages: MetadataRoute.Sitemap = areasWithPage.map((a) => ({
-    url: `${base}/area/${a.slug}`,
-    lastModified: infoDate,
-    changeFrequency: "monthly",
-    priority: a.status === "primary" ? 0.9 : 0.6,
-  }));
+  // 周辺の区のページは、区の公式ページを確かめた日を lastmod にする
+  const areaPages: MetadataRoute.Sitemap = areasWithPage.map((a) => {
+    const ward = getWardProgram(a.slug);
+    return {
+      url: `${base}/area/${a.slug}`,
+      lastModified: ward ? new Date(ward.sources[0].verifiedAt) : infoDate,
+      changeFrequency: "monthly",
+      priority: a.status === "primary" ? 0.9 : 0.7,
+    };
+  });
 
   const productPages: MetadataRoute.Sitemap = publishedProducts.map((p) => ({
     url: `${base}/products/${p.slug}`,

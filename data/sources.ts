@@ -33,6 +33,11 @@ export const sources = {
   katsushikaSeibi: src("katsushika-seibi", "municipality", "葛飾区公式サイト「整備地域」", "https://www.city.katsushika.lg.jp/planning/1003610/1034257.html", "2026-10-02"),
   katsushikaSolarPage: src("katsushika-solar-page", "municipality", "葛飾区公式サイト「（個人住宅用）太陽光発電システム」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1036257/1036259.html", "2026-10-02"),
 
+  katsushikaQa: src("katsushika-qa", "municipality", "葛飾区「かつしかエコ助成金 よくあるご質問」", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/035/385/r8qa.pdf", "2026-10-02"),
+  katsushikaEcoIndex: src("katsushika-eco-index", "municipality", "葛飾区公式サイト「かつしかエコ助成金」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/index.html", "2026-10-02"),
+  katsushikaNoticePeriod: src("katsushika-notice-period", "municipality", "葛飾区公式サイト「かつしかエコ助成金 交付額確定通知書発送までの目安期間」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1041425.html", "2026-10-02"),
+  katsushikaPublicSolar: src("katsushika-public-solar", "municipality", "葛飾区公式サイト「助成金を活用した太陽光発電システムの導入」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1032675.html", "2026-10-02"),
+
   // ───────── 東京都（環境局）
   tokyoSolarPortal: src("tokyo-solar-portal", "tokyo", "東京都環境局「太陽光ポータル」", "https://www.kankyo.metro.tokyo.lg.jp/climate/solar_portal", "2026-10-02"),
 
@@ -50,8 +55,15 @@ export const sources = {
   // ───────── 国
   enechoStandalone: src("enecho-standalone", "national", "資源エネルギー庁「停電時の住宅用太陽光発電パネルの自立運転機能について」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/dl/announce/20200706.pdf", "2026-10-02"),
 
+  metiProcurementOpinion: src("meti-procurement-opinion-2026", "national", "調達価格等算定委員会「令和8年度以降の調達価格等に関する意見」", "https://www.meti.go.jp/shingikai/santeii/pdf/20260205_1.pdf", "2026-10-02"),
   caaDoorToDoorSales: src("caa-door-to-door-sales", "national", "消費者庁「特定商取引法ガイド 訪問販売」", "https://www.no-trouble.caa.go.jp/what/doortodoorsales/", "2026-10-02"),
   caaHotline188: src("caa-hotline-188", "national", "消費者庁「消費者ホットライン」", "https://www.caa.go.jp/policies/policy/local_cooperation/local_consumer_administration/hotline/", "2026-10-02"),
+
+  // ───────── 周辺の区
+  adachiSolarBattery: src("adachi-solar-battery", "municipality", "足立区「太陽光発電システム及び蓄電池設置費補助金（設置後申請）」", "https://www.city.adachi.tokyo.jp/kankyo/kurashi/kankyo/taiyoukouhatuden.html", "2026-10-02"),
+  sumidaEcoSubsidy: src("sumida-eco-subsidy", "municipality", "墨田区「地球温暖化防止設備導入助成制度」", "https://www.city.sumida.lg.jp/kurashi/kankyou_hozen/jyoseikin/ecojyoseiseido.html", "2026-10-02"),
+  sumidaEcoPamphlet: src("sumida-eco-pamphlet", "municipality", "墨田区「［申請編］令和8年度地球温暖化防止設備導入助成制度パンフレット」", "https://www.city.sumida.lg.jp/kurashi/kankyou_hozen/jyoseikin/ecojyoseiseido.files/01_R8pamphlet_s.pdf", "2026-10-02"),
+  edogawaDecarbon: src("edogawa-decarbon", "municipality", "江戸川区「江戸川区脱炭素補助金」", "https://www.city.edogawa.tokyo.jp/e086/toshikeikaku/kankyo/inochi/hojokin/index.html", "2026-10-02"),
 
   // ───────── 業界団体
   jpeaLifespan: src("jpea-lifespan", "industry", "太陽光発電協会（JPEA）よくある質問「機器の耐用年数はどれくらいですか？」", "https://www.jpea.gr.jp/faq/583/", "2026-10-02"),

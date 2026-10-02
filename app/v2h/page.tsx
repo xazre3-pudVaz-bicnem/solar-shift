@@ -32,7 +32,7 @@ export default function V2hPage() {
       eyebrow="V2H"
       heroImage={images.houseEvV2h}
       tip={{ title: "最初に確認すること", body: <>V2Hは<strong className="marker">対応車種と機器の組み合わせ</strong>に制限があります。お持ちの車（購入予定の車）で使えるかを先に確認しましょう。</>, image: images.poseIdea }}
-      title={<>V2H<span className="block text-[0.7em] text-ink-2">電気自動車を、走る蓄電池として使う</span></>}
+      title={<>V2Hとは<span className="block text-[0.7em] text-ink-2">電気自動車を、走る蓄電池として使う仕組み</span></>}
       lead="V2H（Vehicle to Home）は、電気自動車（EV・PHEV）のバッテリーにためた電気を家庭で使えるようにする設備です。太陽光で発電した電気をEVに充電し、夜間や停電時に家で使うことができます。"
       conclusion={`V2Hは、EVの大きなバッテリーを家庭用蓄電池のように使う設備です。太陽光と組み合わせると、昼に発電した電気でEVを充電し、夜や停電時に家へ給電できます。対応車種とV2H機器の組み合わせに制限があり、車を使っている時間は家に給電できない点が家庭用蓄電池との違いです。葛飾区の助成は${k.amount}（${k.maxAmount}）で、国のCEV補助金は2026年8月27日に受付終了しています（2026年10月1日時点）。`}
       points={[

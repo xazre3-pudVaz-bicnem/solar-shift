@@ -7,6 +7,8 @@ import { guides } from "@/data/guides";
 import { faqs } from "@/data/faq";
 import { fit } from "@/data/fit";
 import { getAllPosts } from "@/lib/blog";
+import { areas } from "@/data/areas";
+import { wardPrograms } from "@/data/ward-programs";
 
 export const dynamic = "force-static";
 
@@ -30,7 +32,9 @@ export function GET() {
     ...p.menus.map((m) => {
       const pre = m.preApplicationRequired ? `事前手続きが必要${m.preApplicationNote ? `（${m.preApplicationNote}）` : ""}。` : "";
       const conditions = m.conditions.length > 0 ? `主な条件: ${m.conditions.join("／")}。` : "";
-      return `- ${m.name}: ${m.amount.replace(/\n/g, "／")}（${m.maxAmount}）。受付状況: ${statusLabel[m.status]}。${pre}${conditions}`;
+      const amount = m.amount.replace(/\n/g, "／");
+      const cap = m.maxAmount && !amount.includes(m.maxAmount) ? `（${m.maxAmount}）` : "";
+      return `- ${m.name}: ${amount}${cap}。受付状況: ${statusLabel[m.status]}。${pre}${conditions}`;
     }),
   ]);
 
@@ -52,6 +56,13 @@ export function GET() {
     `葛飾区と東京都の助成は別の制度です。葛飾区の案内には「国や都の補助制度との併用も可能」と明記されていますが、補助金の合計は助成対象経費が上限のため、当サイトでは金額を合算していません。`,
     ...subsidyLines,
     ``,
+    `## 周辺の区の補助金（各区の公式ページで確認）`,
+    `区の補助金は、区ごとに金額も申請の時期も違います。葛飾区の制度の説明は、ほかの区には当てはまりません。`,
+    ...wardPrograms.map((w) => {
+      const name = areas.find((a) => a.slug === w.slug)?.name ?? "";
+      return `- [${name}の太陽光・蓄電池の補助金](${url(`/area/${w.slug}`)}): ${w.conclusion}（${formatDateJa(w.sources[0].verifiedAt)}確認。出典: ${w.sources[0].url}）`;
+    }),
+    ``,
     `## FIT（固定価格買取制度）`,
     `- ${fit.fiscalYear}・住宅用（10kW未満）: ${fit.residential.steps.map((s) => `${s.label} ${s.yenPerKwh}円/kWh`).join("、")}（調達期間${fit.residential.termYears}年）。出典: ${fit.sourceUrl}`,
     ``,
@@ -62,6 +73,7 @@ export function GET() {
     `- [補助金の総合ページ](${url("/subsidy")}): 区・都・国の3層の整理`,
     `- [補助金シミュレーター](${url("/simulation")}): 条件を選んで区・都それぞれの想定助成額を試算`,
     `- [葛飾区の太陽光・蓄電池業者](${url("/area/katsushika")}): 区内の対応エリア、業者を選ぶときの確認点、相談の進め方、住宅事情と水害リスク`,
+    `- [対応エリア](${url("/area")}): 葛飾区と周辺の区の位置関係、区ごとの補助金と申請の順番の早見表`,
     `- [太陽光発電](${url("/solar")}) / [家庭用蓄電池](${url("/battery")}) / [太陽光＋蓄電池](${url("/solar-battery")}) / [V2H](${url("/v2h")}) / [HEMS](${url("/hems")})`,
     `- [導入・施工の流れ](${url("/flow")}): 相談から申請・工事・運転開始まで`,
     `- [よくある質問](${url("/faq")}): ${faqs.length}問`,

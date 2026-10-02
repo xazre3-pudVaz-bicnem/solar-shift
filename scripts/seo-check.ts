@@ -12,6 +12,9 @@
  *   5. 全ページ：h1 が1つだけか、title・h1 が他のページと重複していないか、description があるか
  *   6. ブログ記事：固定ページのキーワードと取り合いになっていないか
  *   7. sitemap.xml：noindex のページが載っていないか
+ *   8. タイトルの長さ：検索結果で切れやすい長さ（全角で35字を超える）のものを、注意として出す
+ *   9. よくある質問の構造化データ：同じ質問を、2つ以上のページでマークアップしていないか
+ *  10. 主キーワードの語が、title に入っているか（入っていなければ注意として出す）
  *
  * 一覧（title / h1 / 主キーワード / 検索意図 / canonical）は --table を付けると出る。
  */
@@ -32,6 +35,8 @@ if (!fs.existsSync(APP)) {
 
 interface Page {
   route: string;
+  /** FAQPage としてマークアップしている質問 */
+  faqQuestions: string[];
   title: string;
   h1: string[];
   description: string;
@@ -56,8 +61,22 @@ function parse(file: string): Page {
   const html = fs.readFileSync(file, "utf8");
   let route = "/" + path.relative(APP, file).replace(/\\/g, "/").replace(/\.html$/, "");
   if (route === "/index") route = "/";
+  // FAQPage の質問（JSON-LD）
+  const faqQuestions: string[] = [];
+  for (const m of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
+    try {
+      const data = JSON.parse(m[1]);
+      const nodes: unknown[] = Array.isArray(data?.["@graph"]) ? data["@graph"] : [data];
+      for (const n of nodes as { "@type"?: string; mainEntity?: { name?: string }[] }[]) {
+        if (n?.["@type"] === "FAQPage" && Array.isArray(n.mainEntity)) for (const q of n.mainEntity) if (q?.name) faqQuestions.push(q.name);
+      }
+    } catch {
+      // JSON-LD の構文エラーは、ここでは数えない
+    }
+  }
   return {
     route,
+    faqQuestions,
     title: text((html.match(/<title>([\s\S]*?)<\/title>/) ?? [, ""])[1] ?? ""),
     h1: [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => text(m[1])),
     description: attr(html, /<meta name="description" content="([^"]*)"/),
@@ -169,6 +188,34 @@ for (const e of SEO_MAP) {
   } else if (isPublicBuild) {
     warnings.push("sitemap.xml のビルド結果が見つかりません");
   }
+}
+
+// ── 8. タイトルの長さ（半角を1、全角を2と数える。70 を超えると、検索結果で後ろが切れやすい）
+{
+  const width = (s: string) => [...s].reduce((w, ch) => w + (/[\u0020-\u007e\uff61-\uff9f]/.test(ch) ? 1 : 2), 0);
+  const long = pages.filter((p) => !/\/page\/\d+$/.test(p.route) && width(p.title) > 70);
+  if (long.length > 0) warnings.push(`タイトルが長いページ（幅70超）: ${long.length} 件 → ${long.slice(0, 6).map((p) => `${p.route}（${width(p.title)}）`).join("、")}${long.length > 6 ? " ほか" : ""}`);
+}
+
+// ── 9. よくある質問の構造化データ：同じ質問を複数のページでマークアップしない
+{
+  const seen = new Map<string, string>();
+  for (const p of pages) {
+    for (const q of new Set(p.faqQuestions)) {
+      const prev = seen.get(q);
+      if (prev && prev !== p.route) errors.push(`FAQ の構造化データが重複: 「${q}」が ${prev} と ${p.route} にあります`);
+      else seen.set(q, p.route);
+    }
+  }
+  console.log(`FAQPage: ${pages.filter((p) => p.faqQuestions.length > 0).length} ページ ／ 質問 ${seen.size} 件`);
+}
+
+// ── 10. 主キーワードの語が title に入っているか（注意として出す）
+for (const e of SEO_MAP) {
+  const p = byRoute.get(e.path);
+  if (!p || e.primary.includes("SOLAR SHIFT")) continue;
+  const missing = e.primary.split(/\s+/).filter((t) => t && !compact(p.title).includes(t));
+  if (missing.length > 0) warnings.push(`${e.path}: 主キーワード「${e.primary}」のうち「${missing.join("・")}」が title にありません → ${p.title}`);
 }
 
 if (showTable) {

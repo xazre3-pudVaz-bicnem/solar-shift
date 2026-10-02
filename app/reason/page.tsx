@@ -97,7 +97,7 @@ export default function ReasonPage() {
           {publishedWorks.length > 0 ? (
             <>
               SOLAR SHIFT は2026年に始まった新しいサービスです。導入されたお客様の事例は、掲載の許可をいただいたものを
-              <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">
+              <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">
                 施工事例
               </Link>
               で公開しています。「創業○年」「施工○件」「地域No.1」「メーカー認定」といった表現は、事実として確認できるまで使いません。お客様ご本人の言葉を載せる「お客様の声」は、掲載の許可をいただいたものから公開します。
@@ -112,7 +112,7 @@ export default function ReasonPage() {
             <section key={r.n} aria-labelledby={`r-${r.n}`} className={`cv-block grid items-center gap-8 lg:gap-14 ${i % 2 === 1 ? "lg:grid-cols-[1fr_18rem] lg:[&>*:first-child]:order-2" : "lg:grid-cols-[18rem_1fr]"}`}>
               <ImagePlaceholder src={REASON_ICONS[i].src} alt="" ratio="1/1" fit="contain" frame={false} sizes="288px" className="mx-auto w-48 lg:w-full" />
               <div>
-                <p className="flex items-baseline gap-1 font-en font-bold text-navy-700">
+                <p className="flex items-baseline gap-1 font-en font-bold text-green-700">
                   <span className="text-[13px] tracking-[0.14em]">POINT</span>
                   <span className="text-[30px] leading-none">{r.n}</span>
                 </p>
@@ -129,7 +129,7 @@ export default function ReasonPage() {
         </div>
 
         <section className="cv-block mt-16" aria-labelledby="faq-h">
-          <h2 id="faq-h" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">よくある質問</h2>
+          <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">よくある質問</h2>
           <FaqSection items={faqsByIds(["service-company", "service-sales", "subsidy-guarantee", "install-survey"])} withSchema className="mt-6" />
         </section>
 

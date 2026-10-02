@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { handlingManufacturers, manufacturerCategoryLabel, type Manufacturer, type ManufacturerCategory } from "@/data/manufacturers";
+import { CountUp } from "@/components/ui/CountUp";
+import { reveal } from "@/lib/reveal";
 
 /**
  * 取扱メーカーの一覧。メーカー名のタイルを並べ、見出しに社数を大きく出す。
@@ -10,6 +12,7 @@ import { handlingManufacturers, manufacturerCategoryLabel, type Manufacturer, ty
  *   他社の商標を、許諾なしに画像で使わない。
  * - 個別の商品は載せない方針なので、型番・仕様・価格は出さない。
  * - 流れ続けるアニメーション（ロゴのマーキー）にはしない。動き続けるものがあると、スマホの表示が重くなる。
+ *   タイルは、画面に入ったときに1枚ずつ順番に現れる。
  *
  * category … その種類を扱うメーカーに絞る（太陽光パネルの比べ方・蓄電池の比べ方のページ用）
  * detail   … 紹介文と公式サイトへのリンクも出す（商品ページ用）
@@ -37,26 +40,32 @@ export function MakerShowcase({
 
   return (
     <section aria-labelledby={headingId} className={className}>
-      <div className="text-center">
-        <p>
-          <span className="inline-flex items-center rounded-full bg-navy-900 px-4 py-1 font-heading text-[13px] font-bold tracking-[0.08em] text-white">取扱メーカー</span>
+      <div className="text-center" {...reveal()}>
+        <p className="mb-5 flex justify-center">
+          <span className="relative inline-block rounded-full bg-orange-500 px-5 py-1.5 font-heading text-[14px] font-bold tracking-wide text-navy-900 shadow-sm after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-x-[7px] after:border-t-[8px] after:border-x-transparent after:border-t-orange-500 after:content-['']">
+            取扱メーカー
+          </span>
         </p>
-        <Heading id={headingId} className="mt-4 text-[21px] leading-[1.6] font-black text-navy-900 sm:text-[27px]">
+        <Heading id={headingId} className="text-[21px] leading-[1.6] font-black text-navy-900 sm:text-[27px]">
           {lead}
-          <span className="num-xl mx-1.5 align-[-0.08em] text-[42px] text-orange-700 sm:text-[52px]">{list.length}</span>
+          <CountUp value={list.length} className="num-xl mx-1.5 align-[-0.08em] text-[46px] text-orange-600 sm:text-[60px]" />
           {tail}
         </Heading>
       </div>
 
-      <ul className="mt-8 grid grid-cols-2 gap-x-3 gap-y-2 rounded-lg border border-line bg-white p-4 sm:grid-cols-4 sm:gap-x-4 sm:gap-y-4 sm:p-8">
-        {list.map((m) => (
-          <li key={m.id} className="flex min-h-[7.5rem] flex-col items-center justify-center px-1 py-3 text-center">
+      <ul className="mt-8 grid grid-cols-2 gap-2.5 rounded-[2rem] bg-beige p-3 sm:grid-cols-4 sm:gap-4 sm:p-6">
+        {list.map((m, i) => (
+          <li
+            key={m.id}
+            className="flex min-h-[7.5rem] flex-col items-center justify-center rounded-2xl bg-white px-2 py-4 text-center shadow-card transition-transform duration-200 hover:-translate-y-1"
+            {...reveal((i % 4) * 70, "pop")}
+          >
             <MakerMark maker={m} />
             <span className="mt-2.5 text-[14px] leading-[1.5] font-bold text-ink">{m.brand}</span>
-            <span className="mt-0.5 text-[12px] leading-[1.5] text-ink-2">{categoryText(m)}</span>
+            <span className="mt-1 rounded-full bg-green-50 px-2.5 py-[1px] text-[12px] leading-[1.6] font-bold text-green-700">{categoryText(m)}</span>
           </li>
         ))}
-        <li className="flex min-h-[7.5rem] flex-col items-center justify-center px-1 py-3 text-center">
+        <li className="flex min-h-[7.5rem] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-orange-300 bg-white/60 px-2 py-4 text-center" {...reveal((list.length % 4) * 70, "pop")}>
           <span className="text-[14px] leading-[1.7] font-bold text-navy-900">
             このほかのメーカーも
             <br />
@@ -70,15 +79,18 @@ export function MakerShowcase({
       </p>
 
       {detail && (
-        <ul className="mt-8 divide-y divide-line border-y border-line">
-          {list.map((m) => (
-            <li key={m.id} className="grid gap-1 py-4 sm:grid-cols-[13rem_1fr_auto] sm:items-center sm:gap-6">
-              <Sub className="text-base leading-[1.5] font-bold text-navy-900">
-                {m.brand}
-                {m.name !== m.brand && <span className="block text-[13px] font-normal text-ink-2">{m.name}</span>}
+        <ul className="mt-8 space-y-3">
+          {list.map((m, i) => (
+            <li key={m.id} className="grid gap-1 rounded-2xl bg-white px-5 py-4 shadow-card sm:grid-cols-[13rem_1fr_auto] sm:items-center sm:gap-6" {...reveal(Math.min(i, 4) * 50)}>
+              <Sub className="flex items-start gap-2.5 text-base leading-[1.5] font-bold text-navy-900">
+                <span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-orange-500" aria-hidden="true" />
+                <span>
+                  {m.brand}
+                  {m.name !== m.brand && <span className="block text-[13px] font-normal text-ink-2">{m.name}</span>}
+                </span>
               </Sub>
               <p className="text-[15px] leading-[1.8] text-ink-2">{m.summary}</p>
-              <a href={m.officialUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-[14px] font-bold whitespace-nowrap text-navy-700 underline underline-offset-4 hover:text-accent-text">
+              <a href={m.officialUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-[14px] font-bold whitespace-nowrap text-navy-600 underline decoration-orange-400 decoration-2 underline-offset-4 hover:text-accent-text">
                 公式サイト
                 <span className="sr-only">（{m.brand}・別のタブで開きます）</span>
               </a>
@@ -89,7 +101,7 @@ export function MakerShowcase({
 
       {!detail && (
         <p className="mt-5 text-center">
-          <Link href="/products" className="inline-flex min-h-11 items-center font-bold text-navy-700 underline underline-offset-4 hover:text-accent-text">
+          <Link href="/products" className="inline-flex min-h-11 items-center font-bold text-navy-600 underline decoration-orange-400 decoration-2 underline-offset-4 hover:text-accent-text">
             メーカーごとの紹介と、機器の比べ方を見る
           </Link>
         </p>

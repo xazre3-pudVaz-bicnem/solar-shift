@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { publishedVoices } from "@/data/voices";
@@ -39,7 +40,7 @@ export default function VoicePage() {
         {publishedVoices.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2">
             {publishedVoices.map((v) => (
-              <article key={v.id} className="rounded-lg bg-white p-6 border border-line">
+              <article key={v.id} className="rounded-3xl bg-white p-6 shadow-card">
                 <p className="text-[13px] font-bold text-accent-text">{v.area}・{v.displayName}</p>
                 <p className="mt-1 text-[12px] text-ink-3">{v.equipment.join("・")}／{v.date}</p>
                 <blockquote className="mt-4 text-base leading-[1.9] text-ink">{v.body}</blockquote>
@@ -52,11 +53,12 @@ export default function VoicePage() {
             ))}
           </div>
         ) : (
-          <div className="rounded-md border border-l-4 border-line border-l-navy-900 bg-paper-2 px-5 py-6 sm:px-8 sm:py-8">
+          <div className="rounded-[2rem] border-[3px] border-dashed border-orange-200 bg-white px-5 py-6 sm:px-8 sm:py-8">
+            <Image src={images.peopleCoupleTalk.src} alt="" width={images.peopleCoupleTalk.width} height={images.peopleCoupleTalk.height} sizes="176px" className="mb-4 h-auto w-36 sm:float-right sm:mb-2 sm:ml-6 sm:w-44" />
             <p className="text-[20px] leading-[1.45] font-black text-navy-900">お客様の声は準備中です</p>
             <p className="mt-3 max-w-3xl text-base leading-[1.9] text-ink-2">
               お客様ご本人の言葉をそのまま載せる「お客様の声」は、掲載の許可をいただいたものから掲載します。導入されたお客様の事例は、
-              <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">施工事例</Link>
+              <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">施工事例</Link>
               のページで紹介しています。
             </p>
             <Callout tone="note" title="掲載の基準" className="mt-6">
@@ -69,7 +71,7 @@ export default function VoicePage() {
               </ul>
             </Callout>
             <p className="mt-6 text-base text-ink-2">
-              SOLAR SHIFT の考え方は<Link href="/reason" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">大切にしていること</Link>、進め方は<Link href="/flow" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">導入までの流れ</Link>をご覧ください。
+              SOLAR SHIFT の考え方は<Link href="/reason" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">大切にしていること</Link>、進め方は<Link href="/flow" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">導入までの流れ</Link>をご覧ください。
             </p>
           </div>
         )}

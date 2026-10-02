@@ -52,7 +52,7 @@ export function BlogIndex({ page }: { page: number }) {
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_16rem]">
           <div className="min-w-0">
             {posts.length === 0 ? (
-              <p className="text-base text-ink-2">記事は準備中です。</p>
+              <p className="text-[15px] text-ink-2">記事は準備中です。</p>
             ) : (
               <div className="grid gap-8 sm:grid-cols-2">
                 {posts.map((p) => (
@@ -63,8 +63,8 @@ export function BlogIndex({ page }: { page: number }) {
             <Pagination basePath={BLOG_PATH} current={page} total={total} className="mt-12" />
           </div>
           <aside className="min-w-0 space-y-8 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-lg bg-paper-2 p-5">
-              <h2 className="font-heading text-base font-black text-navy-900">カテゴリ</h2>
+            <div className="rounded-3xl bg-cream p-5">
+              <h2 className="font-heading text-[15px] font-black text-navy-900">カテゴリ</h2>
               <ul className="mt-3 divide-y divide-orange-200/70">
                 {categories.map((c) => (
                   <li key={c.slug}>
@@ -76,18 +76,18 @@ export function BlogIndex({ page }: { page: number }) {
                 ))}
               </ul>
             </div>
-            <div className="rounded-lg border border-line bg-white p-5">
-              <h2 className="font-heading text-base font-black text-navy-900">まず読むページ</h2>
+            <div className="rounded-3xl border-2 border-green-200 bg-white p-5">
+              <h2 className="font-heading text-[15px] font-black text-navy-900">まず読むページ</h2>
               <ul className="mt-3 space-y-1 text-[14px]">
-                <li><Link href="/subsidy/katsushika" className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4">葛飾区の補助金</Link></li>
-                <li><Link href="/subsidy/tokyo" className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4">東京都の補助金</Link></li>
-                <li><Link href="/simulation" className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4">補助金シミュレーター</Link></li>
-                <li><Link href="/guide" className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4">導入ガイド一覧</Link></li>
-                <li><Link href="/editorial-policy" className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4">記事の編集方針</Link></li>
+                <li><Link href="/subsidy/katsushika" className="inline-flex font-bold text-navy-600 underline underline-offset-4 items-center min-h-11">葛飾区の補助金</Link></li>
+                <li><Link href="/subsidy/tokyo" className="inline-flex font-bold text-navy-600 underline underline-offset-4 items-center min-h-11">東京都の補助金</Link></li>
+                <li><Link href="/simulation" className="inline-flex font-bold text-navy-600 underline underline-offset-4 items-center min-h-11">補助金シミュレーター</Link></li>
+                <li><Link href="/guide" className="inline-flex font-bold text-navy-600 underline underline-offset-4 items-center min-h-11">導入ガイド一覧</Link></li>
+                <li><Link href="/editorial-policy" className="inline-flex font-bold text-navy-600 underline underline-offset-4 items-center min-h-11">記事の編集方針</Link></li>
               </ul>
             </div>
             <p className="text-[12px] text-ink-3">
-              <a href="/feed.xml" className="inline-flex min-h-11 items-center underline underline-offset-4">RSSフィード</a>
+              <a href="/feed.xml" className="inline-flex underline underline-offset-4 items-center min-h-11">RSSフィード</a>
             </p>
           </aside>
         </div>

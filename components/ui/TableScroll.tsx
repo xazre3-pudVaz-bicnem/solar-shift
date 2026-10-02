@@ -13,13 +13,13 @@ export function TableScroll({
   children,
   label,
   className = "",
+  bordered = false,
   hintBelow = "md",
 }: {
   children: ReactNode;
   /** 読み上げ用の表の名前（例：「葛飾区の助成額の一覧」） */
   label: string;
   className?: string;
-  /** 以前の指定の名残（いまは常に枠線つき） */
   bordered?: boolean;
   hintBelow?: "sm" | "md";
 }) {
@@ -27,11 +27,11 @@ export function TableScroll({
     <div className={className}>
       <p className={`mb-1.5 flex items-center justify-end gap-1 text-[12px] font-bold text-ink-3 ${hintBelow === "sm" ? "sm:hidden" : "md:hidden"}`} aria-hidden="true">
         横にスクロールできます
-        <svg className="h-3 w-3" viewBox="0 0 20 20" fill="none">
+        <svg className="h-3 w-3 animate-bob-x" viewBox="0 0 20 20" fill="none">
           <path d="M4 10h11m0 0-4-4m4 4-4 4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </p>
-      <div role="group" aria-label={label} tabIndex={0} className="overflow-x-auto rounded-lg border border-line bg-white">
+      <div role="group" aria-label={label} tabIndex={0} className={`overflow-x-auto rounded-2xl bg-white shadow-card ${bordered ? "border border-line" : ""}`}>
         {children}
       </div>
     </div>

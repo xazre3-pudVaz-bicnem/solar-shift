@@ -14,10 +14,10 @@ export function FitStepChart({ className = "", compact = false }: { className?: 
   const [hi, lo] = fit.residential.steps;
   const max = Math.max(...years.map((y) => y.yenPerKwh));
   return (
-    <figure className={`rounded-lg bg-white p-5 sm:p-8 border border-line ${className}`} {...reveal()}>
+    <figure className={`rounded-3xl bg-white p-5 shadow-card sm:p-8 ${className}`} {...reveal()}>
       <div className={`grid items-end gap-6 ${compact ? "" : "lg:grid-cols-[1fr_15rem]"}`}>
         <div>
-          <p className="font-heading text-base font-bold text-navy-900 sm:text-[17px]">
+          <p className="font-heading text-[15px] font-bold text-navy-900 sm:text-[17px]">
             {fit.fiscalYear}の売電価格（住宅用10kW未満・{fit.residential.termYears}年間）
           </p>
           <div className="relative mt-5 flex h-52 items-end gap-1.5 sm:h-60 sm:gap-2.5">
@@ -26,7 +26,7 @@ export function FitStepChart({ className = "", compact = false }: { className?: 
               return (
                 <div key={y.year} className="flex h-full flex-1 flex-col items-center justify-end">
                   <div
-                    className={`grow-y w-full rounded-t-lg ${high ? "bg-orange-500" : "bg-navy-300"}`}
+                    className={`grow-y w-full rounded-t-lg ${high ? "bg-orange-500" : "bg-green-400"}`}
                     style={{ height: `${(y.yenPerKwh / max) * BAR_MAX}%`, ...growDelay(150 + i * 70) }}
                   />
                 </div>
@@ -35,11 +35,11 @@ export function FitStepChart({ className = "", compact = false }: { className?: 
             {/* 棒の上のラベル */}
             <p className="absolute left-0 w-[40%] text-center font-heading font-black text-navy-900" style={{ bottom: `calc(${BAR_MAX}% + 4px)` }}>
               <span className="num-xl text-[34px] text-orange-600 sm:text-[44px]">{hi.yenPerKwh}</span>
-              <span className="text-[13px] sm:text-base">円/kWh</span>
+              <span className="text-[13px] sm:text-[15px]">円/kWh</span>
             </p>
             <p className="absolute left-[40%] w-[60%] text-center font-heading font-black text-navy-900" style={{ bottom: `calc(${(lo.yenPerKwh / max) * BAR_MAX}% + 4px)` }}>
-              <span className="num-xl text-[28px] text-navy-700 sm:text-[36px]">{lo.yenPerKwh}</span>
-              <span className="text-[13px] sm:text-base">円/kWh</span>
+              <span className="num-xl text-[28px] text-green-600 sm:text-[36px]">{lo.yenPerKwh}</span>
+              <span className="text-[13px] sm:text-[15px]">円/kWh</span>
             </p>
           </div>
           <div className="border-t-[3px] border-navy-900" />
@@ -54,15 +54,15 @@ export function FitStepChart({ className = "", compact = false }: { className?: 
         </div>
 
         <ul className="space-y-3 text-[14px] leading-[1.7]">
-          <li className="rounded-lg bg-orange-50 px-4 py-3">
+          <li className="rounded-2xl bg-orange-50 px-4 py-3">
             <span className="mr-2 inline-block h-3 w-3 rounded-sm bg-orange-500" aria-hidden="true" />
             <strong className="text-navy-900">{hi.label}</strong>
             <span className="block text-ink-2">
               {hi.yenPerKwh}円/kWh。導入初期に回収を前倒しできる期間。
             </span>
           </li>
-          <li className="rounded-lg bg-paper-2 px-4 py-3">
-            <span className="mr-2 inline-block h-3 w-3 rounded-sm bg-navy-300" aria-hidden="true" />
+          <li className="rounded-2xl bg-green-50 px-4 py-3">
+            <span className="mr-2 inline-block h-3 w-3 rounded-sm bg-green-400" aria-hidden="true" />
             <strong className="text-navy-900">{lo.label}</strong>
             <span className="block text-ink-2">
               {lo.yenPerKwh}円/kWh。売るより自宅で使うほうが有利になりやすい期間。

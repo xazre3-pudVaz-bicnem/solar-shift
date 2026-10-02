@@ -58,6 +58,9 @@ components/
   subsidy/           SubsidyTable / SubsidyCard / BigNumbers / SubsidyBars / SubsidyMatrix / SubsidyCalculator / ApplicationTimeline / ...
   product/           MakerShowcase（取扱メーカーの一覧）/ ProductCatalog / ProductCard / ProductComparison / CompareGuide
   works/             WorksCard（施工事例のカード）
+  area/              AreaCard / NeighborAreaPage（周辺の区のページ）/ ApplyOrderFigure / AreaMapFigure / PublicSolarFigure
+  guide/             PaybackCalculator（回収年数の試算）/ PaybackFormulaFigure
+  glossary/          GlossaryList（用語集の一覧と絞り込み）
   blog/              BlogIndex / CategoryIndex / ArticleCard / ArticleBody / RelatedArticles / AuthorBox
   chat/              ChatPanel（開いたときに初めて読み込む）
 data/
@@ -66,9 +69,13 @@ data/
   sources.ts         出典の登録簿（ページの参考資料・記事の出典・品質ゲートが共有）
   products.ts        商品データ（status: published のみ公開）
   manufacturers.ts   メーカー一覧（relationship: candidate の間は名前を出さない）
-  works.ts           施工事例（空。架空事例は入れない）
+  works.ts           施工事例（運営者から受け取った、掲載の許可のある事例だけ。架空事例は入れない）
   voices.ts          お客様の声（空）
   areas.ts           対応エリア（primary / secondary / planned）
+  ward-programs.ts   周辺の区（足立区・墨田区・江戸川区）の補助金の要点。区の公式ページで確かめた内容だけ
+  katsushika-public-solar.ts  葛飾区が公表している、区の公共施設の太陽光発電と想定発電量
+  solar-assumptions.ts  国の委員会が買取価格を決めるときの想定値（回収年数の試算の初期値）
+  glossary.ts        用語集（説明は事実シートで確かめられる内容だけ）
   faq.ts             FAQ（チャットの回答にも使う）
   guides.ts          導入ガイドの登録簿（1ページ1検索意図）
   blog-categories.ts ブログカテゴリ（紹介文 lead・親ページ pillarLinks つき）
@@ -84,6 +91,7 @@ lib/
   og.tsx / og-pages.ts   OG 画像の描画と、対象ページの一覧
   page-labels.ts     パス → 表示名（リンクの文言に URL を出さないため）
   subsidy-calc.ts    シミュレーターの計算（純関数）
+  payback.ts         回収年数の計算（純関数。単価などは呼び出し側から渡す）
   blog.ts            記事の読み込み・関連記事・ページ送り
   blog-generator/    記事自動生成の共通コア（topics / facts / claims / validate / generate）
   chat/              チャットの共通コア（prompt / scripted / guard / respond）
@@ -118,6 +126,17 @@ scripts/             generate-blog-post.ts / blog-audit.ts / blog-selftest.ts / 
 6. `lib/blog-generator/facts.ts` の `allowedYenAmounts` に新しい単価・上限があれば追加。単価（◯万円/kW など）は `lib/blog-generator/validate.ts` の `allowedUnit` にも追加
 7. 上限額・単価が変わったら `lib/chat/guard.ts` の `ALLOWED_CAPS` / `ALLOWED_UNIT` も更新
 8. `npm run facts:audit` / `npm run blog:audit` / `npm run chat:selftest` を回して、既存のページ・記事・チャットに影響が無いかを確かめる
+
+### 周辺の区（足立区・墨田区・江戸川区）の制度の更新
+
+1. 各区の公式ページ（とパンフレット）を開いて、金額・受付期間・条件を確かめる
+2. `data/ward-programs.ts` を直す（`pageUpdatedAt` に区のページの更新日、`sources[].verifiedAt` に確認日）
+3. `docs/VERIFIED_FACTS.md` の、その区の節を同じ内容に直す
+4. `npm run build && npm run facts:audit && npm run seo:check` で確かめる
+
+葛飾区の「交付額確定通知書の発送までの目安」（`data/subsidies/katsushika-details.ts` の `katsushikaNoticeEstimate`）は、区が随時書き換える値。ページには「いつの時点の案内か」が出るので、区のページを見て、日付と一緒に直す。
+
+国の委員会の想定値（`data/solar-assumptions.ts`）は、年度が変わったら、新しい年度の「調達価格等に関する意見」を読み直して直す。
 
 ## 商品
 
@@ -231,7 +250,7 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 
 - **SEO マップ**（`lib/seo-map.ts`）：ページごとに、主キーワード・関連キーワード・検索意図・役割・title や H1 に必ず入れる語・index するかを1か所で決めている。主キーワードが2ページで重ならないこと、title / H1 に必要な語が入っていること、canonical / robots / sitemap が設定どおりであることを `npm run seo:check` がビルド結果から確かめる
 - **役割分担**：`/` ＝ 葛飾区 太陽光／蓄電池、`/subsidy/katsushika` ＝ 葛飾区 太陽光 補助金・かつしかエコ助成金、`/area/katsushika` ＝ 葛飾区 太陽光 業者・施工・会社、`/solar` ＝ 住宅用 太陽光発電、`/battery` ＝ 家庭用 蓄電池 選び方。ブログは固定ページで扱いきれない細かい疑問（ロングテール）を受け持ち、記事の末尾から親の固定ページへ案内する
-- **メタデータ**：全ページ `buildMetadata()`（title / description / canonical / OG / Twitter / RSS）。タイトルの末尾は `｜SOLAR SHIFT`
+- **メタデータ**：全ページ `buildMetadata()`（title / description / canonical / OG / Twitter / RSS）。タイトルの末尾は `｜SOLAR SHIFT`。ただし本体の幅が 50（全角25字）を超えるタイトルには付けない（`lib/seo.ts` の `fullTitle`）
 - **OG 画像**：ページごとに日本語の見出し入りで生成（`/og/…`）。対象は `lib/og-pages.ts`、固定ページの見出しは `lib/routes.ts` の `ogTitle`
 - **構造化データ**：Organization / LocalBusiness / WebSite（全ページ）、BreadcrumbList、FAQPage、Article / BlogPosting（出典を citation に）、Service、HowTo、Blog、ItemList、CollectionPage / AboutPage / ContactPage、WebApplication、Product（価格未確定なら Offer なし）。口コミ・評価は出さない
 - **noindex にするページ**：お客様の声（中身が入るまで）、記事が3本未満のカテゴリ、404。どれも sitemap に載せない
@@ -241,18 +260,26 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 - **/llms.txt**：AI 検索向けの要約（運営・補助金の数値と確認日・主要ページ）。補助金の数値は `data/subsidies` から自動で出る
 - **ブログ一覧**：1ページ12件でページを分ける（`/blog/page/2` …）
 - **導入ガイド**：一覧ページ `/guide` がハブ。ガイドを足したら `data/guides.ts` に登録し、`app/guide/page.tsx` の `GROUPS` に入れる
+- **周辺の区のページ**（`/area/adachi` `/area/sumida` `/area/edogawa`）：主キーワードは「◯◯区 太陽光 補助金」。内容は `data/ward-programs.ts` だけから出す（`components/area/NeighborAreaPage.tsx`）。区ごとに制度が違うので、葛飾区の説明を流用しない
+- **用語集**（`/glossary`）：`data/glossary.ts`。説明は事実シートで確かめられる内容だけ。構造化データは DefinedTermSet
+- **回収年数のガイド**（`/guide/solar-payback`）：式と前提を示し、見積書の数字を入れて試算する道具（`components/guide/PaybackCalculator.tsx`、計算は `lib/payback.ts`）。初期値は、国の委員会の想定値（`data/solar-assumptions.ts`）と FIT の単価だけ。相場の金額は初期値にしない
+- **よくある質問の構造化データ**：共通の質問（`data/faq.ts`）は `/faq` だけでマークアップする。ほかのページは、そのページにしか無い質問だけを出す（`FaqSection`）。重複は `seo:check` が落とす
 - **ページを足すとき**：`lib/routes.ts` に追加（sitemap・リンク検査・OG 画像が連動）、`lib/nav.ts` に表示名、`lib/seo-map.ts` にキーワードと役割を入れる
 - **地域名**：亀有・金町・新小岩・青戸・柴又・高砂・水元・立石・四つ木・堀切 は `/area/katsushika` の中で「区内の対応エリア」として扱う。町名ごとの薄いページは作らない
 
 ## デザインと動き
 
-- 配色はディープネイビー × ソーラーオレンジ。地の色は白とライトグレー（`paper-2`）。緑は「受付中」などの状態表示とチェックマークだけに使う。色は `app/globals.css` の `@theme`
+- 配色は、クリーム（`cream`）の地に、ソーラーオレンジと緑。文字はネイビー。色と影は `app/globals.css` の `@theme`（`cream` / `beige` / `marker` / `shadow-card` / `shadow-pop`）
 - 主ボタンは `orange-500` の地にネイビーの文字（白文字はコントラストが足りない）。オレンジ色の「文字」は `accent-text`
-- 角丸は小さめ（`rounded-md` / `rounded-lg`）、影は使わず枠線で区切る。装飾のアニメーションは置かない
-- 画像は役割で使い分ける。実写＝ヒーロー・住宅・設備、人物イラスト＝よくある質問・相談・流れ、設備アイコン＝サービス・記事カード。1つの区画で混ぜない
-- 登場アニメーションは `{...reveal()}`（`lib/reveal.ts`）の控えめなフェードだけ。表示の切り替えは `RevealObserver` が行う。JS が動かなければ全部表示されたまま
+- 白い角丸カード（`rounded-2xl` / `rounded-3xl`）と、やわらかい影。見出しには、オレンジの吹き出しラベルと、蛍光ペン（`.marker`）を使う
+- 人物イラスト・スタッフのイラスト・設備アイコン・写真を、区画ごとに添える（`data/images.ts`）。本文の途中の「ここが大事」は `StaffTip`（スタッフのイラスト＋吹き出し）
+- **TOP のヒーローには、ボタンもリンクも置かない**（最初の導線は、ヒーロー直下の文字リンク）
+- 図解は部品にしてある：電気の流れ（`EnergyFlowFigure`）、FIT の単価（`FitStepChart`）、区ごとの申請の順番（`components/area/ApplyOrderFigure`）、対応エリアの位置関係（`AreaMapFigure`）、区の公共施設の発電量（`PublicSolarFigure`）、回収年数の式（`components/guide/PaybackFormulaFigure`）
+- 登場の動きは `{...reveal()}`（`lib/reveal.ts`）。下から・左右から・ポンと出る、を選べる。表示の切り替えは `RevealObserver` が行い、JS が動かなければ全部表示されたまま
+- 飾りの動き（`animate-float` / `twinkle` / `bob-x` / `flow-x` など）は、**回数を決めて**あり、画面に入っているあいだだけ動く（`RevealObserver` が `data-inview` を付ける）。無限に回る動きは足さない
+- ヒーローの登場は `.enter-rise` / `.enter-slide` / `.enter-pop`（1回だけ）。蛍光ペンは `.marker-draw` で左から引く。h1 と写真は、透明から始めない（最初の描画を遅らせないため）
 - 横に長い表は `TableScroll`、本文（`.prose-ss`）の中の表は `ProseTable` を使う（スクロールの案内とキーボード操作）
-- スマホ：押す場所は 44px 以上、入力欄の文字は 16px。下の固定バーは高さ 52px で「チャット・試算・電話・相談」。TOP ではヒーローを過ぎてから出す。メニューは `details` のアコーディオン。長いページには目次（`Toc`）
+- スマホ：押す場所は 44px 以上、入力欄の文字は 16px。下の固定バーは「チャット・試算・電話・無料相談」。TOP ではヒーローを過ぎてから出す。メニューは `details` のアコーディオン
 
 ### 表示速度のために決めていること
 

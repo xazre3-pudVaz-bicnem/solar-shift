@@ -6,7 +6,6 @@ import { images } from "@/data/images";
 
 export const metadata: Metadata = {
   title: "ページが見つかりません | SOLAR SHIFT",
-  robots: { index: false, follow: false },
 };
 
 const LINKS = [
@@ -33,7 +32,7 @@ export default function NotFound() {
           <ul className="mt-8 grid gap-2 sm:grid-cols-2">
             {LINKS.map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="block rounded-lg border border-line bg-white px-4 py-3 text-base font-bold text-navy-900 duration-200 hover:border-orange-400 hover:bg-paper-2 transition-colors">
+                <Link href={l.href} className="block rounded-2xl border border-line bg-white px-4 py-3 text-[15px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
                   {l.label} →
                 </Link>
               </li>

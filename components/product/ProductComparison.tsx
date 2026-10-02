@@ -25,7 +25,7 @@ export function ProductComparison({ products, category }: { products: Product[];
     <TableScroll label="商品の比較表">
       <table className="w-full min-w-[40rem] border-collapse text-[14px]">
         <thead>
-          <tr className="bg-navy-900 text-white">
+          <tr className="bg-green-600 text-white">
             <th className="border border-line px-3 py-2 text-left font-bold">商品</th>
             {cols.map((c) => (
               <th key={c.label} className="border border-line px-3 py-2 text-left font-bold">{c.label}</th>

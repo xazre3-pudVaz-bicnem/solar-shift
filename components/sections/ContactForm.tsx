@@ -84,14 +84,14 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
 
   if (status === "done") {
     return (
-      <div className="rounded-lg border border-l-4 border-line border-l-navy-900 bg-white p-6" role="status">
+      <div className="rounded-3xl border-2 border-green-500 bg-white p-6 shadow-card" role="status">
         <p className="text-[18px] font-bold text-navy-900">お問い合わせを受け付けました</p>
         <p className="mt-2 text-base leading-[1.8] text-ink-2">
           内容を確認のうえ、担当者よりご連絡します。
           {telDisplay ? (
             <>
               お急ぎの場合は、お電話（
-              <a href={`tel:${tel}`} className="font-bold text-navy-700 underline underline-offset-4">
+              <a href={`tel:${tel}`} className="font-bold text-navy-600 underline underline-offset-4">
                 {telDisplay}
               </a>
               ）でも受け付けています。
@@ -106,34 +106,34 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
 
   if (status === "unconfigured") {
     return (
-      <div className="rounded-lg border border-l-4 border-orange-200 border-l-orange-500 bg-orange-50 p-6">
-        <p className="text-[17px] font-bold text-navy-900">フォーム送信は現在準備中です</p>
+      <div className="rounded-3xl border-2 border-orange-200 bg-orange-50 p-6">
+        <p className="text-[16px] font-bold text-navy-900">フォーム送信は現在準備中です</p>
         <p className="mt-2 text-base leading-[1.8] text-ink-2">お手数ですが、下のボタンからメールでお送りください。ご入力いただいた内容は、メールの本文にそのまま入ります。</p>
         <p className="mt-4">
           <a
             href={`mailto:${fallbackEmail}?subject=${mailSubject}&body=${encodeURIComponent(mailBody)}`}
-            className="inline-flex min-h-12 items-center justify-center rounded-md bg-orange-500 px-6 py-2 text-center font-heading text-base leading-[1.35] font-bold text-navy-950 hover:bg-orange-400"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-cta px-6 py-2 text-center font-heading text-[15px] leading-[1.35] font-bold text-white shadow-pill hover:bg-cta-dark"
           >
             入力した内容をメールで送る
           </a>
         </p>
         <p className="mt-4 text-base leading-[1.9] text-ink-2">
           メール：
-          <a href={`mailto:${fallbackEmail}?subject=${mailSubject}`} className="inline-flex min-h-11 items-center font-bold break-all text-navy-700 underline underline-offset-4">
+          <a href={`mailto:${fallbackEmail}?subject=${mailSubject}`} className="inline-flex min-h-11 items-center font-bold break-all text-navy-600 underline underline-offset-4">
             {fallbackEmail}
           </a>
           {telDisplay && (
             <>
               <br />
               お電話：
-              <a href={`tel:${tel}`} className="inline-flex min-h-11 items-center font-bold text-navy-700 underline underline-offset-4">
+              <a href={`tel:${tel}`} className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4">
                 {telDisplay}
               </a>
             </>
           )}
         </p>
         <p className="mt-1">
-          <button type="button" onClick={() => setStatus("idle")} className="min-h-11 text-[15px] font-bold text-navy-700 underline underline-offset-4">
+          <button type="button" onClick={() => setStatus("idle")} className="min-h-11 text-[15px] font-bold text-navy-600 underline underline-offset-4">
             入力内容に戻る
           </button>
         </p>
@@ -176,17 +176,17 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
         <textarea name="message" rows={5} value={values.message} onChange={onChange("message")} required className={`${inputCls} h-auto py-3`} />
       </Field>
 
-      <details className="group rounded-md border border-line bg-paper-2">
+      <details className="group overflow-hidden rounded-2xl border-2 border-dashed border-orange-200 bg-cream">
         <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-2 [&::-webkit-details-marker]:hidden">
           <span className="flex-1 text-[15px] leading-[1.5] font-bold text-navy-900">
             分かる範囲で教えてください
             <span className="block text-[13px] font-normal text-ink-2">任意です。書かなくても送れます</span>
           </span>
-          <svg className="h-4 w-4 shrink-0 text-navy-900 transition-transform duration-200 group-open:rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <svg className="h-4 w-4 shrink-0 text-orange-600 transition-transform duration-200 group-open:rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="m3.5 6 4.5 4.5L12.5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </summary>
-        <div className="grid gap-5 border-t border-line bg-white px-4 py-5 sm:grid-cols-2">
+        <div className="grid gap-5 border-t-2 border-dashed border-orange-200 bg-white px-4 py-5 sm:grid-cols-2">
           <Field label="町名">
             <input type="text" name="town" autoComplete="address-level3" placeholder="例：亀有" value={values.town} onChange={onChange("town")} className={inputCls} />
           </Field>
@@ -232,14 +232,14 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
       </div>
 
       {error && (
-        <p role="alert" className="rounded-md border border-l-4 border-orange-200 border-l-orange-500 bg-orange-50 px-4 py-2.5 text-[15px] font-bold text-accent-text">
+        <p role="alert" className="rounded-xl border-l-8 border-orange-500 bg-orange-50 px-4 py-2.5 text-[15px] font-bold text-accent-text">
           {error}
         </p>
       )}
 
       <p className="text-[14px] leading-[1.8] text-ink-2">
         ご入力いただいた情報は、お問い合わせへの回答のためにのみ使用します。詳しくは
-        <Link href="/privacy" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">
+        <Link href="/privacy" className="mx-1 inline-block py-1 font-bold text-navy-600 underline underline-offset-4">
           プライバシーポリシー
         </Link>
         をご確認ください。
@@ -248,7 +248,7 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
       <button
         type="submit"
         disabled={status === "sending"}
-        className="inline-flex min-h-14 w-full items-center justify-center rounded-md bg-orange-500 px-10 font-heading text-[17px] font-bold text-navy-950 transition-colors duration-200 hover:bg-orange-400 disabled:opacity-60 sm:w-auto"
+        className="inline-flex h-14 w-full items-center justify-center rounded-full bg-cta px-10 font-heading text-[17px] font-bold text-white shadow-pill transition-transform duration-200 hover:-translate-y-0.5 hover:bg-cta-dark disabled:opacity-60 sm:w-auto min-h-14"
       >
         {status === "sending" ? "送信中…" : "この内容で送信する"}
       </button>
@@ -256,14 +256,14 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
   );
 }
 
-const inputCls = "h-12 w-full rounded-md border border-line-2 bg-white px-3 text-[16px] text-ink focus:border-navy-900";
+const inputCls = "h-12 w-full rounded-xl border-2 border-line-2 bg-white px-3 text-[16px] text-ink focus:border-green-600";
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
       <span className="mb-1.5 flex items-center gap-2 text-[15px] font-bold text-navy-900">
         {label}
-        {required && <span className="rounded-sm bg-navy-900 px-1.5 py-[1px] text-[11px] font-bold text-white">必須</span>}
+        {required && <span className="rounded-full bg-cta px-2 py-[1px] text-[11px] font-bold text-white">必須</span>}
       </span>
       {children}
       {hint && <span className="mt-1 block text-[13px] leading-[1.6] text-ink-2">{hint}</span>}

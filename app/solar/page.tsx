@@ -33,7 +33,7 @@ export default function SolarPage() {
       eyebrow="太陽光発電"
       heroImage={images.houseRoofSkyWide}
       tip={{ title: "容量の決め方", body: <>容量は「<strong className="marker">屋根に載る枚数・電気の使用量・補助金の上限</strong>」の3つから決めます。大きければ得、とは限りません。</>, image: images.poseIdea }}
-      title={<>住宅用太陽光発電<span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">屋根でつくった電気を、まず自宅で使う</span></>}
+      title={<>住宅用太陽光発電<span className="block text-[0.7em] text-ink-2">屋根でつくった電気を、まず自宅で使う</span></>}
       lead="太陽光発電は、屋根に載せたパネルで発電した電気を自宅で使い、余った分を電力会社に売る仕組みです。電気を「買う量」を減らすことが本来の目的で、売電は補助的な収入と考えるのが2026年度以降の基本です。"
       conclusion="住宅用太陽光発電は「自家消費が主、売電が従」で考えます。2026年度のFIT制度は最初の4年間が24円/kWh、5〜10年目が8.3円/kWhと前半に手厚い設定で、葛飾区では区の助成（6万円/kW・上限30万円）と東京都の助成（既存住宅3.75kW超は12万円/kW）が検討対象です。導入の可否は屋根の向き・面積・影・築年数で決まるため、現地調査が出発点になります。"
       points={[

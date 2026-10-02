@@ -1,3 +1,6 @@
+import { reveal } from "@/lib/reveal";
+import { images } from "@/data/images";
+import { PageHeader } from "@/components/ui/PageHeader";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,13 +9,12 @@ import { buildMetadata, formatDateJa } from "@/lib/seo";
 import { publishedWorks, getWork, workArea, WORK_BILL_NOTE, type Work } from "@/data/works";
 import { areasWithPage } from "@/data/areas";
 import { Container } from "@/components/ui/Container";
-import { Breadcrumb } from "@/components/layout/Breadcrumb";
 import { DefinitionList } from "@/components/ui/DefinitionList";
 import { Callout } from "@/components/ui/Callout";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { LastUpdated } from "@/components/ui/LastUpdated";
 import { WorksCard, workIcon } from "@/components/works/WorksCard";
-import { ArrowIcon } from "@/components/ui/Button";
+import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, articleSchema } from "@/lib/schema";
 
@@ -71,7 +73,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
   ];
   const areaPage = w.areaSlug ? areasWithPage.find((a) => a.slug === w.areaSlug) : undefined;
   const rows = [
-    { term: "地域", description: areaPage ? <Link href={`/area/${areaPage.slug}`} className="inline-flex min-h-11 items-center font-bold text-navy-700 underline underline-offset-4">{area}</Link> : area },
+    { term: "地域", description: areaPage ? <Link href={`/area/${areaPage.slug}`} className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4">{area}</Link> : area },
     { term: "お客様", description: w.customer },
     ...(w.housingType ? [{ term: "住宅", description: w.housingType }] : []),
     ...(w.buildingAge ? [{ term: "築年数", description: w.buildingAge }] : []),
@@ -82,59 +84,72 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
     ...(w.installedAt ? [{ term: "施工した年月", description: w.installedAt.replace("-", "年") + "月" }] : []),
     ...(w.constructionPeriod ? [{ term: "工事期間", description: w.constructionPeriod }] : []),
   ];
-  const others = publishedWorks.filter((x) => x.slug !== w.slug).slice(0, 3);
+  // ほかの事例：いつも先頭の3件を出すと、後ろの事例へのリンクが少なくなる。自分の次の事例から順に回す
+  const index = publishedWorks.findIndex((x) => x.slug === w.slug);
+  const others = [...publishedWorks.slice(index + 1), ...publishedWorks.slice(0, index)].slice(0, 3);
   const icon = workIcon(w);
   const cover = w.images[0];
 
   return (
     <>
-      <Container className="pt-2 sm:pt-3">
-        <Breadcrumb crumbs={crumbs} />
-      </Container>
-      <Container size="prose" className="py-8 sm:py-12">
-        <header className="border-b border-line pb-7">
-          <p className="flex items-center gap-3 font-heading text-[13px] leading-[1.6] font-bold tracking-[0.06em] text-accent-text">
-            <span className="h-px w-8 shrink-0 bg-current" aria-hidden="true" />
-            施工事例｜{w.label}
-          </p>
-          <h1 className="mt-3 text-[26px] leading-[1.5] font-black text-navy-900 sm:text-[34px]">{w.title}</h1>
-          <p className="mt-3 text-base leading-[1.8] text-ink-2">
-            {area}・{w.customer}
-          </p>
-          <LastUpdated updatedAt={w.updatedAt} publishedAt={w.publishedAt} className="mt-4" />
-        </header>
+      <PageHeader
+        crumbs={crumbs}
+        eyebrow="施工事例"
+        title={
+          <>
+            <span className="mb-2 block text-[0.6em] leading-[1.5] text-ink-2">{w.label}の施工事例</span>
+            {w.title}
+          </>
+        }
+        lead={`${area}・${w.customer}`}
+        image={images.peopleCoupleHappy}
+      >
+        <LastUpdated updatedAt={w.updatedAt} publishedAt={w.publishedAt} className="mt-5" />
+      </PageHeader>
 
+      <Container size="prose" className="py-10 sm:py-14">
         {cover && (
-          <figure className="mt-8">
-            <Image src={cover.src} alt={cover.alt} width={1200} height={800} sizes="(max-width: 767px) 100vw, 720px" className="aspect-[3/2] w-full rounded-lg object-cover" preload />
+          <figure>
+            <div className="overflow-hidden rounded-[2rem] shadow-card">
+              <Image src={cover.src} alt={cover.alt} width={1200} height={800} sizes="(max-width: 767px) 100vw, 720px" className="aspect-[3/2] w-full object-cover" preload />
+            </div>
             {cover.caption && <figcaption className="mt-2 text-[13px] text-ink-3">{cover.caption}</figcaption>}
           </figure>
         )}
 
         {/* 要点：設備と、導入前後の電気代 */}
-        <section className="mt-8" aria-labelledby="summary-h">
+        <section className={cover ? "mt-8" : ""} aria-labelledby="summary-h">
           <h2 id="summary-h" className="sr-only">
             この事例の要点
           </h2>
-          <div className="overflow-hidden rounded-lg border border-line">
-            <div className="flex items-center gap-4 bg-paper-2 px-5 py-4">
-              {!cover && <Image src={icon.src} alt="" width={icon.width} height={icon.height} sizes="64px" className="h-16 w-16 shrink-0 object-contain" />}
+          <div className="rounded-3xl border-2 border-orange-200 bg-white p-4 shadow-card sm:p-6" {...reveal(0, "zoom")}>
+            <div className="flex items-center gap-4">
+              {!cover && (
+                <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-cream">
+                  <Image src={icon.src} alt="" width={icon.width} height={icon.height} sizes="64px" className="h-16 w-16 animate-float object-contain" />
+                </span>
+              )}
               <div className="min-w-0">
-                <p className="text-[13px] font-bold text-ink-2">導入した設備</p>
-                <p className="mt-0.5 text-[19px] leading-[1.5] font-black text-navy-900">{w.equipment}</p>
+                <p>
+                  <span className="inline-block rounded-full bg-green-600 px-3 py-[2px] text-[12px] font-bold text-white">導入した設備</span>
+                </p>
+                <p className="mt-1.5 text-[19px] leading-[1.5] font-black text-navy-900 sm:text-[21px]">{w.equipment}</p>
               </div>
             </div>
             {w.billBefore && w.billAfter && (
-              <dl className="grid grid-cols-2 gap-px border-t border-line bg-line text-center">
-                <div className="bg-white px-3 py-4">
-                  <dt className="text-[13px] font-bold text-ink-2">導入前の電気代</dt>
-                  <dd className="mt-1 text-[20px] leading-[1.4] font-bold text-ink sm:text-[22px]">{w.billBefore}</dd>
-                </div>
-                <div className="bg-white px-3 py-4">
-                  <dt className="text-[13px] font-bold text-ink-2">導入後の電気代</dt>
-                  <dd className="mt-1 text-[20px] leading-[1.4] font-black text-accent-text sm:text-[22px]">{w.billAfter}</dd>
-                </div>
-              </dl>
+              <div className="mt-4 grid items-center gap-2 text-center min-[400px]:grid-cols-[1fr_auto_1fr] sm:gap-3">
+                <p className="rounded-2xl border-2 border-line bg-white px-2 py-3.5">
+                  <span className="block text-[13px] font-bold text-ink-2">導入前の電気代</span>
+                  <span className="mt-1 block text-[19px] leading-[1.4] font-bold whitespace-nowrap text-ink min-[400px]:text-[18px] sm:text-[24px]">{w.billBefore}</span>
+                </p>
+                <svg className="mx-auto h-7 w-7 rotate-90 text-orange-500 min-[400px]:rotate-0 min-[400px]:animate-bob-x" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M4 10h11m0 0-4-4m4 4-4 4" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <p className="rounded-2xl border-2 border-orange-300 bg-orange-50 px-2 py-3.5">
+                  <span className="block text-[13px] font-bold text-ink-2">導入後の電気代</span>
+                  <span className="mt-1 block text-[19px] leading-[1.4] font-black whitespace-nowrap text-accent-text min-[400px]:text-[18px] sm:text-[24px]">{w.billAfter}</span>
+                </p>
+              </div>
             )}
           </div>
           {w.billBefore && w.billAfter && <p className="mt-3 text-[13px] leading-[1.8] text-ink-2">※ {WORK_BILL_NOTE}</p>}
@@ -152,7 +167,7 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
         </section>
 
         <section className="mt-10" aria-labelledby="spec-h">
-          <h2 id="spec-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">
+          <h2 id="spec-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">
             事例の概要
           </h2>
           <DefinitionList rows={rows} className="mt-5" />
@@ -160,13 +175,15 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
 
         {w.images.length > 1 && (
           <section className="mt-10" aria-labelledby="photos-h">
-            <h2 id="photos-h" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">
+            <h2 id="photos-h" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">
               施工写真
             </h2>
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               {w.images.slice(1).map((img) => (
                 <figure key={img.src}>
-                  <Image src={img.src} alt={img.alt} width={800} height={600} sizes="(max-width: 639px) 100vw, 360px" className="aspect-[4/3] w-full rounded-lg object-cover" />
+                  <div className="overflow-hidden rounded-3xl shadow-card">
+                    <Image src={img.src} alt={img.alt} width={800} height={600} sizes="(max-width: 639px) 100vw, 360px" className="aspect-[4/3] w-full object-cover" />
+                  </div>
                   {img.caption && <figcaption className="mt-1 text-[13px] text-ink-3">{img.caption}</figcaption>}
                 </figure>
               ))}
@@ -183,18 +200,20 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
         </Callout>
 
         <nav className="mt-10" aria-labelledby="related-h">
-          <h2 id="related-h" className="text-[18px] leading-[1.5] font-black text-navy-900">
+          <h2 id="related-h" className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">
             この事例に関係するページ
           </h2>
-          <ul className="mt-3 divide-y divide-line overflow-hidden rounded-lg border border-line bg-white">
-            {relatedLinks(w).map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="flex min-h-14 items-center gap-3 px-4 py-2.5 hover:bg-paper-2">
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            {relatedLinks(w).map((l, i) => (
+              <li key={l.href} {...reveal((i % 2) * 70)}>
+                <Link href={l.href} className="group flex h-full min-h-14 items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
                   <span className="min-w-0 flex-1">
                     <span className="block text-base font-bold text-navy-900">{l.label}</span>
                     <span className="block text-[14px] leading-[1.6] text-ink-2">{l.description}</span>
                   </span>
-                  <ArrowIcon className="h-4 w-4 shrink-0 text-accent-text" />
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream text-navy-900">
+                    <ArrowIcon />
+                  </span>
                 </Link>
               </li>
             ))}
@@ -203,29 +222,29 @@ export default async function WorkDetailPage({ params }: { params: Promise<{ slu
       </Container>
 
       {others.length > 0 && (
-        <section className="cv-auto border-t border-line bg-paper-2 py-12 sm:py-16" aria-labelledby="others-h">
+        <section className="cv-auto bg-green-50 py-14 sm:py-20" aria-labelledby="others-h">
           <Container>
-            <h2 id="others-h" className="text-[22px] leading-[1.45] font-black text-navy-900">
-              ほかの施工事例
+            <h2 id="others-h" className="text-center text-[24px] leading-[1.45] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+              ほかの<span className="marker">施工事例</span>
             </h2>
-            <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {others.map((x) => (
-                <li key={x.slug}>
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {others.map((x, i) => (
+                <li key={x.slug} {...reveal(i * 90)}>
                   <WorksCard work={x} />
                 </li>
               ))}
             </ul>
-            <p className="mt-6">
-              <Link href="/works" className="inline-flex min-h-11 items-center font-bold text-navy-700 underline underline-offset-4 hover:text-accent-text">
-                施工事例の一覧へ
-              </Link>
+            <p className="mt-8 text-center">
+              <LinkButton href="/works" variant="secondary">
+                施工事例の一覧へ <ArrowIcon />
+              </LinkButton>
             </p>
           </Container>
         </section>
       )}
 
       <CtaSection title="ご自宅の条件で、設備と補助金を整理します。" body="屋根の形と電気の使い方を伺い、容量の候補と、制度ごとの想定助成額を整理してお伝えします。現地調査・お見積もりは無料です。" />
-      <JsonLd data={graph(articleSchema({ path, title: `${w.label}：${w.title}`, description: descriptionOf(w), datePublished: w.publishedAt, dateModified: w.updatedAt, image: cover?.src, section: "施工事例" }))} />
+      <JsonLd data={graph(articleSchema({ path, title: `${w.label}：${w.title}`, description: descriptionOf(w), datePublished: w.publishedAt, dateModified: w.updatedAt, image: cover?.src, section: "施工事例", location: area }))} />
     </>
   );
 }

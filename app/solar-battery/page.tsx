@@ -39,7 +39,7 @@ export default function SolarBatteryPage() {
       eyebrow="太陽光＋蓄電池"
       heroImage={images.houseBatterySunset}
       tip={{ title: "葛飾区の併設加算", body: <>葛飾区では、太陽光と蓄電池を併設すると<strong className="marker">併設加算（一律5万円）</strong>の対象になります。同時に設置する場合も、すでにある機器に足す場合も対象です。</>, image: images.poseOk }}
-      title={<>太陽光＋蓄電池<span className="block text-[0.7em] text-ink-2">つくった電気を、ためて使う</span></>}
+      title={<>太陽光＋蓄電池のセット導入<span className="block text-[0.7em] text-ink-2">つくった電気を、ためて使う</span></>}
       lead="太陽光発電と蓄電池を組み合わせると、昼につくった電気を夜に使えるようになり、買う電気を減らしながら停電にも備えられます。同時に導入するか、後から追加するかで、工事・機器・補助金の扱いが変わります。"
       conclusion={`太陽光と蓄電池の同時導入は、工事を1回にまとめられること、ハイブリッド型パワーコンディショナで機器を集約できることが主な利点です。葛飾区の併設加算（${addon.amount}）は、同時に設置する場合も、すでにある機器に足す場合も対象になります。同時導入は初期費用が大きくなるため、「夜に使う電気の量」と「停電への備えの必要性」で判断します。既に太陽光がある家は、パワコンの交換時期に合わせた後付けも選択肢です。`}
       points={[

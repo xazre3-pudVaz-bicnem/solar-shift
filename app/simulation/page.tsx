@@ -1,3 +1,5 @@
+import { getPostsForPillar } from "@/lib/blog";
+import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
@@ -19,7 +21,7 @@ import { images } from "@/data/images";
 const PATH = "/simulation";
 
 export const metadata: Metadata = buildMetadata({
-  title: "太陽光・蓄電池 補助金シミュレーター｜葛飾区・東京都の想定助成額を試算",
+  title: "太陽光・蓄電池の補助金シミュレーション｜葛飾区・東京都の助成額を試算",
   description:
     "住宅区分・太陽光の容量・蓄電池の容量・V2H・HEMSの有無を選ぶと、葛飾区（かつしかエコ助成金）と東京都（クール・ネット東京）それぞれの制度名・計算式・想定額・上限・注意点を表示。区と都は別々に表示します（合計は助成対象経費が上限のため）。",
   path: PATH,
@@ -32,24 +34,31 @@ export default function SimulationPage() {
     { name: "補助金シミュレーター", href: PATH },
   ];
   const faqItems = faqsByIds(["subsidy-combination", "subsidy-pre-consultation", "subsidy-tokyo-battery-sii", "subsidy-guarantee"]);
+  // 計算の例を扱った記事を先に出す
+  const posts = getPostsForPillar(["katsushika-subsidy", "tokyo-subsidy"], 3, { path: PATH, prefer: ["solar-5kw-subsidy-how-much", "katsushika-solar-battery-together-subsidy"] });
 
   return (
     <>
       <PageHeader
         crumbs={crumbs}
         eyebrow="いくら補助される？"
-        title="太陽光・蓄電池 補助金シミュレーター"
-        lead="条件を選ぶと、葛飾区と東京都それぞれの制度について「制度名・計算式・想定額・上限・注意事項」を分けて表示します。国の制度は受付状況とともに参考表示します。"
+        title={
+          <>
+            太陽光・蓄電池の補助金シミュレーション
+            <span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">葛飾区・東京都の助成額を、条件を選んで試算</span>
+          </>
+        }
+        lead="補助金のシミュレーションができるページです。条件を選ぶと、葛飾区と東京都それぞれの制度について「制度名・計算式・想定額・上限・注意事項」を分けて表示します。国の制度は受付状況とともに参考表示します。"
         image={images.peopleWomanThink}
       >
-        <LastUpdated updatedAt={siteConfig.subsidyInfoDate} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={siteConfig.contentUpdatedAt} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
         <SubsidyCalculator infoDate={siteConfig.subsidyInfoDate} />
 
-        <div className="mt-12 rounded-lg bg-paper-3 p-6 text-[14px] leading-[1.9] text-ink-2">
-          <p className="text-base font-bold text-navy-900">この試算の前提</p>
+        <div className="mt-12 rounded-3xl bg-beige p-6 text-[14px] leading-[1.9] text-ink-2">
+          <p className="text-[15px] font-bold text-navy-900">この試算の前提</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li>金額は {formatDateJa(siteConfig.subsidyInfoDate)} 時点の公式情報（下記出典）をもとに、制度のルールをそのまま計算した概算です。</li>
             <li>葛飾区の蓄電池（対象経費の1/4）とV2H（本体価格の1/3）は、経費を入力しない場合は上限額で表示します。</li>
@@ -65,7 +74,7 @@ export default function SimulationPage() {
         </div>
 
         <section className="cv-block mt-14" aria-labelledby="faq">
-          <h2 id="faq" className="border-l-[5px] border-orange-500 pl-3 text-[22px] leading-[1.45] font-black text-navy-900">シミュレーターについてよくある質問</h2>
+          <h2 id="faq" className="border-l-[8px] border-orange-500 pl-3 text-[22px] leading-[1.35] font-black text-navy-900">シミュレーターについてよくある質問</h2>
           <FaqSection items={faqItems} withSchema className="mt-5" />
         </section>
 
@@ -80,6 +89,12 @@ export default function SimulationPage() {
         />
       </Container>
 
+      {posts.length > 0 && (
+        <Container className="pb-14">
+          <RelatedArticles posts={posts} title="計算の考え方が分かる記事" />
+        </Container>
+      )}
+
       <CtaSection
         title="試算結果をもとに、わが家の条件で確かめませんか。"
         body="屋根に載る容量、必要な蓄電池の容量、SII登録機器かどうか。現地調査のうえで、制度ごとの想定助成額を整理した見積もりをお出しします。相談は無料です。"
@@ -88,8 +103,13 @@ export default function SimulationPage() {
 
       <JsonLd
         data={graph(
-          webPageSchema({ path: PATH, name: "太陽光・蓄電池 補助金シミュレーター", description: metadata.description as string, dateModified: siteConfig.subsidyInfoDate }),
-          webApplicationSchema({ path: PATH, name: "太陽光・蓄電池 補助金シミュレーター", description: metadata.description as string }),
+          webPageSchema({ path: PATH, mainEntity: "app", name: "太陽光・蓄電池の補助金シミュレーション", description: metadata.description as string, lastReviewed: siteConfig.subsidyInfoDate, dateModified: siteConfig.contentUpdatedAt }),
+          webApplicationSchema({
+            path: PATH,
+            name: "太陽光・蓄電池 補助金シミュレーター",
+            description: metadata.description as string,
+            features: ["葛飾区（かつしかエコ助成金）の想定助成額の試算", "東京都（クール・ネット東京）の想定助成額の試算", "制度ごとの計算式・上限・注意点の表示", "国の制度の受付状況の表示"],
+          }),
         )}
       />
     </>

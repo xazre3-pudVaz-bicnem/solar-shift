@@ -46,6 +46,8 @@ for (const p of extract(/path:\s*"(\/guide\/[^"]*)"/g, read(path.join(ROOT, "dat
     if (slug && /page:\s*\{/.test(block)) routes.add(`/area/${slug}`);
   }
 }
+// エリア（周辺の区。区の補助金を公式ページで確かめた区だけ、ページがある）
+for (const slug of extract(/\n\s{4}slug:\s*"([a-z-]+)",/g, read(path.join(ROOT, "data", "ward-programs.ts")))) routes.add(`/area/${slug}`);
 // ブログ記事・カテゴリ
 const categories = new Set();
 for (const f of walk(path.join(ROOT, "content", "blog"), [".md"])) {

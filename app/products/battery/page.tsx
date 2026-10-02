@@ -24,14 +24,14 @@ const DESC =
   "家庭用蓄電池を比べるときに見る項目をまとめました。蓄電容量、定格出力、停電時に使える範囲、パワーコンディショナの方式、設置場所、SIIの登録、保証。葛飾区・東京都の助成の対象になる機器の条件も確認できます。";
 
 export const metadata: Metadata = buildMetadata({
-  title: "家庭用蓄電池の比べ方｜容量・出力・SII登録・保証の見方",
+  title: "家庭用蓄電池を比較するときの見方｜容量・出力・SII登録・保証",
   description: DESC,
   path: PATH,
   keywords: ["蓄電池 比較 見方", "蓄電池 容量 出力 見方"],
 });
 
-const H2 = "border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900";
-const TEXT_LINK = "font-bold text-navy-700 underline underline-offset-4 hover:text-accent-text";
+const H2 = "border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900";
+const TEXT_LINK = "font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text";
 
 export default function ProductsBatteryPage() {
   const products = productsByCategory("battery");
@@ -101,7 +101,7 @@ export default function ProductsBatteryPage() {
                 },
               ]}
             />
-            <p className="mt-4 text-[15px] leading-[1.8] text-ink-2">
+            <p className="mt-4 text-base leading-[1.8] text-ink-2">
               種類の違いは
               <Link href="/guide/battery-how-to-choose" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
                 全負荷型と特定負荷型の違い

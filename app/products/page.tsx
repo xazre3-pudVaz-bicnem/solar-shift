@@ -1,3 +1,5 @@
+import { handlingManufacturers } from "@/data/manufacturers";
+import { siteConfig } from "@/lib/site";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -11,7 +13,7 @@ import { SourceList } from "@/components/ui/SourceList";
 import { ProductCatalog } from "@/components/product/ProductCatalog";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, webPageSchema } from "@/lib/schema";
+import { graph, webPageSchema, externalItemListSchema } from "@/lib/schema";
 import { images } from "@/data/images";
 
 /**
@@ -22,11 +24,13 @@ const PATH = "/products";
 const DESC =
   "太陽光パネル・家庭用蓄電池を選ぶ前に、どの項目を比べればよいかをまとめました。出力・容量・認証・保証の見方と、葛飾区・東京都の助成の対象になる機器の条件。個別の商品は、メーカーの公式資料で仕様を確認できたものから掲載します。";
 
+const MAKER_COUNT = handlingManufacturers().length;
+
 export const metadata: Metadata = buildMetadata({
-  title: "太陽光パネル・蓄電池の選び方｜比べるときに見る項目",
+  title: `取扱メーカー${MAKER_COUNT}社と、太陽光パネル・蓄電池の選び方`,
   description: DESC,
   path: PATH,
-  keywords: ["太陽光パネル 蓄電池 メーカー 比較", "太陽光 メーカー 選び方"],
+  keywords: ["太陽光 蓄電池 取扱メーカー", "太陽光パネル 蓄電池 選び方", "太陽光 メーカー 選び方"],
 });
 
 const GUIDES = [
@@ -45,7 +49,12 @@ export default function ProductsPage() {
           { name: "商品の選び方", href: PATH },
         ]}
         eyebrow="商品の選び方"
-        title="太陽光パネル・蓄電池の選び方"
+        title={
+          <>
+            太陽光パネル・蓄電池の選び方
+            <span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">取扱メーカー{MAKER_COUNT}社と、比べるときに見る項目</span>
+          </>
+        }
         lead="機種を決める前に、何を比べればよいかを知っておくと、見積もりが読みやすくなります。ここでは、比べるときに見る項目と、補助金の対象になる機器の条件をまとめています。"
         image={images.panelBatteryProducts}
       />
@@ -62,18 +71,20 @@ export default function ProductsPage() {
           />
 
           <section className="mt-12" aria-labelledby="guides-h">
-            <h2 id="guides-h" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">
+            <h2 id="guides-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">
               比べ方のガイド
             </h2>
-            <ul className="mt-6 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
+            <ul className="mt-6 grid gap-4 sm:grid-cols-2">
               {GUIDES.map((c) => (
-                <li key={c.href} className="bg-white">
-                  <Link href={c.href} className="group flex h-full items-center gap-4 px-5 py-5 hover:bg-paper-2">
+                <li key={c.href}>
+                  <Link href={c.href} className="group flex h-full items-center gap-4 rounded-3xl bg-white px-5 py-5 shadow-card transition-transform duration-200 hover:-translate-y-1">
                     <span className="flex-1">
                       <span className="block text-[18px] leading-[1.5] font-black text-navy-900">{c.title}</span>
                       <span className="mt-1 block text-base leading-[1.8] text-ink-2">{c.body}</span>
                     </span>
-                    <ArrowIcon className="h-4 w-4 shrink-0 text-accent-text" />
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-500 text-navy-900">
+                      <ArrowIcon />
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -91,7 +102,13 @@ export default function ProductsPage() {
         title="機種選びは、屋根と電気の使い方を見てから。"
         body="カタログの数字だけでは決められない部分を、現地調査で確認してからご提案します。補助金の対象になる機器かどうかも、型番で確かめてお伝えします。"
       />
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "太陽光パネル・蓄電池の選び方", description: DESC, type: "CollectionPage" }))} />
+      <JsonLd
+        data={graph(
+          webPageSchema({ path: PATH, name: "太陽光パネル・蓄電池の選び方", description: DESC, type: "CollectionPage", dateModified: siteConfig.contentUpdatedAt }),
+          // brand（取扱ブランド）としては出さない。正規取扱店と読まれかねないため、名前と公式サイトの一覧にとどめる
+          externalItemListSchema({ name: "取扱メーカー", items: handlingManufacturers().map((m) => ({ name: m.name, url: m.officialUrl })) }),
+        )}
+      />
     </>
   );
 }

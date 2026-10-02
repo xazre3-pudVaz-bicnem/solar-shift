@@ -32,13 +32,30 @@ export function absoluteUrl(path = "/"): string | undefined {
  */
 export const SITE_TITLE_SUFFIX = `｜${siteConfig.name}`;
 
+/** 文字の幅（半角を1、全角を2と数える） */
+export function textWidth(s: string): number {
+  let w = 0;
+  for (const ch of s) w += /[\u0020-\u007e\uff61-\uff9f]/.test(ch) ? 1 : 2;
+  return w;
+}
+
+/**
+ * 本体がこの幅を超えるタイトルには、末尾の「｜SOLAR SHIFT」を付けない。
+ * 検索結果のタイトルは全角30字前後で切れる。サイト名は検索結果に別枠で出るので、長いタイトルでは本題を優先する。
+ */
+export const TITLE_SUFFIX_MAX_WIDTH = 50;
+
+export function fullTitle(title: string): string {
+  return textWidth(title) > TITLE_SUFFIX_MAX_WIDTH ? title : `${title}${SITE_TITLE_SUFFIX}`;
+}
+
 /** SNS 共有用の画像（app/og/[[...path]]/route.tsx がビルド時に生成する）。ページのパスと 1 対 1 */
 export function ogImagePath(path: string): string {
   return path === "/" ? "/og" : `/og${path}`;
 }
 
 type BuildMetadataInput = {
-  /** 「｜SOLAR SHIFT」を付ける前のタイトル */
+  /** 「｜SOLAR SHIFT」を付ける前のタイトル（長いときは付かない。fullTitle を参照） */
   title: string;
   description: string;
   /** 先頭スラッシュから始まるパス */
@@ -63,7 +80,7 @@ type BuildMetadataInput = {
 };
 
 export function buildMetadata(input: BuildMetadataInput): Metadata {
-  const title = input.rawTitle ? input.title : `${input.title}${SITE_TITLE_SUFFIX}`;
+  const title = input.rawTitle ? input.title : fullTitle(input.title);
   const url = absoluteUrl(input.path);
   const ogImage = absoluteUrl(ogImagePath(input.ogFrom ?? input.path));
   const noindex = input.noindex || !IS_PUBLIC;

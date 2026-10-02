@@ -60,6 +60,8 @@ const allHeaderNav: NavGroup[] = [
       { href: "/guide/solar-merit-demerit", label: "メリット・デメリット" },
       { href: "/guide/blackout", label: "停電時の備え" },
       { href: "/guide/selling-electricity", label: "売電とFIT価格" },
+      { href: "/guide/solar-payback", label: "何年で元が取れるか" },
+      { href: "/glossary", label: "用語集" },
       { href: "/faq", label: "よくある質問" },
     ],
   },
@@ -99,6 +101,9 @@ const allFooterNav: NavGroup[] = [
       { href: "/subsidy/tokyo", label: "東京都の補助金" },
       { href: "/subsidy/national", label: "国の補助制度" },
       { href: "/simulation", label: "補助金シミュレーター" },
+      { href: "/area/adachi", label: "足立区の補助金" },
+      { href: "/area/sumida", label: "墨田区の補助金" },
+      { href: "/area/edogawa", label: "江戸川区の補助金" },
     ],
   },
   {
@@ -106,6 +111,7 @@ const allFooterNav: NavGroup[] = [
     links: [
       { href: "/guide", label: "導入ガイド一覧" },
       { href: "/guide/solar-cost", label: "太陽光発電の費用" },
+      { href: "/guide/solar-payback", label: "何年で元が取れるか" },
       { href: "/guide/solar-merit-demerit", label: "メリット・デメリット" },
       { href: "/guide/solar-lifespan", label: "太陽光パネルの寿命" },
       { href: "/guide/battery-cost", label: "蓄電池の費用" },
@@ -116,6 +122,7 @@ const allFooterNav: NavGroup[] = [
       { href: "/guide/all-electric", label: "オール電化との相性" },
       { href: "/guide/roof-conditions", label: "屋根の条件" },
       { href: "/guide/maintenance", label: "メンテナンス" },
+      { href: "/glossary", label: "用語集" },
     ],
   },
   {

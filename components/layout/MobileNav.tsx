@@ -9,8 +9,8 @@ import { siteConfig } from "@/lib/site";
 /**
  * スマホ用メニュー。PC のメガメニューをそのまま並べず、分類ごとに開閉するアコーディオンにしている
  * （開閉は <details>。ブラウザの機能なので、ここで状態を持たない）。
- * 開閉の状態管理はメニュー全体の表示だけを client で行う。リンクのクリックで閉じる。
- * 行の高さはどれも 44px 以上。
+ * 見た目はクリーム地に白い角丸カード。開閉の状態管理はメニュー全体の表示だけを client で行う。
+ * リンクのクリックで閉じる。行の高さはどれも 44px 以上。
  */
 export function MobileNav({ groups }: { groups: NavGroup[] }) {
   const [open, setOpen] = useState(false);
@@ -38,7 +38,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
         aria-expanded={open}
         aria-controls="mobile-nav"
         aria-label={open ? "メニューを閉じる" : "メニューを開く"}
-        className="flex h-11 w-11 items-center justify-center rounded-md border border-navy-900 text-navy-900"
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-navy-900 text-white"
       >
         <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           {open ? (
@@ -50,20 +50,20 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
       </button>
 
       {open && (
-        <div id="mobile-nav" className="fixed inset-x-0 top-16 bottom-0 z-50 overflow-y-auto border-t border-line bg-white">
+        <div id="mobile-nav" className="fixed inset-x-0 top-16 bottom-0 z-50 overflow-y-auto bg-cream">
           <nav aria-label="モバイルナビゲーション" className="px-4 pt-4 pb-24 sm:px-6">
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/simulation" onClick={close} className="flex h-12 items-center justify-center rounded-md bg-navy-900 font-heading text-[15px] font-bold text-white">
+              <Link href="/simulation" onClick={close} className="flex h-12 items-center justify-center rounded-full bg-green-600 font-heading text-[15px] font-bold text-white shadow-card">
                 補助金を試算
               </Link>
-              <Link href="/contact" onClick={close} className="flex h-12 items-center justify-center rounded-md bg-orange-500 font-heading text-[15px] font-bold text-navy-950">
+              <Link href="/contact" onClick={close} className="flex h-12 items-center justify-center rounded-full bg-cta font-heading text-[15px] font-bold text-white shadow-pill">
                 無料相談
               </Link>
             </div>
             {siteConfig.contact.telDisplay && (
               <a
                 href={`tel:${siteConfig.contact.tel}`}
-                className="mt-2 flex h-12 items-center justify-center gap-2 rounded-md border border-navy-900 bg-white font-heading text-[14px] font-bold text-navy-900"
+                className="mt-2 flex h-12 items-center justify-center gap-2 rounded-full border-2 border-navy-900 bg-white font-heading text-[14px] font-bold text-navy-900"
               >
                 <PhoneIcon className="h-4 w-4 shrink-0 text-orange-600" />
                 電話で相談
@@ -71,27 +71,34 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
               </a>
             )}
 
-            <div className="mt-5 border-t border-line">
+            <div className="mt-4 space-y-2">
               {groups.map((g) => (
-                <details key={g.label} name="mobile-nav-group" className="group border-b border-line">
+                <details key={g.label} name="mobile-nav-group" className="group rounded-2xl bg-white px-4 shadow-card open:ring-2 open:ring-orange-200">
                   <summary className="flex min-h-[3.25rem] cursor-pointer list-none items-center justify-between gap-3 font-heading text-[16px] font-bold text-navy-900 [&::-webkit-details-marker]:hidden">
-                    {g.label}
-                    <svg className="h-4 w-4 shrink-0 text-accent-text transition-transform duration-200 group-open:rotate-180" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="m4 6 4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                    <span className="flex items-center gap-2.5">
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-orange-500" aria-hidden="true" />
+                      {g.label}
+                    </span>
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cream text-navy-900 transition-transform duration-200 group-open:rotate-180" aria-hidden="true">
+                      <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none">
+                        <path d="m4 6 4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
                   </summary>
-                  <ul className="pb-3">
+                  <ul className="divide-y divide-dashed divide-line border-t border-dashed border-line pb-2">
                     {g.href && (
                       <li>
-                        <Link href={g.href} onClick={close} className="flex min-h-11 items-center pl-3 text-base font-bold text-navy-700">
+                        <Link href={g.href} onClick={close} className="flex min-h-11 items-center justify-between text-base font-bold text-green-700">
                           {g.label}のトップ
+                          <Chevron />
                         </Link>
                       </li>
                     )}
                     {g.links.map((l) => (
                       <li key={l.href}>
-                        <Link href={l.href} onClick={close} className="flex min-h-11 items-center pl-3 text-base text-ink">
+                        <Link href={l.href} onClick={close} className="flex min-h-11 items-center justify-between text-base font-bold text-navy-900">
                           {l.label}
+                          <Chevron />
                         </Link>
                       </li>
                     ))}
@@ -100,7 +107,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
               ))}
             </div>
 
-            <ul className="mt-4 grid grid-cols-2 gap-x-4 text-[14px] text-ink-2">
+            <ul className="mt-4 grid grid-cols-2 gap-x-4 px-1 text-[14px] text-ink-2">
               <li><Link href="/contact" onClick={close} className="flex min-h-11 items-center">お問い合わせ</Link></li>
               <li><Link href="/faq" onClick={close} className="flex min-h-11 items-center">よくある質問</Link></li>
               <li><Link href="/privacy" onClick={close} className="flex min-h-11 items-center">プライバシーポリシー</Link></li>
@@ -111,5 +118,13 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
         </div>
       )}
     </div>
+  );
+}
+
+function Chevron() {
+  return (
+    <svg className="h-3.5 w-3.5 shrink-0 text-orange-600" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="m4.5 2.5 3 3.5-3 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }

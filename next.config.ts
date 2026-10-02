@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     // 写真は 60（見た目の差はほぼ無く、転送量が 3〜4 割減る）。イラスト・アイコンは既定の 75
     qualities: [60, 75],
+    // 最適化した画像を配信側で持つ期間（31日）。画像を差し替えるときは、ファイル名を変える
+    minimumCacheTTL: 2678400,
   },
   // Vercel のサーバーレス関数に、記事生成が読む事実シートと既存記事を同梱する
   outputFileTracingIncludes: {
@@ -35,6 +37,9 @@ const nextConfig: NextConfig = {
       { source: "/recommend/solar", destination: "/products/solar", permanent: true },
       { source: "/recommend/battery", destination: "/products/battery", permanent: true },
       { source: "/recommend", destination: "/products", permanent: true },
+      // ブログ一覧の1ページ目は /blog（/blog/page/1 という URL は作らない）
+      { source: "/blog/page/1", destination: "/blog", permanent: true },
+      { source: "/blog/category/:slug/page/1", destination: "/blog/category/:slug", permanent: true },
     ];
   },
   async headers() {
@@ -47,6 +52,9 @@ const nextConfig: NextConfig = {
         has: [{ type: "host", value: "(?<sub>.*)\\.vercel\\.app" }],
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
+      // 自前で置いている書体。ファイル名を変えずに中身を差し替えることはないので、長く持たせる
+      { source: "/fonts/:file(.*\\.woff2)", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+      { source: "/fonts/:file(.*\\.css)", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" }] },
       {
         source: "/:path*",
         headers: [

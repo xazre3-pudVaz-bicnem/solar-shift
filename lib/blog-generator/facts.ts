@@ -49,5 +49,7 @@ export function allowedYenAmounts(): Set<number> {
   [800000, 450000].forEach(add);
   // 国 DR 上限60万、3/10 で上限に達する 200万
   add(2000000);
+  // 国の委員会の資料にある、太陽光発電協会へのヒアリングの結果（5kWの設備を想定）：定期点検 約3.8万円、パワーコンディショナの交換 38.4万円
+  [38000, 384000].forEach(add);
   return set;
 }

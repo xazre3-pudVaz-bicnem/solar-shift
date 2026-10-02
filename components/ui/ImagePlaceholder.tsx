@@ -39,7 +39,7 @@ export function ImagePlaceholder({
 
   if (src) {
     const bg = fit === "contain" ? "bg-white" : "bg-paper-3";
-    const frameCls = frame ? "rounded-lg border border-line" : "rounded-lg";
+    const frameCls = frame ? "rounded-3xl shadow-card" : "rounded-2xl";
     return (
       <div className={`relative overflow-hidden ${bg} ${frameCls} ${ratioCls} ${className}`}>
         <Image
@@ -56,7 +56,7 @@ export function ImagePlaceholder({
 
   return (
     <div
-      className={`relative flex items-center justify-center overflow-hidden rounded-lg border border-line bg-paper-3 ${ratioCls} ${className}`}
+      className={`relative flex items-center justify-center overflow-hidden rounded-3xl border border-line bg-paper-3 ${ratioCls} ${className}`}
       role="img"
       aria-label={alt}
     >

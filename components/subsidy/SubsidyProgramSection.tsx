@@ -22,12 +22,12 @@ export function SubsidyProgramSection({
   className?: string;
 }) {
   const H = headingLevel;
-  const areaPill = program.area === "katsushika" ? "bg-orange-500 text-navy-900" : program.area === "tokyo" ? "bg-navy-900 text-white" : "bg-navy-900 text-white";
+  const areaPill = program.area === "katsushika" ? "bg-orange-500 text-navy-900" : program.area === "tokyo" ? "bg-green-600 text-white" : "bg-navy-900 text-white";
   return (
     <section aria-labelledby={`program-${program.id}`} className={`space-y-6 ${className}`}>
       <div {...reveal()}>
         <p className="flex flex-wrap items-center gap-2 text-[12px] font-bold text-ink-3">
-          <span className={`rounded-sm px-2 py-[2px] text-[12px] font-bold ${areaPill}`}>{program.area === "katsushika" ? "葛飾区" : program.area === "tokyo" ? "東京都" : "国"}</span>
+          <span className={`rounded-full px-3 py-[2px] text-[12px] font-bold ${areaPill}`}>{program.area === "katsushika" ? "葛飾区" : program.area === "tokyo" ? "東京都" : "国"}</span>
           {program.issuer}／{program.fiscalYear}
         </p>
         <H id={`program-${program.id}`} className="mt-2 text-[22px] leading-[1.4] font-black text-navy-900 sm:text-[26px]">
@@ -56,7 +56,7 @@ export function SubsidyProgramSection({
       )}
 
       {detailed && (
-        <div className="space-y-3">
+        <div className="space-y-5">
           {program.menus.map((m) => (
             <SubsidyCard key={m.id} subsidy={m} id={m.id} collapsible />
           ))}

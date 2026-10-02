@@ -28,6 +28,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, articleSchema } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
+import { ApplyOrderFigure } from "@/components/area/ApplyOrderFigure";
+import { WardCompareTable } from "@/components/area/NeighborAreaPage";
 
 /**
  * 補助金の総合ページ。役割は「区・都・国の3つの制度の全体像と、申請の順番」。
@@ -54,12 +56,12 @@ export const metadata: Metadata = buildMetadata({
   title: TITLE,
   description: DESCRIPTION,
   path: PATH,
-  keywords: ["太陽光 補助金 2026", "太陽光 蓄電池 補助金", "東京 太陽光 補助金"],
+  keywords: ["太陽光 補助金 2026", "太陽光 蓄電池 補助金", "太陽光 蓄電池 補助金 併用"],
   type: "article",
   modifiedTime: UPDATED,
 });
 
-const H2 = "border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900 sm:text-[28px]";
+const H2 = "border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900 sm:text-[28px]";
 const LEAD = "mt-4 max-w-3xl text-base leading-[1.9] text-ink-2";
 
 export default function SubsidyIndexPage() {
@@ -108,6 +110,7 @@ export default function SubsidyIndexPage() {
     { id: "order", label: "申請の順番" },
     { id: "combination", label: "区と都の併用" },
     { id: "all", label: "制度の一覧表" },
+    { id: "wards", label: "周辺の区の補助金" },
     { id: "faq", label: "よくある質問" },
   ];
 
@@ -148,24 +151,29 @@ export default function SubsidyIndexPage() {
               補助金は、3つの制度に分かれています
             </h2>
             <p className={LEAD}>窓口も手続きも別々です。まずは、ご自宅で使える可能性がある制度を確かめます。</p>
-            <ul className="mt-6 divide-y divide-line overflow-hidden rounded-xl border border-line bg-white">
-              {layers.map((c) => (
-                <li key={c.href}>
-                  <Link href={c.href} className="group grid gap-x-6 gap-y-1 px-4 py-5 hover:bg-paper-2 sm:grid-cols-[5.5rem_1fr_auto] sm:items-center sm:px-6">
-                    <span className="font-heading text-[20px] leading-none font-black text-navy-900 sm:text-[22px]">{c.label}</span>
-                    <span>
-                      <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="text-[17px] leading-[1.5] font-bold text-navy-900">{c.title}</span>
-                        <span className={`rounded-sm px-2 py-[1px] text-[12px] font-bold ${c.open ? "bg-green-600 text-white" : "border border-line-2 bg-paper-3 text-ink-2"}`}>{c.status}</span>
+            <ul className="mt-8 grid gap-4 lg:grid-cols-3">
+              {layers.map((c, i) => {
+                const tone = ["border-orange-300", "border-green-300", "border-navy-100"][i] ?? "border-line";
+                const badge = ["bg-orange-500 text-navy-900", "bg-green-600 text-white", "bg-navy-900 text-white"][i] ?? "bg-navy-900 text-white";
+                return (
+                  <li key={c.href} {...reveal(i * 90)}>
+                    <Link href={c.href} className={`group flex h-full flex-col rounded-3xl border-2 bg-white p-5 shadow-card transition-transform duration-200 hover:-translate-y-1 sm:p-6 ${tone}`}>
+                      <span className="flex flex-wrap items-center gap-3">
+                        <span className={`inline-flex h-11 min-w-11 items-center justify-center rounded-full px-4 font-heading text-[18px] leading-none font-black ${badge}`}>{c.label}</span>
+                        <span className={`rounded-full px-3 py-[2px] text-[12px] font-bold ${c.open ? "bg-green-600 text-white" : "border border-line-2 bg-paper-3 text-ink-2"}`}>{c.status}</span>
                       </span>
-                      <span className="mt-1 block text-base leading-[1.8] text-ink-2">{c.body}</span>
-                    </span>
-                    <span className="mt-2 inline-flex items-center gap-1.5 text-[15px] font-bold text-navy-700 group-hover:text-accent-text sm:mt-0">
-                      詳しく見る <ArrowIcon className="h-4 w-4" />
-                    </span>
-                  </Link>
-                </li>
-              ))}
+                      <span className="mt-4 block text-[18px] leading-[1.5] font-black text-navy-900">{c.title}</span>
+                      <span className="mt-2 block flex-1 text-base leading-[1.8] text-ink-2">{c.body}</span>
+                      <span className="mt-4 flex items-center justify-end gap-2 text-[14px] font-bold text-navy-900">
+                        詳しく見る
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-navy-900">
+                          <ArrowIcon />
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </section>
 
@@ -206,7 +214,7 @@ export default function SubsidyIndexPage() {
               />
             </div>
             <p className="mt-8">
-              <Link href="/subsidy/katsushika#flow" className="inline-flex min-h-11 items-center font-bold text-navy-700 underline underline-offset-4 hover:text-accent-text">
+              <Link href="/subsidy/katsushika#flow" className="inline-flex min-h-11 items-center font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text">
                 葛飾区の申請の時系列・必要書類を詳しく見る →
               </Link>
             </p>
@@ -246,6 +254,19 @@ export default function SubsidyIndexPage() {
             <div className="mt-6">
               <SubsidyTable menus={[...katsushikaProgram.menus, ...tokyoSolarProgram.menus, ...tokyoBatteryProgram.menus, ...nationalMenus]} showArea />
             </div>
+          </section>
+
+          {/* ───────── 周辺の区（区ごとに制度が違う） */}
+          <section id="wards" aria-labelledby="wards-h" className="cv-block scroll-mt-24">
+            <h2 id="wards-h" className={H2} {...reveal()}>
+              足立区・墨田区・江戸川区の補助金
+            </h2>
+            <p className={LEAD}>
+              区の補助金は、区ごとに金額も申請の時期も違います。葛飾区は工事の前に事前協議をしますが、足立区は設置したあとに申請します。SOLAR SHIFT が対応している区を並べました。
+            </p>
+            <ApplyOrderFigure className="mt-6" />
+            <WardCompareTable className="mt-6" />
+            <p className="mt-3 text-[13px] leading-[1.8] text-ink-3">※ 各区の公式ページで確かめた内容です。確認した日付と条件は、区ごとのページに記載しています。金額は区ごとに見てください（合算はしていません）。</p>
           </section>
 
           {/* ───────── FAQ */}

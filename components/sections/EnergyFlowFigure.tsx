@@ -12,11 +12,11 @@ import { reveal } from "@/lib/reveal";
  * 補足の文言は文節ごとの配列で渡し、文節の途中では折り返さない。
  */
 function Node({ children, label, sub, tone }: { children: React.ReactNode; label: string; sub: string[]; tone: "gray" | "orange" | "green" | "navy" }) {
-  const ring = { gray: "border-line-2 bg-white", orange: "border-orange-300 bg-white", green: "border-navy-200 bg-white", navy: "border-navy-100 bg-white" }[tone];
-  const pill = { gray: "bg-ink-3 text-white", orange: "bg-orange-500 text-navy-900", green: "bg-navy-900 text-white", navy: "bg-navy-700 text-white" }[tone];
+  const ring = { gray: "border-line-2 bg-white", orange: "border-orange-300 bg-white", green: "border-green-300 bg-white", navy: "border-navy-100 bg-white" }[tone];
+  const pill = { gray: "bg-ink-3 text-white", orange: "bg-orange-500 text-navy-900", green: "bg-green-600 text-white", navy: "bg-navy-700 text-white" }[tone];
   return (
     <div className="flex w-[4.4rem] shrink-0 flex-col items-center text-center min-[400px]:w-[5.5rem] sm:w-28">
-      <div className={`flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-full border-2 min-[400px]:h-[4.5rem] min-[400px]:w-[4.5rem] sm:h-24 sm:w-24 ${ring}`}>{children}</div>
+      <div className={`flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-full border-[3px] min-[400px]:h-[4.5rem] min-[400px]:w-[4.5rem] sm:h-24 sm:w-24 ${ring}`}>{children}</div>
       <span className={`mt-2 inline-block rounded-full px-3 py-[2px] font-heading text-[12px] font-bold whitespace-nowrap sm:text-[13px] ${pill}`}>{label}</span>
       <span className="mt-1 text-[11px] leading-[1.5] text-ink-2 sm:text-[12px]">
         {sub.map((part) => (
@@ -52,7 +52,7 @@ export function EnergyFlowFigure() {
   return (
     <div className="grid items-stretch gap-4 lg:grid-cols-[1fr_auto_1.45fr]">
       {/* BEFORE */}
-      <div className="min-w-0 rounded-lg bg-paper-3 p-4 min-[400px]:p-5 sm:p-7" {...reveal(0, "left")}>
+      <div className="min-w-0 rounded-3xl bg-paper-3 p-4 min-[400px]:p-5 sm:p-7" {...reveal(0, "left")}>
         <p>
           <span className="inline-block rounded-full bg-ink-3 px-4 py-1 font-heading text-[13px] font-bold text-white">これまで</span>
         </p>
@@ -71,7 +71,7 @@ export function EnergyFlowFigure() {
 
       {/* 矢印 */}
       <div className="flex items-center justify-center py-1" aria-hidden="true">
-        <span className="flex h-12 w-12 rotate-90 items-center justify-center rounded-full bg-orange-500 text-navy-950 lg:rotate-0">
+        <span className="flex h-12 w-12 rotate-90 animate-bob-x items-center justify-center rounded-full bg-cta text-white shadow-pill lg:rotate-0">
           <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
             <path d="M5 12h13m0 0-5-5m5 5-5 5" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -79,7 +79,7 @@ export function EnergyFlowFigure() {
       </div>
 
       {/* AFTER */}
-      <div className="min-w-0 rounded-lg border-2 border-orange-500 bg-white p-4 min-[400px]:p-5 sm:p-7" {...reveal(150, "right")}>
+      <div className="min-w-0 rounded-3xl border-[3px] border-orange-500 bg-white p-4 shadow-pop min-[400px]:p-5 sm:p-7" {...reveal(150, "right")}>
         <p>
           <span className="inline-block rounded-full bg-orange-500 px-4 py-1 font-heading text-[13px] font-bold text-navy-900">これから</span>
         </p>
@@ -94,21 +94,25 @@ export function EnergyFlowFigure() {
           <Node label="使う" sub={["まず自宅の", "家電に"]} tone="navy">
             <Image src={images.iconHouseSolar.src} alt="" width={80} height={80} className={ICON} />
           </Node>
-          <Flow className="w-3 text-navy-500 min-[400px]:w-5 sm:w-12" />
+          <Flow className="w-3 text-green-500 min-[400px]:w-5 sm:w-12" />
           <Node label="ためる" sub={["余りは", "蓄電池へ"]} tone="green">
             <Image src={images.iconHouseBattery.src} alt="" width={80} height={80} className={ICON} />
           </Node>
         </div>
         <ul className="mt-5 grid gap-2 text-[13px] leading-[1.7] sm:grid-cols-3">
-          <li className="rounded-xl bg-orange-50 px-3 py-2">
-            <strong className="block text-navy-900">昼</strong>発電した電気をそのまま使う
-          </li>
-          <li className="rounded-xl bg-navy-50 px-3 py-2">
-            <strong className="block text-navy-900">夜</strong>ためた電気で買う量を減らす
-          </li>
-          <li className="rounded-xl bg-paper-2 px-3 py-2">
-            <strong className="block text-navy-900">停電時</strong>最低限の電気を自宅で確保
-          </li>
+          {[
+            { label: "昼", text: "発電した電気をそのまま使う", tone: "bg-orange-50", image: images.batSolarToHome },
+            { label: "夜", text: "ためた電気で買う量を減らす", tone: "bg-navy-50", image: images.batNight },
+            { label: "停電時", text: "最低限の電気を自宅で確保", tone: "bg-green-50", image: images.batStorm2 },
+          ].map((s, i) => (
+            <li key={s.label} className={`flex items-center gap-3 rounded-2xl px-3 py-2 sm:flex-col sm:items-start sm:gap-2 ${s.tone}`} {...reveal(350 + i * 110, "pop")}>
+              <Image src={s.image.src} alt="" width={s.image.width} height={s.image.height} sizes="72px" className="h-14 w-14 shrink-0 rounded-xl bg-white object-contain p-1 sm:h-16 sm:w-16" />
+              <span className="phrase">
+                <strong className="block text-navy-900">{s.label}</strong>
+                {s.text}
+              </span>
+            </li>
+          ))}
         </ul>
         <p className="mt-3 text-[12px] leading-[1.7] text-ink-3">それでも余った電気は売電に回せます。どれだけ減らせるかは、屋根・電気の使い方・料金プランで変わります。</p>
       </div>

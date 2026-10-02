@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { OPEN_CHAT_EVENT } from "@/components/chat/OpenChatButton";
 import { PhoneIcon } from "@/components/ui/PhoneIcon";
+import { images } from "@/data/images";
 import { siteConfig } from "@/lib/site";
 
 /**
@@ -14,11 +16,12 @@ import { siteConfig } from "@/lib/site";
  *   スマホ … 画面下の固定バー（高さ 52px）。文字つきのボタンは「試算・電話・相談」の3つだけ。
  *            チャットの入口は、左端にアイコンだけの小さなボタンで置く（バーを高くしない・画面を塞がない）。
  *            電話は lib/site.ts に番号が入っているときだけ出る。お問い合わせページでは「相談」を出さない。
- *   PC    … 右下にチャットの入口だけ（相談・試算・電話はヘッダーにあるので、ここでは繰り返さない）。
+ *   PC    … 右下に、スタッフのイラストつきのチャットの入口（相談・試算・電話はヘッダーにあるので、ここでは繰り返さない）。
  *
  * - TOP のヒーローには CTA を置かない方針なので、ヒーローを過ぎてから現れる。
  *   スクロール量は scroll イベントで測らず、ページの上のほうに置いた目印が画面から出たかどうかで判定する。
  * - チャット本体（components/chat/ChatPanel.tsx）は、開いたときに初めて読み込む。
+ * - 補助金の受付状況（「予算に達すると終了」など）は、ここには書かない（区の案内で確認できていないため）。
  */
 const ChatPanel = dynamic(() => import("@/components/chat/ChatPanel"), { ssr: false });
 
@@ -78,12 +81,13 @@ export function FloatingDock({ infoDate }: { infoDate: string }) {
   // アイコンの横に文字（320px 幅でも、1区画が約 89px あるので1行に収まる）
   const seg = "flex h-[52px] items-center justify-center gap-1.5 text-[13px] leading-none font-bold whitespace-nowrap min-[400px]:text-[14px]";
   const segIcon = "h-[18px] w-[18px] shrink-0";
+  const staff = images.poseLaptop;
 
   return (
     <>
       <span ref={sentinel} className="pointer-events-none absolute left-0 h-px w-px" style={{ top: pathname === "/" ? SHOW_AFTER_TOP : SHOW_AFTER }} aria-hidden="true" />
 
-      {/* PC: 右下にチャットの入口 */}
+      {/* PC: 右下にチャットの入口（スタッフのイラストつき） */}
       <div className="pointer-events-none fixed right-4 bottom-4 z-30 hidden md:block">
         <button
           type="button"
@@ -91,12 +95,20 @@ export function FloatingDock({ infoDate }: { infoDate: string }) {
           tabIndex={launcherVisible ? 0 : -1}
           aria-hidden={!launcherVisible}
           aria-haspopup="dialog"
-          className={`flex h-12 items-center gap-2 rounded-md border border-navy-900 bg-white px-4 font-heading text-[14px] font-bold text-navy-900 shadow-pop transition-[opacity,transform,background-color] duration-300 hover:bg-navy-50 ${
-            launcherVisible ? "pointer-events-auto translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+          className={`group flex items-center gap-2.5 rounded-full border-2 border-green-600 bg-white py-1.5 pr-5 pl-1.5 shadow-pop transition-[opacity,transform] duration-300 hover:-translate-y-0.5 ${
+            launcherVisible ? "pointer-events-auto translate-y-0 opacity-100" : "translate-y-6 opacity-0"
           }`}
         >
-          <ChatIcon className="h-5 w-5 text-orange-600" />
-          チャットで質問する
+          <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-cream">
+            <Image src={staff.src} alt="" width={staff.width} height={staff.height} sizes="80px" className="absolute top-0 left-1/2 w-[165%] max-w-none -translate-x-[52%] transition-transform duration-300 group-hover:scale-105" />
+          </span>
+          <span className="text-left">
+            <span className="block text-[11px] leading-[1.3] font-bold text-ink-2">補助金のこと、聞いてみる</span>
+            <span className="flex items-center gap-1.5 font-heading text-[16px] leading-[1.4] font-black text-green-700">
+              <ChatIcon className="h-4 w-4" />
+              チャットで質問
+            </span>
+          </span>
         </button>
       </div>
 
@@ -104,29 +116,29 @@ export function FloatingDock({ infoDate }: { infoDate: string }) {
       <nav
         aria-label="固定メニュー"
         aria-hidden={!shown}
-        className={`fixed inset-x-0 bottom-0 z-30 grid border-t border-navy-900 bg-white transition-transform duration-300 md:hidden ${gridCols} ${shown ? "translate-y-0" : "translate-y-full"}`}
+        className={`fixed inset-x-0 bottom-0 z-30 grid bg-white shadow-[0_-6px_20px_-10px_rgba(11,31,58,0.35)] transition-transform duration-300 md:hidden ${gridCols} ${shown ? "translate-y-0" : "translate-y-full"}`}
       >
-        <button type="button" onClick={openChat} tabIndex={shown ? 0 : -1} aria-haspopup="dialog" aria-label="チャットで質問する" className="flex h-[52px] w-[52px] items-center justify-center border-r border-line bg-white text-navy-900">
-          <ChatIcon className="h-[22px] w-[22px] text-navy-700" />
+        <button type="button" onClick={openChat} tabIndex={shown ? 0 : -1} aria-haspopup="dialog" aria-label="チャットで質問する" className="flex h-[52px] w-[52px] items-center justify-center bg-navy-900 text-white">
+          <ChatIcon className="h-[22px] w-[22px]" />
         </button>
-        <Link href="/simulation" tabIndex={shown ? 0 : -1} className={`${seg} bg-navy-900 text-white`}>
+        <Link href="/simulation" tabIndex={shown ? 0 : -1} className={`${seg} bg-green-600 text-white`}>
           <svg className={segIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <path d="M6 3h12v18H6zM9 7h6M9 11h2M13 11h2M9 15h2M13 15h2" />
           </svg>
           試算
         </Link>
         {tel && (
-          <a href={`tel:${tel}`} tabIndex={shown ? 0 : -1} aria-label={`電話する ${siteConfig.contact.telDisplay}`} className={`${seg} border-l border-line bg-white text-navy-900`}>
+          <a href={`tel:${tel}`} tabIndex={shown ? 0 : -1} aria-label={`電話する ${siteConfig.contact.telDisplay}`} className={`${seg} bg-white text-navy-900`}>
             <PhoneIcon className={`${segIcon} text-orange-600`} />
             電話
           </a>
         )}
         {!onContactPage && (
-          <Link href="/contact" tabIndex={shown ? 0 : -1} className={`${seg} bg-orange-500 text-navy-950`}>
+          <Link href="/contact" tabIndex={shown ? 0 : -1} className={`${seg} bg-cta text-white`}>
             <svg className={segIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <path d="M4 7h16v10H4zM4 7l8 6 8-6" />
             </svg>
-            相談
+            無料相談
           </Link>
         )}
       </nav>

@@ -114,6 +114,12 @@ export const tokyoSolarProgram: SubsidyProgram = {
 };
 
 /** 東京都（クール・ネット東京）蓄電池 */
+/**
+ * DR実証に参加したときの加算（東京都の蓄電池の助成）。金額は公式の案内で確認したもの。
+ * 「DR参加で上限がなくなる」とは書かない。加算と上限の扱いは公式案内へ送る。
+ */
+export const TOKYO_DR_ADDON = { withEms: "15万円", withoutEms: "10万円" };
+
 export const tokyoBatteryProgram: SubsidyProgram = {
   id: "tokyo-battery-r8",
   area: "tokyo",

@@ -1,6 +1,6 @@
 import { STATIC_ROUTES } from "@/lib/routes";
 import { guides } from "@/data/guides";
-import { areasWithPage } from "@/data/areas";
+import { areasWithPage, areaPageTitle } from "@/data/areas";
 import { publishedProducts } from "@/data/products";
 import { publishedWorks } from "@/data/works";
 import { getAllPosts, categoriesWithPosts } from "@/lib/blog";
@@ -23,7 +23,7 @@ function eyebrowFor(path: string): string {
   if (path.startsWith("/subsidy") || path === "/simulation") return "補助金";
   if (["/solar", "/battery", "/solar-battery", "/v2h", "/hems"].includes(path)) return "サービス";
   if (path.startsWith("/products")) return "取扱メーカーと選び方";
-  if (path.startsWith("/guide")) return "導入ガイド";
+  if (path.startsWith("/guide") || path === "/glossary") return "導入ガイド";
   if (path.startsWith("/blog")) return "ブログ";
   if (path.startsWith("/area")) return "対応エリア";
   return "葛飾区の太陽光発電・蓄電池";
@@ -32,7 +32,7 @@ function eyebrowFor(path: string): string {
 export function ogPages(): OgPage[] {
   const pages: OgPage[] = STATIC_ROUTES.map((r) => ({ path: r.path, title: r.ogTitle, eyebrow: eyebrowFor(r.path) }));
   for (const g of guides) pages.push({ path: g.path, title: g.title, eyebrow: "導入ガイド" });
-  for (const a of areasWithPage) pages.push({ path: `/area/${a.slug}`, title: `${a.name}の太陽光・蓄電池業者｜対応エリアと相談の進め方`, eyebrow: "対応エリア" });
+  for (const a of areasWithPage) pages.push({ path: `/area/${a.slug}`, title: areaPageTitle(a), eyebrow: a.status === "primary" ? "対応エリア" : "周辺対応エリアの補助金" });
   for (const c of categoriesWithPosts()) pages.push({ path: `/blog/category/${c.slug}`, title: `${c.name}の記事一覧`, eyebrow: "ブログ" });
   for (const p of getAllPosts()) pages.push({ path: `/blog/${p.slug}`, title: p.title, eyebrow: p.categoryName });
   for (const p of publishedProducts) pages.push({ path: `/products/${p.slug}`, title: `${p.manufacturer} ${p.name}`, eyebrow: "取扱商品" });

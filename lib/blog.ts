@@ -177,11 +177,33 @@ export function getRelatedPosts(post: BlogPost, n = 3): BlogPost[] {
     .map((x) => x.p);
 }
 
-/** 固定ページから「このテーマの記事」を出すとき用：カテゴリ指定で最新 n 本 */
-export function getPostsForPillar(categories: string[], n = 3): BlogPost[] {
-  return getAllPosts()
-    .filter((p) => categories.includes(p.category))
-    .slice(0, n);
+/**
+ * 固定ページから「このテーマの記事」を出すとき用。
+ *
+ * 以前は、指定したカテゴリを混ぜて新しい順に n 本取っていた。そのため、記事の多いカテゴリ（葛飾区の補助金）で
+ * 枠が埋まり、/v2h に V2H の記事が出ない、/guide/blackout に水害の記事が出ない、ということが起きていた。
+ * どの固定ページからもリンクされない記事ができ、検索エンジンにも読者にも見つけにくくなる。
+ *
+ * 選ぶ順番
+ *   1. prefer … ページ側が名指しした記事（slug）
+ *   2. そのページを「親」にしているカテゴリ（data/blog-categories.ts の pillarLinks に path がある）
+ *   3. 指定したカテゴリ（書いた順）
+ * 2 と 3 は、カテゴリごとに新しい順で1本ずつ回して取る（1つのカテゴリで枠を埋めない）。
+ */
+export function getPostsForPillar(categories: string[], n = 3, opts: { path?: string; prefer?: string[] } = {}): BlogPost[] {
+  const all = getAllPosts();
+  const out: BlogPost[] = [];
+  const push = (p?: BlogPost) => {
+    if (p && out.length < n && !out.some((x) => x.slug === p.slug)) out.push(p);
+  };
+  for (const slug of opts.prefer ?? []) push(all.find((p) => p.slug === slug));
+  const own = opts.path ? blogCategories.filter((c) => c.pillarLinks.includes(opts.path as string)).map((c) => c.slug) : [];
+  const order = [...new Set([...own, ...categories])];
+  const buckets = order.map((c) => all.filter((p) => p.category === c));
+  for (let round = 0; out.length < n && buckets.some((b) => b.length > round); round += 1) {
+    for (const b of buckets) push(b[round]);
+  }
+  return out;
 }
 
 /** 一覧1ページあたりの記事数（毎日1本増えるので、一覧は必ずページを分ける） */
