@@ -4,6 +4,7 @@ import { loadFacts, allowedSourceUrls } from "./facts";
 import { validate, similarity, countChars, MIN_BODY_CHARS, type GeneratedArticle, type ExistingPost } from "./validate";
 import { buildFactIndex, compactClaims, sourceTypeOf, type Claim, type FactIndex } from "./claims";
 import { findCannibalPage } from "../seo-map";
+import { findPageLabel } from "../page-labels";
 import { blogCategories } from "../../data/blog-categories";
 import { guides } from "../../data/guides";
 import { STATIC_ROUTES } from "../routes";
@@ -125,6 +126,9 @@ ${facts}
 - ## 見出しを4〜6本。### は必要なときだけ。# は使わない。見出しの下には、それぞれ150字以上の本文を書く。
 - 本文は2,300〜2,800字。1,800字に満たない記事は公開されない。description は90〜120文字（文字数を数えてから出す）。
 - 本文で事実として書いた内容は、その内容が載っている節の出典URLを、必ず sources に入れる。葛飾区のページにあることを書いたら葛飾区のページのURLを、区の案内（PDF）にあることを書いたら案内のURLを入れる。
+- 公式資料の文言を「」で引用してよいのは、事実シートに「」つきで載っている文言だけ。それ以外は「」を付けず、「区は〜と呼びかけています」のように自分の言葉で書く。
+- 見出しそのものをリンクにしない。リンクは本文の文章の中に置き、リンクの文言は、リンク先のページの内容に合わせる（下の一覧の、かっこの中がそのページの内容）。
+- 書き終えたら、誤字・脱字が無いかを読み返す。
 - 数値を扱う箇所では Markdown の表を1つ以上使う。
 - 補助金・制度の数値には「2026年10月1日時点の葛飾区の公式情報」のように、時点と出典元を添える。
 - 制度に触れる記事では「最新情報は公式サイトでご確認ください」と必ず書く。
@@ -133,6 +137,12 @@ ${facts}
 - SOLAR SHIFT の実績・件数・資格・スタッフ・電話番号・LINE・営業方法・返信の速さには触れない。
 - 記事末尾に「監修」「参考資料」の見出しは作らない（サイト側で自動付与される）。
 - 最後の段落で1回だけ、SOLAR SHIFT（運営：株式会社サイプレス）が現地調査・見積もりを無料で行っていることを短く書き、/contact か /simulation へリンクする。`;
+}
+
+/** リンク先のパスに、そのページの表示名を添える（リンクの文言を、リンク先の内容に合わせてもらうため） */
+function withLabel(path: string): string {
+  const label = findPageLabel(path);
+  return label ? `${path}（${label}）` : path;
 }
 
 function buildUserPrompt(topic: Topic, existing: ExistingPost[], allowedPaths: Set<string>, sourceUrls: Set<string>): string {
@@ -144,8 +154,11 @@ function buildUserPrompt(topic: Topic, existing: ExistingPost[], allowedPaths: S
 - 狙う検索: 「${topic.intent}」
 - 切り口: ${topic.angle}
 - カテゴリ: ${topic.category}（${category?.name ?? ""}）
-- 本文に必ず入れる固定ページへの内部リンク（すべて入れる）: ${topic.links.join(" , ")}
-- リンクしてよいパス（これ以外へのリンクは禁止）: ${[...allowedPaths].filter((p) => !p.startsWith("/blog/")).join(" , ")}
+- 本文に必ず入れる固定ページへの内部リンク（すべて入れる。かっこの中は、そのページの内容）: ${topic.links.map(withLabel).join(" , ")}
+- リンクしてよいパス（これ以外へのリンクは禁止。かっこの中は、そのページの内容）: ${[...allowedPaths]
+    .filter((p) => !p.startsWith("/blog/"))
+    .map(withLabel)
+    .join(" , ")}
 - 出典に使ってよいURL（これ以外は禁止。本文で使った数値・制度の出典を、すべて sources に入れる）: ${[...sourceUrls].join(" , ")}
 
 すでに公開している記事（内容・タイトル・検索意図・見出しの構成が重ならないようにしてください）:
@@ -232,12 +245,17 @@ function buildReviewPrompt(article: GeneratedArticle): string {
 - 判定しなくてよいもの：読者への呼びかけ、「見積もりで確認しましょう」のような助言、
   「機種によって異なる」という書き方、屋根や電気の使い方によって変わるという一般的な注意
 
+あわせて、文章の誤りを wording に挙げてください（無ければ空の配列）。
+- 誤字・脱字、日本語として存在しない語や活用（例：「急わせる」）
+- リンクの文言と、リンク先のページの内容が合っていない箇所（例：補助金の話なのに、業者選びのページへリンクしている）
+
 次の形式のJSONだけを返してください。前後に説明文やコードフェンスを付けないでください。
 
 {
   "claims": [
     { "claim": "記事中の主張（1文・80字以内に要約）", "source": "出典URLまたは空文字", "supported": true }
-  ]
+  ],
+  "wording": ["誤りのある箇所と、その理由（1件40字以内）"]
 }
 
 # 記事
@@ -272,9 +290,9 @@ export async function reviewArticle(opts: { client: Anthropic; model: string; fa
       .join("");
   }
 
-  let parsed: { claims?: ReviewedClaim[] };
+  let parsed: { claims?: ReviewedClaim[]; wording?: unknown };
   try {
-    parsed = extractJson<{ claims?: ReviewedClaim[] }>(text);
+    parsed = extractJson<{ claims?: ReviewedClaim[]; wording?: unknown }>(text);
   } catch (e) {
     return { ok: false, claims: [], errors: [`読み直しの結果を解析できませんでした: ${(e as Error).message}`], missingSources: [] };
   }
@@ -304,6 +322,12 @@ export async function reviewArticle(opts: { client: Anthropic; model: string; fa
     // 根拠は事実シートで確認できたが、記事の sources に入っていない。記事が合格したときに、この出典を足す
     if (!listed.has(c.source)) missing.add(c.source);
     claims.push({ claim: c.claim.slice(0, 160), source: c.source, sourceType: type, verified: true });
+  }
+  // 誤字・不自然な語・リンクの文言とリンク先の食い違い
+  if (Array.isArray(parsed.wording)) {
+    for (const w of parsed.wording) {
+      if (typeof w === "string" && w.trim()) errors.push(`文章の誤りがあります: ${w.trim().slice(0, 80)}`);
+    }
   }
   return { ok: errors.length === 0, claims, errors: errors.slice(0, 8), missingSources: [...missing] };
 }

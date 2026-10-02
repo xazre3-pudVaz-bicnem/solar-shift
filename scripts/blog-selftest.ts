@@ -94,6 +94,14 @@ async function main() {
   const sameStructure = validate(good, { ...ctx, existing: [...existing, { slug: "y", title: "別の題名", intent: "別の意図", body: skeleton }] }).errors.join("\n");
   check("落とす：見出しの構成が既存記事と同じ", /見出しの構成がほぼ同じ/.test(sameStructure));
 
+  // ── 実際のモデルで試したときに、機械の検査をすり抜けた書き方（2026-10-02）
+  const headingLink = validate({ ...good, body: good.body.replace(/^## (.+)$/m, "## [$1](/flow)") }, ctx).errors.join("\n");
+  check("落とす：見出しをリンクにしている", /見出しの中にリンク/.test(headingLink));
+  const fakeQuote = validate({ ...good, body: `${good.body}\n\n葛飾区の案内には、「契約を急がせる業者とは、その場で契約しないでください」と明記されています。` }, ctx).errors.join("\n");
+  check("落とす：事実シートに無い文言を「」で引用している", /引用の形で書いた文/.test(fakeQuote));
+  const realQuote = validate({ ...good, body: `${good.body}\n\n葛飾区の案内には、「国や都の補助制度との併用も可能」と明記されています。ただし、補助金の合計は助成対象経費が上限です。` }, ctx).errors.join("\n");
+  check("通す：事実シートにある文言の引用", !/引用の形で書いた文/.test(realQuote), realQuote);
+
   // ── 読み直し（数値以外の主張）
   const client = null as never;
   const ok = await reviewArticle({ client, model: "fixture", facts, index: factIndex, article: good, fixture: load("blog-review-ok.json") });
@@ -134,6 +142,16 @@ async function main() {
   });
   check("読み直し：sources に無い出典は、足す対象として返す", missing.ok && missing.missingSources.length === 1 && missing.missingSources[0] === extraUrl);
   check("出典の表示名を、登録簿か事実シートから取れる", sourceNameFor(extraUrl, facts) !== extraUrl, sourceNameFor(extraUrl, facts));
+  // 誤字・不自然な語・リンクの文言とリンク先の食い違いが挙がったら不合格
+  const wording = await reviewArticle({
+    client,
+    model: "fixture",
+    facts,
+    index: factIndex,
+    article: good,
+    fixture: JSON.stringify({ claims: [], wording: ["「急わせる」は誤字（急がせる）"] }),
+  });
+  check("読み直し：誤字・不自然な語が挙がったら不合格", !wording.ok && /文章の誤り/.test(wording.errors.join("\n")));
 
   // ── 保存される形（frontmatter に claim / source / sourceType / verified が残る）
   const md = toMarkdown(good, TOPIC, "selftest", "2026-10-02", [...g.claims, ...ok.claims], { gate: QUALITY_GATE_VERSION, checkedAt: "2026-10-02", chars: 0, reviewer: "fixture" });

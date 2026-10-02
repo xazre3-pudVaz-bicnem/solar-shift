@@ -262,6 +262,22 @@ export function validate(article: GeneratedArticle, ctx: ValidateContext): Valid
       }
     }
   }
+  // 見出しはページの骨組み（目次にもなる）。見出しそのものをリンクにしない
+  if (/^#{2,4}\s.*\]\(/m.test(body)) errors.push("見出しの中にリンクがあります（リンクは、本文の文章の中に置く）");
+
+  // ── 「」での引用：公式資料の文言を引用する形で書いた文は、事実シートにある文言と一致していること
+  //    （言い換えた文を「」で囲んで「と明記されています」と書くと、原文に無い言葉を引用したことになる）
+  if (ctx.factIndex) {
+    const flat = (s: string) => normalizeDigits(s).replace(/[\s、。，,.・「」『』（）()]/g, "");
+    const sheet = flat(ctx.factIndex.sections.flatMap((s) => s.bullets.map((b) => b.text)).join("\n"));
+    const quoted = haystack.matchAll(/「([^」]{10,})」\s*(?:と|という|との)(?:明記|記載|書かれ|書いて|案内|呼びかけ|述べ|注意を|推奨)/g);
+    for (const m of quoted) {
+      if (!sheet.includes(flat(m[1]))) {
+        errors.push(`引用の形で書いた文が、事実シートの文言と一致しません: 「${m[1].slice(0, 30)}」（「」を外して自分の言葉で書くか、事実シートにある文言をそのまま使う）`);
+        break;
+      }
+    }
+  }
 
   // ── 出典
   if (!Array.isArray(article.sources)) errors.push("sources が配列ではありません");
