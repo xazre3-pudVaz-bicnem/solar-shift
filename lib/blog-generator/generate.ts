@@ -28,14 +28,21 @@ import { sources as sourceRegistry } from "../../data/sources";
  */
 
 export const DEFAULT_MODEL = "claude-haiku-4-5";
+/**
+ * 公開前の読み直しに使うモデルの既定値（ANTHROPIC_REVIEW_MODEL で変えられる）。
+ * 書くモデルと同じ軽いモデルで読み直すと、根拠のない理由づけや、対応エリアを広げた書き方を見逃した（実際に試して分かった）。
+ * 読み直しは出力が短く、ここが公開の最後の関門なので、書くモデルより上のモデルを使う。
+ * このモデルを呼べなかったとき（権限・名前の誤りなど）は、書くモデルで読み直す。
+ */
+export const DEFAULT_REVIEW_MODEL = "claude-opus-5-5";
 /** 品質ゲートの版。検査の内容を変えたら上げる（記事の frontmatter に残る） */
-export const QUALITY_GATE_VERSION = 3;
+export const QUALITY_GATE_VERSION = 4;
 const HISTORY_SIZE = 40;
 /**
  * 書き直しの回数の上限。実際のモデルで試したところ、1回目は機械の検査、2〜3回目は読み直しで落ち、
- * 指摘の数は回を追うごとに減った（4件 → 2件 → 1件）。4回目まで認める。
+ * 指摘の数は回を追うごとに減った。4回目で合格した回があったので、余裕を見て5回目まで認める。
  */
-const MAX_ATTEMPTS = 4;
+const MAX_ATTEMPTS = 5;
 
 export interface GenerateResult {
   status: "generated" | "skipped";
@@ -123,8 +130,12 @@ ${facts}
 # 文章の決まり
 - 敬体（です・ます）。一文は60文字以内を目安に短く。
 - 冒頭に見出しを置かず、150〜250字の導入から始める。導入の最初の2文で、疑問への答え（結論）を書く。
-- ## 見出しを4〜6本。### は必要なときだけ。# は使わない。見出しの下には、それぞれ150字以上の本文を書く。
+- ## 見出しを5〜6本。### は必要なときだけ。# は使わない。見出しの下には、それぞれ350〜450字の本文を書く（短い区画を作らない）。
 - 本文は2,300〜2,800字。1,800字に満たない記事は公開されない。description は90〜120文字（文字数を数えてから出す）。
+- 事実シートに無い理由づけ・推測を書かない。「区がなぜそう呼びかけているのか」「業者がなぜそうするのか」を自分で作らない。
+  「〜と考えられます」「〜可能性が高いです」「〜ことを示しています」「〜と判断して間違いありません」のような書き方をしない。
+  事実シートにあること（だれが、何を決めている・勧めている・呼びかけている）と、読者が確かめる手順だけを書く。
+- SOLAR SHIFT の対応エリアは、事実シートのとおりに書く（葛飾区が中心。周辺は足立区・江戸川区・墨田区）。「東京都内」「都内全域」のように広げない。
 - 本文で事実として書いた内容は、その内容が載っている節の出典URLを、必ず sources に入れる。葛飾区のページにあることを書いたら葛飾区のページのURLを、区の案内（PDF）にあることを書いたら案内のURLを入れる。
 - 公式資料の文言を「」で引用してよいのは、事実シートに「」つきで載っている文言だけ。それ以外は「」を付けず、「区は〜と呼びかけています」のように自分の言葉で書く。
 - 見出しそのものをリンクにしない。リンクは本文の文章の中に置き、リンクの文言は、リンク先のページの内容に合わせる（下の一覧の、かっこの中がそのページの内容）。
@@ -241,6 +252,10 @@ function buildReviewPrompt(article: GeneratedArticle): string {
   事実シートの「サービス（SOLAR SHIFT）」の節に書かれているもの … supported を true にし、source に "operator" と入れる
   （この節は運営者から確認した内容で、出典URLが無い）
 - 事実シートの「施工事例」の節にある内容（お客様の電気代・設備）を記事が書いていたら … supported を false にする（記事には書けない決まり）
+- SOLAR SHIFT の対応エリアを、事実シートより広く書いていたら（例：「東京都内で対応」）… supported を false にする
+- 事実シートに無い理由づけ・推測を、事実のように書いている文 … supported を false にする
+  （例：「区がこう呼びかけているのは〜だからです」「〜という営業手法が存在することを示しています」「〜する業者は、〜している可能性が高いです」。
+   区や協会が何を言っているかは事実シートで確かめられるが、その理由や、業者の意図は、事実シートに書かれていない）
 - 「2026年10月1日時点の公式情報」のように、情報の時点と出どころを示すだけの言い回しは、主張として取り出さない
 - 判定しなくてよいもの：読者への呼びかけ、「見積もりで確認しましょう」のような助言、
   「機種によって異なる」という書き方、屋根や電気の使い方によって変わるという一般的な注意
@@ -394,7 +409,8 @@ const REVIEW_BUDGET_MS = 25_000;
 export async function generateArticle(opts: GenerateOptions): Promise<GenerateResult> {
   const log = opts.log ?? (() => {});
   const model = (opts.model ?? process.env.ANTHROPIC_MODEL ?? "").trim() || DEFAULT_MODEL;
-  const reviewModel = (opts.reviewModel ?? process.env.ANTHROPIC_REVIEW_MODEL ?? "").trim() || model;
+  // 読み直しに使うモデル。呼べなかったときは、書くモデルに切り替える（その実行のあいだ）
+  let reviewModel = (opts.reviewModel ?? process.env.ANTHROPIC_REVIEW_MODEL ?? "").trim() || DEFAULT_REVIEW_MODEL;
   const existing = opts.existing;
 
   const topic = pickTopic(existing);
@@ -468,7 +484,16 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
       return outOfTime(attempt);
     }
     if (errors.length === 0 && (client || opts.reviewFixture !== undefined)) {
-      const review = await reviewArticle({ client: client as Anthropic, model: reviewModel, facts, index: factIndex, article, fixture: opts.reviewFixture });
+      let review: ReviewResult;
+      try {
+        review = await reviewArticle({ client: client as Anthropic, model: reviewModel, facts, index: factIndex, article, fixture: opts.reviewFixture });
+      } catch (e) {
+        // 読み直し用のモデルを呼べなかった（権限が無い・名前が違うなど）。書くモデルで読み直す
+        if (reviewModel === model) throw e;
+        log(`読み直し: ${reviewModel} を呼べなかったため、${model} で読み直します（${(e as Error).message.slice(0, 120)}）`);
+        reviewModel = model;
+        review = await reviewArticle({ client: client as Anthropic, model: reviewModel, facts, index: factIndex, article, fixture: opts.reviewFixture });
+      }
       reviewer = opts.reviewFixture !== undefined ? "fixture" : reviewModel;
       if (!review.ok) errors = review.errors;
       else {

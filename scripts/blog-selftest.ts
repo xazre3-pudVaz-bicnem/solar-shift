@@ -112,6 +112,13 @@ async function main() {
   const accusation = validate({ ...good, tags: [...good.tags.slice(0, 3), "詐欺注意"] }, ctx).errors.join("\n");
   check("落とす：タグの「詐欺」（区の資料に無い、断定的な非難の言葉）", /詐欺/.test(accusation));
 
+  const speculation = validate({ ...good, body: `${good.body}\n\n契約を急がせる業者は、顧客の利益を考えていない可能性が高いのです。` }, ctx).errors.join("\n");
+  check("落とす：根拠のない推測（〜可能性が高い）", /根拠を示さない一般化/.test(speculation));
+  const flatAssertion = validate({ ...good, body: `${good.body}\n\nそれは営業側の都合だと判断して間違いありません。` }, ctx).errors.join("\n");
+  check("落とす：根拠のない言い切り（〜と判断して間違いありません）", /根拠のない言い切り/.test(flatAssertion));
+  const wideArea = validate({ ...good, body: `${good.body}\n\nSOLAR SHIFT では、葛飾区をはじめ東京都内で、現地調査と見積もりを無料で行っています。` }, ctx).errors.join("\n");
+  check("落とす：対応エリアを「東京都内」と広げている", /対応エリアを、事実シートより広く/.test(wideArea));
+
   // ── 読み直し（数値以外の主張）
   const client = null as never;
   const ok = await reviewArticle({ client, model: "fixture", facts, index: factIndex, article: good, fixture: load("blog-review-ok.json") });

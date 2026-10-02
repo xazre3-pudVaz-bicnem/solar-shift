@@ -7,7 +7,8 @@ name: 毎日のブログ記事を生成（GitHub Actions 版）
 # content/blog に保存して push する。通らなかった日は何も保存せず、緑のまま終わる。
 #
 # 必要な Secrets: ANTHROPIC_API_KEY
-# 任意の Secrets: ANTHROPIC_MODEL（記事を書くモデル）／ANTHROPIC_REVIEW_MODEL（公開前の読み直しに使うモデル）
+# 任意の Secrets: ANTHROPIC_MODEL（記事を書くモデル。既定は Haiku）
+#                  ANTHROPIC_REVIEW_MODEL（公開前の読み直しに使うモデル。既定は書くモデルより上のモデル）
 # ANTHROPIC_API_KEY が未登録の間は、警告を出して何もせずに終わる（失敗にはしない）。
 
 on:
