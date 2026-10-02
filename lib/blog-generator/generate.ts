@@ -54,6 +54,8 @@ export interface GenerateResult {
   errors?: string[];
   attempts: number;
   model: string;
+  /** 公開しなかったとき：読み直しまで進んだ最後の原稿（保存はしない。試すときに、何が落とされたのかを読むため） */
+  draft?: string;
 }
 
 /** 日本時間の今日（YYYY-MM-DD） */
@@ -493,6 +495,7 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
   const messages: Anthropic.MessageParam[] = [{ role: "user", content: buildUserPrompt(topic, existing, allowedPaths, sourceUrls) }];
 
   let lastErrors: string[] = [];
+  let lastDraft: string | undefined;
   const remaining = () => (opts.deadlineAt === undefined ? Number.POSITIVE_INFINITY : opts.deadlineAt - Date.now());
   const outOfTime = (attempts: number): GenerateResult => ({
     status: "skipped",
@@ -501,6 +504,7 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
     errors: lastErrors,
     attempts,
     model,
+    draft: lastDraft,
   });
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
@@ -513,7 +517,10 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
         return outOfTime(attempt - 1);
       }
       // 事実シートを含む system は試行のたびに同じなので、キャッシュさせる（書き直しの呼び出しが安く・速くなる）
+      const writeStartedAt = Date.now();
       const response = await client!.messages.create({ model, max_tokens: WRITE_MAX_TOKENS, system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }], messages });
+      const writeInput = response.usage.input_tokens + (response.usage.cache_creation_input_tokens ?? 0) + (response.usage.cache_read_input_tokens ?? 0);
+      log(`試行${attempt}（${model}）: 入力 ${writeInput.toLocaleString("en-US")} / 出力 ${response.usage.output_tokens.toLocaleString("en-US")} トークン・${Math.round((Date.now() - writeStartedAt) / 1000)}秒`);
       if (response.stop_reason === "refusal") {
         return { status: "skipped", reason: "モデルが生成を拒否しました", topic, attempts: attempt, model };
       }
@@ -540,6 +547,8 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
     let errors = checked.errors;
     let claims = checked.claims;
     let reviewer = "none";
+    /** この試行の不合格が、読み直しによるものか（機械の検査には通っている） */
+    let reviewed = false;
 
     // ── 読み直し（機械の検査に通ったものだけ）。読み直す時間が残っていなければ、公開しない
     if (errors.length === 0 && client && remaining() < REVIEW_BUDGET_MS) {
@@ -586,8 +595,11 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
         if (review.timedOut) return outOfTime(attempt);
         return { status: "skipped", reason: "公開前の読み直しを終えられませんでした（この回は公開しません）", topic, errors: review.errors, attempts: attempt, model };
       }
-      if (!review.ok) errors = review.errors;
-      else {
+      if (!review.ok) {
+        errors = review.errors;
+        reviewed = true;
+        lastDraft = toMarkdown(article, topic, topic.slug || slugFromIntent(topic.intent, topic.category), todayJst());
+      } else {
         claims = [...claims, ...review.claims];
         // 本文の根拠になっているのに sources に無かった出典を足す（参考資料と本文の対応をそろえる）
         for (const url of review.missingSources) article.sources.push({ name: sourceNameFor(url, facts), url });
@@ -607,14 +619,17 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
     lastErrors = errors;
     log(`試行${attempt}: 品質ゲートで${errors.length}件 → ${errors.join(" / ")}`);
     if (opts.fixture) break;
-    messages.push(
-      { role: "assistant", content: text },
-      {
-        role: "user",
-        content: `前回の記事には次の問題がありました。修正して、同じJSON形式で書き直してください。事実シートに無い内容は、言い換えるのではなく削ってください（本文は${MIN_BODY_CHARS.toLocaleString("ja-JP")}字以上を保つこと）。\n${errors.map((e) => `- ${e}`).join("\n")}`,
-      },
-    );
+    const minChars = MIN_BODY_CHARS.toLocaleString("ja-JP");
+    // 読み直しで落ちた記事は、機械の検査には通っている。全体を書き直させると、直した分だけ新しい説明が足されて、また落ちる
+    // （実際のモデルで試すと、指摘が 8件 → 8件 → 3件 と入れ替わるだけで、5回とも通らなかった）。指摘された文だけを直させる
+    const request = reviewed
+      ? `前回の記事を、公開前の読み直しにかけたところ、次の箇所が事実シートで確認できませんでした。
+指摘された文だけを、削るか、事実シートに書いてある内容に直してください。指摘されていない文は、一字も変えないでください（新しい説明・理由づけ・一般論を足さない）。
+削って本文が${minChars}字を下回るときは、事実シートの関連する節にある内容（条件・書類・日付・手順）を、出どころを添えて足してください。
+同じJSON形式で、記事の全体を返してください。`
+      : `前回の記事には次の問題がありました。修正して、同じJSON形式で書き直してください。事実シートに無い内容は、言い換えるのではなく削ってください（本文は${minChars}字以上を保つこと）。`;
+    messages.push({ role: "assistant", content: text }, { role: "user", content: `${request}\n${errors.map((e) => `- ${e}`).join("\n")}` });
   }
 
-  return { status: "skipped", reason: "品質ゲートを通過できませんでした（この回は公開しません）", topic, errors: lastErrors, attempts: MAX_ATTEMPTS, model };
+  return { status: "skipped", reason: "品質ゲートを通過できませんでした（この回は公開しません）", topic, errors: lastErrors, attempts: MAX_ATTEMPTS, model, draft: lastDraft };
 }

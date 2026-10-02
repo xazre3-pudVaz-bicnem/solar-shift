@@ -21,6 +21,14 @@ on:
         description: "ファイルを書かずに、生成される記事の内容だけ確認する"
         type: boolean
         default: false
+      model:
+        description: "記事を書くモデル（試すとき用。空なら Secrets の ANTHROPIC_MODEL、それも無ければ既定）"
+        type: string
+        default: ""
+      review_model:
+        description: "読み直しに使うモデル（試すとき用。空なら Secrets の ANTHROPIC_REVIEW_MODEL、それも無ければ既定）"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -66,8 +74,8 @@ jobs:
         if: steps.key.outputs.ready == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          ANTHROPIC_MODEL: ${{ secrets.ANTHROPIC_MODEL }}
-          ANTHROPIC_REVIEW_MODEL: ${{ secrets.ANTHROPIC_REVIEW_MODEL }}
+          ANTHROPIC_MODEL: ${{ inputs.model || secrets.ANTHROPIC_MODEL }}
+          ANTHROPIC_REVIEW_MODEL: ${{ inputs.review_model || secrets.ANTHROPIC_REVIEW_MODEL }}
           DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
         run: npm run blog:generate
 

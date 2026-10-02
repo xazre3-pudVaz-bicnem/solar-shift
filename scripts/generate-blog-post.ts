@@ -51,6 +51,8 @@ async function main() {
   if (result.status === "skipped") {
     console.log(`公開しません: ${result.reason}`);
     if (result.errors) for (const e of result.errors) console.log(`  - ${e}`);
+    // 試すとき（保存しない実行）は、読み直しで落ちた最後の原稿も出す（何が落とされたのかを、読んで確かめるため）
+    if ((DRY_RUN || fixture) && result.draft) console.log(`\n--- 公開しなかった原稿（読み直しで不合格） ---\n${result.draft}`);
     // 公開しないことは失敗ではない（基準を満たさない記事を出さないのが、この仕組みの役目）
     process.exit(0);
   }
