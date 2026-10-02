@@ -29,6 +29,14 @@ const nextConfig: NextConfig = {
     // チャット（自動応答）も同じ事実シートを読む
     "/api/chat": ["./docs/VERIFIED_FACTS.md"],
   },
+  async redirects() {
+    return [
+      // 「おすすめ商品」のページは廃止（個別の商品を載せない方針）。比べ方のページへ転送する
+      { source: "/recommend/solar", destination: "/products/solar", permanent: true },
+      { source: "/recommend/battery", destination: "/products/battery", permanent: true },
+      { source: "/recommend", destination: "/products", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

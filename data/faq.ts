@@ -244,6 +244,22 @@ export const faqs: FaqItem[] = [
     link: { href: "/area", label: "対応エリアを見る" },
   },
   {
+    id: "service-makers",
+    category: "service",
+    scope: "service",
+    q: "どのメーカーの太陽光パネル・蓄電池を扱っていますか？",
+    a: "Qセルズ、カナディアン・ソーラー、長州産業、シャープ、パナソニック、オムロン、ニチコンなど、国内外の主要メーカーを取り扱っています。ここに無いメーカーについても、ご相談ください。機種の数が多いため、個別の商品や価格はサイトに掲載していません。屋根と電気の使い方を伺ったうえで、機種をご提案します。",
+    link: { href: "/products", label: "取扱メーカーと、機器の比べ方を見る" },
+  },
+  {
+    id: "service-works",
+    category: "service",
+    scope: "service",
+    q: "施工事例はありますか？",
+    a: "掲載の許可をいただいたお客様の事例を、施工事例のページで紹介しています。ご家族の構成、導入した設備、導入前後の電気代をまとめています。電気代は季節や使い方で変わるため、同じ結果を保証するものではありません。",
+    link: { href: "/works", label: "施工事例を見る" },
+  },
+  {
     id: "service-sales",
     category: "service",
     scope: "service",

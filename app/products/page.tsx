@@ -80,14 +80,9 @@ export default function ProductsPage() {
             </ul>
           </section>
 
-          <section className="cv-block mt-14" aria-labelledby="items-h">
-            <h2 id="items-h" className="border-l-[5px] border-orange-500 pl-3 text-[24px] leading-[1.45] font-black text-navy-900">
-              取扱商品
-            </h2>
-            <div className="mt-6">
-              <ProductCatalog products={publishedProducts} showComparison={false} />
-            </div>
-          </section>
+          <div className="cv-block mt-16">
+            <ProductCatalog products={publishedProducts} showComparison={false} detail headingId="makers-h" />
+          </div>
 
           <SourceList sources={[verified.katsushikaGuide, verified.tokyoBatteryPage, verified.jpeaSetting]} className="mt-12" />
         </div>

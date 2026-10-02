@@ -143,8 +143,8 @@ export default function SolarPage() {
         { href: "/solar-battery", label: "太陽光＋蓄電池", description: "つくった電気をためて使う組み合わせ" },
         { href: "/subsidy/katsushika", label: "葛飾区の補助金", description: "かつしかエコ助成金の金額・条件・申請" },
         { href: "/guide/solar-merit-demerit", label: "メリット・デメリット", description: "導入前に両面から確認" },
-        { href: "/products/solar", label: "太陽光パネル一覧", description: "取扱商品（順次掲載）" },
-        { href: "/area/katsushika", label: "葛飾区の太陽光発電", description: "住宅事情・水害リスク・地域FAQ" },
+        { href: "/products/solar", label: "太陽光パネルの比べ方", description: "比べる項目と、取扱メーカー" },
+        { href: "/area/katsushika", label: "葛飾区の太陽光・蓄電池業者", description: "区内の対応エリアと、相談の進め方" },
         { href: "/guide/solar-cost", label: "太陽光発電の費用", description: "内訳と補助金を差し引いた考え方" },
       ]}
       relatedCategories={["solar", "katsushika-subsidy"]}

@@ -49,8 +49,6 @@ const allHeaderNav: NavGroup[] = [
     links: [
       { href: "/products/solar", label: "太陽光パネルの比べ方" },
       { href: "/products/battery", label: "蓄電池の比べ方" },
-      { href: "/recommend/solar", label: "おすすめ太陽光パネル" },
-      { href: "/recommend/battery", label: "おすすめ蓄電池" },
     ],
   },
   {
@@ -91,8 +89,6 @@ const allFooterNav: NavGroup[] = [
       { href: "/products", label: "商品の選び方" },
       { href: "/products/solar", label: "太陽光パネルの比べ方" },
       { href: "/products/battery", label: "蓄電池の比べ方" },
-      { href: "/recommend/solar", label: "おすすめ太陽光パネル" },
-      { href: "/recommend/battery", label: "おすすめ蓄電池" },
     ],
   },
   {

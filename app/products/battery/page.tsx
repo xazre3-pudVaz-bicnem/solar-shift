@@ -114,14 +114,9 @@ export default function ProductsBatteryPage() {
             </p>
           </section>
 
-          <section className="cv-block mt-14" aria-labelledby="items-h">
-            <h2 id="items-h" className={H2}>
-              取扱商品（家庭用蓄電池）
-            </h2>
-            <div className="mt-6">
-              <ProductCatalog products={products} category="battery" />
-            </div>
-          </section>
+          <div className="cv-block mt-16">
+            <ProductCatalog products={products} category="battery" headingId="makers-h" />
+          </div>
 
           <SourceList sources={[verified.katsushikaGuide, verified.katsushikaBatteryHandbook, verified.tokyoBatteryPage, verified.siiBatteryRegistration, verified.jpeaAbout]} className="mt-12" />
         </div>

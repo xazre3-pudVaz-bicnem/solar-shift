@@ -1,10 +1,9 @@
 import { publishedWorks } from "../data/works";
 import { publishedVoices } from "../data/voices";
-import { recommendedProducts } from "../data/products";
 
 /**
  * 「中身がまだ無いので、検索結果にも案内にも出さない」固定ページの一覧。
- * データ（施工事例・お客様の声・おすすめ商品）が登録されると、自動で外れる。
+ * データ（施工事例・お客様の声）が登録されると、自動で外れる。
  *
  * ここに入っているページは、次の4か所で同じ扱いになる。
  *   - そのページの robots … noindex（リンクはたどらせる）
@@ -18,8 +17,6 @@ import { recommendedProducts } from "../data/products";
 export const HELD_BACK: ReadonlySet<string> = new Set<string>([
   ...(publishedWorks.length === 0 ? ["/works"] : []),
   ...(publishedVoices.length === 0 ? ["/voice"] : []),
-  ...(recommendedProducts("solar").length === 0 ? ["/recommend/solar"] : []),
-  ...(recommendedProducts("battery").length === 0 ? ["/recommend/battery"] : []),
 ]);
 
 export function isHeldBack(path: string): boolean {

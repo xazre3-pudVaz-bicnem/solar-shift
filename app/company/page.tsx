@@ -1,3 +1,4 @@
+import { publishedWorks } from "@/data/works";
 import { TrustFacts } from "@/components/ui/TrustFacts";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -86,7 +87,19 @@ export default function CompanyPage() {
             <div className="rounded-md border border-l-4 border-line border-l-navy-900 bg-paper-2 p-5 text-[15px] leading-[1.85] text-ink-2">
               <p className="font-bold text-navy-900">SOLAR SHIFT の位置づけ</p>
               <p className="mt-2">{c.name}は、Webマーケティング支援を中心に事業を行ってきた会社です。SOLAR SHIFT は、拠点のある葛飾区で、住宅の太陽光発電・蓄電池の導入を補助金の整理からサポートする事業として2026年に開始しました。</p>
-              <p className="mt-2">新規事業のため、施工実績やお客様の声は掲載許可をいただいたものから順次公開します。確認できていない実績を掲載することはありません。</p>
+              <p className="mt-2">
+                {publishedWorks.length > 0 ? (
+                  <>
+                    導入されたお客様の事例は、掲載の許可をいただいたものを
+                    <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">
+                      施工事例
+                    </Link>
+                    で公開しています。確認できていない実績を掲載することはありません。
+                  </>
+                ) : (
+                  "新規事業のため、施工実績やお客様の声は掲載許可をいただいたものから順次公開します。確認できていない実績を掲載することはありません。"
+                )}
+              </p>
             </div>
           </div>
           <div>

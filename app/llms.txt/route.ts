@@ -1,3 +1,5 @@
+import { handlingManufacturers } from "@/data/manufacturers";
+import { publishedWorks, workArea } from "@/data/works";
 import { SITE_URL, IS_PUBLIC, formatDateJa } from "@/lib/seo";
 import { siteConfig, addressWithPostal, contactEmail } from "@/lib/site";
 import { subsidyPrograms, statusLabel } from "@/data/subsidies";
@@ -75,10 +77,21 @@ export function GET() {
       .slice(0, 20)
       .map((p) => `- [${p.title}](${url(`/blog/${p.slug}`)}): ${p.description}`),
     ``,
+    ...(publishedWorks.length > 0
+      ? [
+          `## 施工事例（掲載の許可を得た事例）`,
+          `- [施工事例の一覧](${url("/works")})`,
+          ...publishedWorks.map((w) => `- [${w.label}](${url(`/works/${w.slug}`)}): ${workArea(w)}・${w.customer}。導入した設備は${w.equipment}`),
+          ``,
+        ]
+      : []),
+    `## 取扱メーカー`,
+    `- ${handlingManufacturers().map((m) => m.brand).join("、")}（一覧: ${url("/products")}）。個別の商品・型番・価格は掲載していません。`,
+    ``,
     `## このサイトの方針`,
     `- 補助金の交付可否・金額は自治体等の審査で決まります。当サイトの情報は交付を保証するものではありません。`,
-    `- 施工事例・お客様の声は、実際に施工し掲載許可を得たものだけを掲載します（新しいサービスのため、現時点では未掲載です）。`,
-    `- 価格が未確定の商品に価格は表示していません。`,
+    `- 施工事例は、掲載許可を得たものだけを掲載します。事例の電気代は、そのお客様のおおよその月額で、同じ結果を保証するものではありません。お客様の声（ご本人の言葉の引用）は掲載していません。`,
+    `- 個別の商品（型番・仕様・価格）は掲載していません。`,
     ``,
   ];
 

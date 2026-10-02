@@ -1,3 +1,4 @@
+import { publishedWorks } from "@/data/works";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -93,7 +94,17 @@ export default function ReasonPage() {
         />
 
         <Callout tone="note" title="実績について、正直にお伝えします" className="mt-10">
-          SOLAR SHIFT は新規事業のため、現時点で公開できる施工事例やお客様の声はありません。「創業○年」「施工○件」「地域No.1」「メーカー認定」といった表現は、事実として確認できるまで使いません。施工事例とお客様の声は、掲載許可をいただいたものから順次公開します。
+          {publishedWorks.length > 0 ? (
+            <>
+              SOLAR SHIFT は2026年に始まった新しいサービスです。導入されたお客様の事例は、掲載の許可をいただいたものを
+              <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">
+                施工事例
+              </Link>
+              で公開しています。「創業○年」「施工○件」「地域No.1」「メーカー認定」といった表現は、事実として確認できるまで使いません。お客様ご本人の言葉を載せる「お客様の声」は、掲載の許可をいただいたものから公開します。
+            </>
+          ) : (
+            "SOLAR SHIFT は新規事業のため、現時点で公開できる施工事例やお客様の声はありません。「創業○年」「施工○件」「地域No.1」「メーカー認定」といった表現は、事実として確認できるまで使いません。施工事例とお客様の声は、掲載許可をいただいたものから順次公開します。"
+          )}
         </Callout>
 
         <div className="mt-14 space-y-14">

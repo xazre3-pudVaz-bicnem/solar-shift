@@ -1,3 +1,5 @@
+import { WorksCard } from "@/components/works/WorksCard";
+import { worksInCity, publishedWorks, WORK_BILL_NOTE } from "@/data/works";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,7 +9,7 @@ import { siteConfig, addressWithPostal } from "@/lib/site";
 import { getSubsidy, katsushikaProgram } from "@/data/subsidies";
 import { primaryAreas, secondaryAreas } from "@/data/areas";
 import { faqsByIds } from "@/data/faq";
-import { recommendedProducts } from "@/data/products";
+import { MakerShowcase } from "@/components/product/MakerShowcase";
 import { images } from "@/data/images";
 import { getLatestPosts } from "@/lib/blog";
 import { headline } from "@/lib/subsidy-headline";
@@ -20,7 +22,6 @@ import { HomeHero } from "@/components/sections/HomeHero";
 import { SubsidyBanner } from "@/components/sections/SubsidyBanner";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
-import { ProductCard } from "@/components/product/ProductCard";
 import { ArticleCard } from "@/components/blog/ArticleCard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webPageSchema } from "@/lib/schema";
@@ -178,7 +179,9 @@ export default function HomePage() {
 
   const faqItems = faqsByIds(["subsidy-katsushika-overview", "subsidy-pre-consultation", "subsidy-combination", "battery-set", "service-area"]);
   const posts = getLatestPosts(3);
-  const recommended = [...recommendedProducts("solar").slice(0, 2), ...recommendedProducts("battery").slice(0, 2)];
+  // TOP に出す施工事例：葛飾区の事例を先に。無ければ、掲載している事例から3件まで
+  const katsushikaWorks = worksInCity(siteConfig.primaryArea.name);
+  const homeWorks = (katsushikaWorks.length > 0 ? katsushikaWorks : publishedWorks).slice(0, 3);
   const areaText = `${primaryAreas.map((a) => a.name).join("・")}${secondaryAreas.length > 0 ? `（周辺：${secondaryAreas.map((a) => a.name).join("・")}）` : ""}`;
 
   return (
@@ -299,6 +302,33 @@ export default function HomePage() {
 
       {/* ───────── 4. 補助金シミュレーターへの導線（ここがいちばん強い CTA） */}
       <SubsidyBanner />
+
+      {/* ───────── 施工事例（掲載の許可をいただいた事例。葛飾区のものを先に出す） */}
+      {homeWorks.length > 0 && (
+        <section className="cv-auto border-b border-line bg-paper-2 py-16 sm:py-24" aria-labelledby="works">
+          <Container>
+            <SectionHeading
+              eyebrow="施工事例"
+              title={<span id="works">葛飾区で導入されたお客様の事例</span>}
+              lead="掲載の許可をいただいた事例を紹介します。ご家族の構成、導入した設備、導入前後の電気代をまとめています。"
+            />
+            <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {homeWorks.map((w, i) => (
+                <li key={w.slug} {...reveal(i * 60)}>
+                  <WorksCard work={w} />
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 max-w-3xl text-[13px] leading-[1.8] text-ink-2">※ {WORK_BILL_NOTE}</p>
+            <p className="mt-6">
+              <LinkButton href="/works" variant="secondary">
+                施工事例をすべて見る
+                <ArrowIcon />
+              </LinkButton>
+            </p>
+          </Container>
+        </section>
+      )}
 
       {/* ───────── 5. サービス（アイコンだけでそろえる） */}
       <section className="cv-auto py-16 sm:py-24" aria-labelledby="services">
@@ -430,21 +460,12 @@ export default function HomePage() {
       </section>
 
       {/* ───────── 9. 商品・メーカー */}
-      <section className="cv-auto py-16 sm:py-24" aria-labelledby="products">
+      <div className="cv-auto py-16 sm:py-24">
         <Container>
-          <SectionHeading
-            eyebrow="商品・メーカー"
-            title={<span id="products">機種は、現地を確認してからご提案します</span>}
-            lead="機種を決める前に、何を比べればよいかをまとめています。個別の商品は、メーカーの公式資料で仕様を確認できたものだけを掲載します。"
-          />
-          {recommended.length > 0 && (
-            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {recommended.map((p) => (
-                <ProductCard key={p.slug} product={p} />
-              ))}
-            </div>
-          )}
-          <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-3">
+          <div className="mx-auto max-w-4xl">
+            <MakerShowcase headingId="products" />
+          </div>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
             <LinkButton href="/products/solar" variant="secondary">
               太陽光パネルの比べ方
               <ArrowIcon />
@@ -458,7 +479,7 @@ export default function HomePage() {
             </LinkButton>
           </div>
         </Container>
-      </section>
+      </div>
 
       {/* ───────── 10. 最新記事 */}
       {posts.length > 0 && (

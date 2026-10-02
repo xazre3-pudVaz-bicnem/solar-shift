@@ -55,7 +55,9 @@ export default function VoicePage() {
           <div className="rounded-md border border-l-4 border-line border-l-navy-900 bg-paper-2 px-5 py-6 sm:px-8 sm:py-8">
             <p className="text-[20px] leading-[1.45] font-black text-navy-900">お客様の声は準備中です</p>
             <p className="mt-3 max-w-3xl text-base leading-[1.9] text-ink-2">
-              SOLAR SHIFT は2026年に始まった新しいサービスのため、現時点で掲載できるお客様の声はありません。導入後にお客様から伺った声は、ご本人の掲載許可をいただいたものから順次掲載します。
+              お客様ご本人の言葉をそのまま載せる「お客様の声」は、掲載の許可をいただいたものから掲載します。導入されたお客様の事例は、
+              <Link href="/works" className="mx-1 inline-block py-1 font-bold text-navy-700 underline underline-offset-4">施工事例</Link>
+              のページで紹介しています。
             </p>
             <Callout tone="note" title="掲載の基準" className="mt-6">
               <ul className="list-disc space-y-1 pl-5">

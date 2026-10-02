@@ -30,6 +30,13 @@ if (!fs.existsSync(APP)) {
 
 const index = buildFactIndex(loadFacts());
 const yenOk = allowedYenAmounts();
+// 運営者から受け取った内容（出典 URL の無い節）にある金額。施工事例の電気代など。固定ページでは既知として扱う
+// （記事の根拠には使えない。記事の検査は lib/blog-generator/validate.ts の金額ゲートが別に行う）
+const operatorYen = new Set<number>();
+for (const s of index.sections) {
+  if (s.sources.length > 0) continue;
+  for (const b of s.bullets) for (const y of extractYenAmounts(b.text)) operatorYen.add(y.value);
+}
 const GENERALIZATION = /一般的(に|です|な|で)|一般に|多くの(場合|機種|製品|家庭|住宅|方|業者|ケース)|ほとんどの|大半の|通常は|平均(的|して|で)|標準的(に|な)|ことが多(く|い)|がち(です|に|な|で)|傾向(が|に)あ/;
 const HEARSAY = /と(言|い)われています|と(言|い)われる|といわれ|とされています|だそうです|らしいです/;
 const NAMED_SOURCE = /葛飾区|区の|区は|区が|東京都|都の|都は|クール・ネット東京|国の|国は|経済産業省|資源エネルギー庁|環境省|国土交通省|SII|環境共創イニシアチブ|太陽光発電協会|JPEA|公式|手引き|案内|要綱|取扱説明書/;
@@ -77,7 +84,7 @@ for (const file of walk(APP).sort()) {
       if (t.kind === "date" && index.neutral.has(t.key)) continue;
       if (!index.tokens.has(t.key)) issues.push(`数値「${t.raw.trim()}」`);
     }
-    for (const y of extractYenAmounts(line)) if (!yenOk.has(y.value)) issues.push(`金額「${y.raw}」`);
+    for (const y of extractYenAmounts(line)) if (!yenOk.has(y.value) && !operatorYen.has(y.value)) issues.push(`金額「${y.raw}」`);
     // 「」の中（言葉そのものを引用しているところ）は見ない
     const plain = line.replace(/「[^」]*」/g, "「」");
     if (GENERALIZATION.test(plain) && !NAMED_SOURCE.test(line)) issues.push("一般化");

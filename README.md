@@ -56,7 +56,8 @@ components/
   ui/                Container / SectionHeading / Button / Callout / KeyPoints / Steps / Checklist / Toc / TrustFacts / TableScroll / ProseTable / ...
   sections/          HomeHero / CtaSection / FaqSection / ServiceLayout / GuideArticle / ContactForm / 図解
   subsidy/           SubsidyTable / SubsidyCard / BigNumbers / SubsidyBars / SubsidyMatrix / SubsidyCalculator / ApplicationTimeline / ...
-  product/           ProductCard / ProductComparison / ProductCatalog / ManufacturerList / CompareGuide
+  product/           MakerShowcase（取扱メーカーの一覧）/ ProductCatalog / ProductCard / ProductComparison / CompareGuide
+  works/             WorksCard（施工事例のカード）
   blog/              BlogIndex / CategoryIndex / ArticleCard / ArticleBody / RelatedArticles / AuthorBox
   chat/              ChatPanel（開いたときに初めて読み込む）
 data/
@@ -76,7 +77,7 @@ lib/
   site.ts            siteConfig（本番 URL・NAP・会社情報・連絡先・信頼性の項目。空欄は画面に出ない）
   seo.ts             buildMetadata / SITE_URL ゲート / OG 画像のパス
   seo-map.ts         SEO マップ（ページごとの主キーワード・検索意図・役割・index）とカニバリの判定
-  indexing.ts        中身がまだ無いページ（施工事例・お客様の声・おすすめ商品）を noindex にする判定
+  indexing.ts        中身がまだ無いページ（施工事例・お客様の声）を noindex にする判定
   schema.ts          JSON-LD 生成
   routes.ts          固定ページ一覧（sitemap・リンク検査・OG 画像の見出し）
   nav.ts             ヘッダー・フッター・サイトマップのメニュー（noindex のページは自動で外れる）
@@ -120,16 +121,29 @@ scripts/             generate-blog-post.ts / blog-audit.ts / blog-selftest.ts / 
 
 ## 商品
 
-- `/products`・`/products/solar`・`/products/battery` は「選び方・比べ方のガイド」。商品が1つも無くても中身があるので、検索結果に出す
-- 個別の商品は `data/products.ts` のテンプレートをコピーし、メーカー公式ページで確認した値を入れ、`status: "published"` にしたものだけページになる（未確認の商品ページは作られない）
-- `price` が未確定なら `null` のまま（「お問い合わせください」表示、Offer 構造化データなし）
-- `recommended: true` + `recommendReason` を付けると `/recommend/*` に出る。おすすめが0件の間、`/recommend/*` は `noindex`・メニュー非表示・sitemap 対象外
-- メーカーは、取扱契約が確認できたもの（`relationship: handling / authorized`）だけ名前を出す
+方針（2026-10-02・運営者の指示）：メーカー・商品は数が多いので、**個別の商品（型番・仕様・価格）は掲載しない**。代わりに、取り扱っているメーカーを一覧で見せる。
+
+- `/products`・`/products/solar`・`/products/battery` は「選び方・比べ方のガイド」＋「取扱メーカーの一覧」
+- 取扱メーカーは `data/manufacturers.ts`。画面に出るのは `relationship` が `handling` / `authorized` のものだけ。足すときは、運営者に取扱いを確認してから（推測で足さない）
+- 一覧の表示は `components/product/MakerShowcase.tsx`（TOP と商品ページ）。見出しの社数は、データの件数から自動で出る
+- **ロゴ画像は、メーカーから使用許諾を得たものだけ**。`public/images/makers/` に置いて `logo` に登録すると、社名の文字の代わりにロゴが出る。許諾の無いロゴ（他社サイトから取った画像など）は使わない
+- 「正規取扱店」「認定店」「メーカー認定」の表記は、証憑を確認できたとき（`authorized`）だけ
+- 社数を変えたら `docs/VERIFIED_FACTS.md` の取扱メーカーの行も直す（`npm run facts:audit` が食い違いを見つける）
+- `/recommend/*`（おすすめ商品）は廃止し、`/products/*` へ転送している（`next.config.ts` の `redirects`）
+- `data/products.ts` と `/products/[slug]` の仕組みは残してある（いまは0件。方針が変わって商品を載せる場合は、メーカー公式ページで確認した値を入れて `status: "published"` にする）
 
 ## 施工事例・お客様の声
 
 `data/works.ts` / `data/voices.ts` に、掲載許可を得た実際の事例・声だけを追加する。0件の間は「準備中」表示で `noindex`・メニュー非表示・sitemap 対象外（1件入れると自動で公開に切り替わる。判定は `lib/indexing.ts`）。
-施工事例には、地域・住宅タイプ・築年数・屋根形状・容量・メーカー・補助金・施工前後の写真・工事期間・設置した理由・お客様の声の項目がある。
+
+- 施工事例は、2026-10-02 に運営者から「実際のお客様の事例」として受け取った5件を掲載している。見出し・本文・電気代・設備は、受け取った表記のまま
+- 受け取っていない項目（築年数・屋根形状・メーカー・施工した年月・工事期間・写真）は `null` / 空。空の項目は画面に出ない
+- **写真は、その事例の実際の写真だけ**。イメージ写真や生成画像を、事例の写真として使わない（写真が無い事例は、設備の種類のアイコンで表示する）
+- **電気代は、受け取った金額をそのまま出す**。差額・削減率・年間の金額を、こちらで計算して書かない。注記（`WORK_BILL_NOTE`）を必ず添える
+- 事例の金額は、`docs/VERIFIED_FACTS.md` の「施工事例」の節（出典 URL なし）にも書く。固定ページの点検（`facts:audit`）では既知の数値として扱うが、記事・チャットの根拠には使えない
+- 事例は TOP（葛飾区の事例を3件まで）、`/works`、葛飾区のエリアページ（その区の事例）に出る
+- お客様の声（`/voice`）は、ご本人の言葉をそのまま掲載できる場合だけ追加する。いまは0件で `noindex`
+- Review / AggregateRating の構造化データは出さない
 
 ## 信頼性の項目（施工体制・保証など）
 
@@ -207,7 +221,7 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 - **メタデータ**：全ページ `buildMetadata()`（title / description / canonical / OG / Twitter / RSS）。タイトルの末尾は `｜SOLAR SHIFT`
 - **OG 画像**：ページごとに日本語の見出し入りで生成（`/og/…`）。対象は `lib/og-pages.ts`、固定ページの見出しは `lib/routes.ts` の `ogTitle`
 - **構造化データ**：Organization / LocalBusiness / WebSite（全ページ）、BreadcrumbList、FAQPage、Article / BlogPosting（出典を citation に）、Service、HowTo、Blog、ItemList、CollectionPage / AboutPage / ContactPage、WebApplication、Product（価格未確定なら Offer なし）。口コミ・評価は出さない
-- **noindex にするページ**：施工事例・お客様の声・おすすめ商品（中身が入るまで）、記事が3本未満のカテゴリ、404。どれも sitemap に載せない
+- **noindex にするページ**：お客様の声（中身が入るまで）、記事が3本未満のカテゴリ、404。どれも sitemap に載せない
 - **canonical**：全ページが自分自身の URL を指す。ブログ一覧の2ページ目以降（`/blog/page/2` …）も自分自身を指し、index のまま（sitemap には載せない）
 - **sitemap.xml**：検索結果に出すページだけ。`lastmod` は記事の更新日、固定ページは `siteConfig.contentUpdatedAt` と補助金情報の基準日の新しいほう
 - **robots.txt**：AI 検索のクローラー（GPTBot・ClaudeBot・PerplexityBot・Google-Extended など）も許可

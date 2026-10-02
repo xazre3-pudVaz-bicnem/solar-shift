@@ -1,3 +1,5 @@
+import { WorksCard } from "@/components/works/WorksCard";
+import { worksInCity, WORK_BILL_NOTE } from "@/data/works";
 import { TrustFacts } from "@/components/ui/TrustFacts";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -131,9 +133,13 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
     },
   ];
 
+  // この地域で導入されたお客様の事例（掲載の許可をいただいたものだけ）
+  const cityWorks = worksInCity(area.name);
+
   const toc = [
     { id: "about", label: "SOLAR SHIFT について" },
     { id: "towns", label: `${area.name}内の対応エリア` },
+    ...(cityWorks.length > 0 ? [{ id: "works", label: `${area.name}の施工事例` }] : []),
     { id: "checkpoints", label: "業者を選ぶときに確かめること" },
     { id: "flow", label: "ご相談から設置まで" },
     { id: "subsidy", label: `${area.name}で使える補助金（要点）` },
@@ -219,7 +225,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
               <Link href="/reason" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
                 大切にしていること
               </Link>
-              をご覧ください。施工事例は、施工が完了し、掲載の許可をいただいたものから公開します。
+              をご覧ください。{cityWorks.length > 0 ? `${area.name}で導入されたお客様の事例は、このページの「施工事例」にまとめています。` : "施工事例は、施工が完了し、掲載の許可をいただいたものから公開します。"}
             </p>
             <TrustFacts className="mt-6" />
             {embedUrl && <MapEmbed src={embedUrl} address={addressWithPostal()} title={`${c.name}の所在地`} mapUrl={companyMapUrl()} className="mt-8" />}
@@ -257,6 +263,31 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
                   />
                 </div>
               </div>
+            </section>
+          )}
+
+          {/* ───────── この地域の施工事例 */}
+          {cityWorks.length > 0 && (
+            <section id="works" aria-labelledby="works-h" className="cv-block scroll-mt-24">
+              <h2 id="works-h" className={H2} {...reveal()}>
+                {area.name}の施工事例
+              </h2>
+              <p className="mt-4 max-w-3xl text-base leading-[1.9] text-ink">
+                {area.name}で太陽光発電・蓄電池を導入されたお客様の事例です。掲載の許可をいただいた範囲で、ご家族の構成、導入した設備、導入前後の電気代を紹介しています。
+              </p>
+              <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {cityWorks.map((w) => (
+                  <li key={w.slug}>
+                    <WorksCard work={w} />
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-[13px] leading-[1.8] text-ink-2">※ {WORK_BILL_NOTE}</p>
+              <p className="mt-2">
+                <Link href="/works" className={`inline-flex min-h-11 items-center ${TEXT_LINK}`}>
+                  すべての施工事例を見る
+                </Link>
+              </p>
             </section>
           )}
 

@@ -22,7 +22,7 @@ function eyebrowFor(path: string): string {
   if (path === "/") return "東京都葛飾区";
   if (path.startsWith("/subsidy") || path === "/simulation") return "補助金";
   if (["/solar", "/battery", "/solar-battery", "/v2h", "/hems"].includes(path)) return "サービス";
-  if (path.startsWith("/products") || path.startsWith("/recommend")) return "取扱商品";
+  if (path.startsWith("/products")) return "取扱メーカーと選び方";
   if (path.startsWith("/guide")) return "導入ガイド";
   if (path.startsWith("/blog")) return "ブログ";
   if (path.startsWith("/area")) return "対応エリア";

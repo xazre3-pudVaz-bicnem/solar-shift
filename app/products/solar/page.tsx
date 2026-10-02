@@ -108,14 +108,9 @@ export default function ProductsSolarPage() {
             </p>
           </section>
 
-          <section className="cv-block mt-14" aria-labelledby="items-h">
-            <h2 id="items-h" className={H2}>
-              取扱商品（太陽光パネル）
-            </h2>
-            <div className="mt-6">
-              <ProductCatalog products={products} category="solar" />
-            </div>
-          </section>
+          <div className="cv-block mt-16">
+            <ProductCatalog products={products} category="solar" headingId="makers-h" />
+          </div>
 
           <SourceList sources={[verified.katsushikaGuide, verified.katsushikaSolarHandbook, verified.jpeaSetting, verified.jpeaAbout, verified.tokyoSolarHandbook]} className="mt-12" />
         </div>

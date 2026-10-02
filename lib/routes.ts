@@ -26,8 +26,6 @@ export const STATIC_ROUTES: StaticRoute[] = [
   { path: "/products", priority: 0.6, changeFrequency: "weekly", ogTitle: "太陽光パネル・蓄電池の選び方｜比べるときに見る項目" },
   { path: "/products/solar", priority: 0.6, changeFrequency: "weekly", ogTitle: "太陽光パネルの比べ方｜出力・変換効率・保証の見方" },
   { path: "/products/battery", priority: 0.6, changeFrequency: "weekly", ogTitle: "家庭用蓄電池の比べ方｜容量・出力・負荷タイプの見方" },
-  { path: "/recommend/solar", priority: 0.6, changeFrequency: "weekly", ogTitle: "おすすめ太陽光パネル｜葛飾区の屋根タイプ別の選び方" },
-  { path: "/recommend/battery", priority: 0.6, changeFrequency: "weekly", ogTitle: "おすすめ家庭用蓄電池｜容量帯・使い方別の選び方" },
   { path: "/works", priority: 0.5, changeFrequency: "weekly", ogTitle: "施工事例" },
   { path: "/reason", priority: 0.6, changeFrequency: "monthly", ogTitle: "SOLAR SHIFT が大切にしていること" },
   { path: "/flow", priority: 0.7, changeFrequency: "monthly", ogTitle: "導入・施工の流れ｜相談から申請・工事・運転開始まで" },
