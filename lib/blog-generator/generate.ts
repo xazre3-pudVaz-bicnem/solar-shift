@@ -8,6 +8,7 @@ import { blogCategories } from "../../data/blog-categories";
 import { guides } from "../../data/guides";
 import { STATIC_ROUTES } from "../routes";
 import { areasWithPage } from "../../data/areas";
+import { sources as sourceRegistry } from "../../data/sources";
 
 /**
  * ブログ記事の自動生成（共通コア）。
@@ -27,9 +28,13 @@ import { areasWithPage } from "../../data/areas";
 
 export const DEFAULT_MODEL = "claude-haiku-4-5";
 /** 品質ゲートの版。検査の内容を変えたら上げる（記事の frontmatter に残る） */
-export const QUALITY_GATE_VERSION = 2;
+export const QUALITY_GATE_VERSION = 3;
 const HISTORY_SIZE = 40;
-const MAX_ATTEMPTS = 3;
+/**
+ * 書き直しの回数の上限。実際のモデルで試したところ、1回目は機械の検査、2〜3回目は読み直しで落ち、
+ * 指摘の数は回を追うごとに減った（4件 → 2件 → 1件）。4回目まで認める。
+ */
+const MAX_ATTEMPTS = 4;
 
 export interface GenerateResult {
   status: "generated" | "skipped";
@@ -101,6 +106,9 @@ function buildSystemPrompt(facts: string): string {
 - 「一般的に」「多くの場合」「通常は」「〜と言われています」のように、根拠を示さずに一般化する書き方はしない。
   だれの資料に書いてあるかを主語にする（例：「葛飾区の案内では」「東京都の手引きでは」「太陽光発電協会によると」）。
 - 機器の仕様（変換効率・サイクル数・寿命・保証年数・出力）は、メーカーの資料が事実シートに無いので、数値を書かない。
+  例外は、事実シートの「SII の蓄電システム登録基準」にある数値だけ。使うときは「SII の登録基準では」と、出どころを同じ文に書く。
+- SOLAR SHIFT 自身について書いてよいのは、事実シートの「サービス（SOLAR SHIFT）」の節にあることだけ（運営会社、対応エリア、現地調査と見積もりが無料であること）。
+- 事実シートの「施工事例」の節にある内容（お客様の電気代や設備）は、記事に書かない。
 - 経験談・相談の多さ・現場の話・お客様の例・施工事例・費用の例は、作らない。施工事例は、サイトの施工事例のページに載せているものだけです。記事の中では、事例の内容や金額に触れません。
 - 計算例として容量（◯kW・◯kWh）を置くのは構いません。その場合の金額は、事実シートの計算ルールで求められるものだけを書く。
 
@@ -115,6 +123,8 @@ ${facts}
 - 敬体（です・ます）。一文は60文字以内を目安に短く。
 - 冒頭に見出しを置かず、150〜250字の導入から始める。導入の最初の2文で、疑問への答え（結論）を書く。
 - ## 見出しを4〜6本。### は必要なときだけ。# は使わない。見出しの下には、それぞれ150字以上の本文を書く。
+- 本文は2,300〜2,800字。1,800字に満たない記事は公開されない。description は90〜120文字（文字数を数えてから出す）。
+- 本文で事実として書いた内容は、その内容が載っている節の出典URLを、必ず sources に入れる。葛飾区のページにあることを書いたら葛飾区のページのURLを、区の案内（PDF）にあることを書いたら案内のURLを入れる。
 - 数値を扱う箇所では Markdown の表を1つ以上使う。
 - 補助金・制度の数値には「2026年10月1日時点の葛飾区の公式情報」のように、時点と出典元を添える。
 - 制度に触れる記事では「最新情報は公式サイトでご確認ください」と必ず書く。
@@ -152,7 +162,7 @@ ${history.length ? history.map((p) => `- ${p.title}（狙い: ${p.intent || "不
     { "q": "この記事の内容に関する質問", "a": "事実シートの範囲で答える。60〜140文字" },
     { "q": "もう1つの質問", "a": "同上" }
   ],
-  "body": "Markdown本文。2,000〜3,000字。## の見出しを使う。[表示テキスト](/パス) で内部リンク"
+  "body": "Markdown本文。2,300〜2,800字（1,800字未満は不合格）。## の見出しを使う。[表示テキスト](/パス) で内部リンク"
 }`;
 }
 
@@ -177,6 +187,32 @@ export interface ReviewResult {
   ok: boolean;
   claims: Claim[];
   errors: string[];
+  /**
+   * 主張の根拠として確認できたのに、記事の sources に入っていなかった出典URL。
+   * 合格した記事には、この出典を足してから保存する（本文と参考資料の対応を、機械的にそろえる）。
+   */
+  missingSources: string[];
+}
+
+/** 読み直しで、運営者から確認した内容（事実シートの「サービス」の節。出典URLなし）を指すときの source の値 */
+export const OPERATOR_SOURCE = "operator";
+/** 運営者についての説明だと言える主張か（"operator" を、関係のない主張の抜け道にさせない） */
+const OPERATOR_CLAIM = /SOLAR SHIFT|ソーラーシフト|サイプレス|運営|現地調査|見積|対応エリア|お問い合わせ|ご相談|無料/;
+
+/** 出典URLの表示名。出典の登録簿（data/sources.ts）に無ければ、事実シートの「出典：」の行から取る */
+export function sourceNameFor(url: string, facts: string): string {
+  const registered = Object.values(sourceRegistry).find((s) => s.url === url);
+  if (registered) return registered.name;
+  for (const line of facts.split(/\r?\n/)) {
+    const i = line.indexOf(url);
+    if (i <= 0) continue;
+    const label = line
+      .slice(0, i)
+      .replace(/^[-\s]*出典[：:]?/, "")
+      .trim();
+    if (label) return label;
+  }
+  return url;
 }
 
 function buildReviewPrompt(article: GeneratedArticle): string {
@@ -188,6 +224,11 @@ function buildReviewPrompt(article: GeneratedArticle): string {
 - 事実シートに書かれている主張 … supported を true にし、source にその節の出典URLを入れる
 - 事実シートに書かれていない主張 … supported を false にし、source は空文字にする
   （数値が無くても、制度の条件・手続きの順番・機器の性質を事実として述べていれば対象）
+- SOLAR SHIFT 自身についての説明（運営会社、対応エリア、現地調査と見積もりが無料であること）で、
+  事実シートの「サービス（SOLAR SHIFT）」の節に書かれているもの … supported を true にし、source に "operator" と入れる
+  （この節は運営者から確認した内容で、出典URLが無い）
+- 事実シートの「施工事例」の節にある内容（お客様の電気代・設備）を記事が書いていたら … supported を false にする（記事には書けない決まり）
+- 「2026年10月1日時点の公式情報」のように、情報の時点と出どころを示すだけの言い回しは、主張として取り出さない
 - 判定しなくてよいもの：読者への呼びかけ、「見積もりで確認しましょう」のような助言、
   「機種によって異なる」という書き方、屋根や電気の使い方によって変わるという一般的な注意
 
@@ -223,7 +264,7 @@ export async function reviewArticle(opts: { client: Anthropic; model: string; fa
       messages: [{ role: "user", content: buildReviewPrompt(opts.article) }],
     });
     if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens") {
-      return { ok: false, claims: [], errors: [`読み直しを完了できませんでした（${response.stop_reason}）`] };
+      return { ok: false, claims: [], errors: [`読み直しを完了できませんでした（${response.stop_reason}）`], missingSources: [] };
     }
     text = response.content
       .filter((b): b is Anthropic.TextBlock => b.type === "text")
@@ -235,17 +276,24 @@ export async function reviewArticle(opts: { client: Anthropic; model: string; fa
   try {
     parsed = extractJson<{ claims?: ReviewedClaim[] }>(text);
   } catch (e) {
-    return { ok: false, claims: [], errors: [`読み直しの結果を解析できませんでした: ${(e as Error).message}`] };
+    return { ok: false, claims: [], errors: [`読み直しの結果を解析できませんでした: ${(e as Error).message}`], missingSources: [] };
   }
-  if (!Array.isArray(parsed.claims)) return { ok: false, claims: [], errors: ["読み直しの結果に claims がありません"] };
+  if (!Array.isArray(parsed.claims)) return { ok: false, claims: [], errors: ["読み直しの結果に claims がありません"], missingSources: [] };
 
   const errors: string[] = [];
   const claims: Claim[] = [];
   const listed = new Set(opts.article.sources.map((s) => s.url));
+  const missing = new Set<string>();
   for (const c of parsed.claims) {
     if (!c || typeof c.claim !== "string") continue;
     if (!c.supported) {
       errors.push(`事実シートで確認できない主張: 「${c.claim.slice(0, 60)}」`);
+      continue;
+    }
+    // 運営者から確認した内容（事実シートの「サービス」の節）。出典URLは無いので、sources との突き合わせはしない。
+    // 運営者についての説明だと言えない主張に "operator" が付いていたら、根拠なしとして落とす
+    if (c.source === OPERATOR_SOURCE) {
+      if (!OPERATOR_CLAIM.test(c.claim)) errors.push(`出典を特定できない主張: 「${c.claim.slice(0, 60)}」`);
       continue;
     }
     const type = c.source ? opts.index.sources.get(c.source) ?? null : null;
@@ -253,13 +301,11 @@ export async function reviewArticle(opts: { client: Anthropic; model: string; fa
       errors.push(`出典を特定できない主張: 「${c.claim.slice(0, 60)}」`);
       continue;
     }
-    if (!listed.has(c.source)) {
-      errors.push(`主張の出典が sources にありません: 「${c.claim.slice(0, 40)}」→ ${c.source}`);
-      continue;
-    }
+    // 根拠は事実シートで確認できたが、記事の sources に入っていない。記事が合格したときに、この出典を足す
+    if (!listed.has(c.source)) missing.add(c.source);
     claims.push({ claim: c.claim.slice(0, 160), source: c.source, sourceType: type, verified: true });
   }
-  return { ok: errors.length === 0, claims, errors: errors.slice(0, 8) };
+  return { ok: errors.length === 0, claims, errors: errors.slice(0, 8), missingSources: [...missing] };
 }
 
 // ─────────────────────────────────────────────────────────────── 出力
@@ -401,7 +447,12 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
       const review = await reviewArticle({ client: client as Anthropic, model: reviewModel, facts, index: factIndex, article, fixture: opts.reviewFixture });
       reviewer = opts.reviewFixture !== undefined ? "fixture" : reviewModel;
       if (!review.ok) errors = review.errors;
-      else claims = [...claims, ...review.claims];
+      else {
+        claims = [...claims, ...review.claims];
+        // 本文の根拠になっているのに sources に無かった出典を足す（参考資料と本文の対応をそろえる）
+        for (const url of review.missingSources) article.sources.push({ name: sourceNameFor(url, facts), url });
+        if (review.missingSources.length > 0) log(`読み直し: 本文の根拠になっている出典を sources に追加（${review.missingSources.length} 件）`);
+      }
       log(`読み直し: ${review.ok ? `合格（主張 ${review.claims.length} 件を確認）` : `不合格 ${review.errors.length} 件`}`);
     }
 

@@ -17,7 +17,7 @@ import path from "node:path";
 import { validate, type GeneratedArticle } from "../lib/blog-generator/validate";
 import { buildFactIndex } from "../lib/blog-generator/claims";
 import { loadFacts, allowedSourceUrls } from "../lib/blog-generator/facts";
-import { allowedInternalPaths, reviewArticle, toMarkdown, QUALITY_GATE_VERSION } from "../lib/blog-generator/generate";
+import { allowedInternalPaths, reviewArticle, toMarkdown, sourceNameFor, OPERATOR_SOURCE, QUALITY_GATE_VERSION } from "../lib/blog-generator/generate";
 import { readExistingPosts } from "../lib/blog-generator/existing";
 import { guides } from "../data/guides";
 import matter from "gray-matter";
@@ -102,6 +102,38 @@ async function main() {
   check("読み直し：確認できない主張が1つでもあれば不合格", !ng.ok && /確認できない主張/.test(ng.errors.join("\n")));
   const broken = await reviewArticle({ client, model: "fixture", facts, index: factIndex, article: good, fixture: "JSON ではない返答" });
   check("読み直し：結果を解析できなければ不合格（公開しない）", !broken.ok);
+  // 運営者から確認した内容（事実シートの「サービス」の節）は、出典URLが無くても通す
+  const operatorOk = await reviewArticle({
+    client,
+    model: "fixture",
+    facts,
+    index: factIndex,
+    article: good,
+    fixture: JSON.stringify({ claims: [{ claim: "SOLAR SHIFT は現地調査と見積もりを無料で行っている", source: OPERATOR_SOURCE, supported: true }] }),
+  });
+  check("読み直し：運営者から確認した内容は、出典URLが無くても通す", operatorOk.ok, operatorOk.errors.join(" / "));
+  // 運営者の説明ではない主張に "operator" が付いていたら落とす（抜け道にしない）
+  const operatorNg = await reviewArticle({
+    client,
+    model: "fixture",
+    facts,
+    index: factIndex,
+    article: good,
+    fixture: JSON.stringify({ claims: [{ claim: "蓄電池は15年使える", source: OPERATOR_SOURCE, supported: true }] }),
+  });
+  check("読み直し：運営者の説明ではない主張に operator が付いていたら不合格", !operatorNg.ok);
+  // 根拠は確認できたが、記事の sources に無い出典は、足す対象として返す（不合格にはしない）
+  const extraUrl = [...factIndex.sources.keys()].find((u) => !good.sources.some((s) => s.url === u))!;
+  const missing = await reviewArticle({
+    client,
+    model: "fixture",
+    facts,
+    index: factIndex,
+    article: good,
+    fixture: JSON.stringify({ claims: [{ claim: "事実シートにある内容", source: extraUrl, supported: true }] }),
+  });
+  check("読み直し：sources に無い出典は、足す対象として返す", missing.ok && missing.missingSources.length === 1 && missing.missingSources[0] === extraUrl);
+  check("出典の表示名を、登録簿か事実シートから取れる", sourceNameFor(extraUrl, facts) !== extraUrl, sourceNameFor(extraUrl, facts));
 
   // ── 保存される形（frontmatter に claim / source / sourceType / verified が残る）
   const md = toMarkdown(good, TOPIC, "selftest", "2026-10-02", [...g.claims, ...ok.claims], { gate: QUALITY_GATE_VERSION, checkedAt: "2026-10-02", chars: 0, reviewer: "fixture" });
