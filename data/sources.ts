@@ -36,6 +36,8 @@ export const sources = {
   katsushikaQa: src("katsushika-qa", "municipality", "葛飾区「かつしかエコ助成金 よくあるご質問」", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/035/385/r8qa.pdf", "2026-10-02"),
   katsushikaEcoIndex: src("katsushika-eco-index", "municipality", "葛飾区公式サイト「かつしかエコ助成金」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/index.html", "2026-10-02"),
   katsushikaNoticePeriod: src("katsushika-notice-period", "municipality", "葛飾区公式サイト「かつしかエコ助成金 交付額確定通知書発送までの目安期間」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1041425.html", "2026-10-02"),
+  katsushikaResidentTax: src("katsushika-resident-tax", "municipality", "葛飾区公式サイト「令和8年度住民税の申告をお願いします」", "https://www.city.katsushika.lg.jp/kurashi/1000047/1001463/1022540.html", "2026-10-05"),
+  katsushikaResidentTaxFaq: src("katsushika-resident-tax-faq", "municipality", "葛飾区 よくある質問「住民税の申告の対象者を知りたいのですが。」", "https://www.city.katsushika.lg.jp/faq/1030270/1007655/1007969/1008032.html", "2026-10-05"),
   katsushikaPublicSolar: src("katsushika-public-solar", "municipality", "葛飾区公式サイト「助成金を活用した太陽光発電システムの導入」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1032675.html", "2026-10-02"),
 
   // ───────── 東京都（環境局）
@@ -43,6 +45,8 @@ export const sources = {
 
   tokyoSolarQa: src("tokyo-solar-qa-2026", "tokyo", "東京都環境局「太陽光パネル設置に関するQ&A【新築・中小規模制度】」（令和8年4月1日）", "https://www.kankyo.metro.tokyo.lg.jp/documents/d/kankyo/q-a_260401", "2026-10-05"),
   tokyoReportLeaflet: src("tokyo-report-leaflet", "tokyo", "東京都環境局「環境性能の説明が必要です～東京都建築物環境報告書制度～」", "https://www.kankyo.metro.tokyo.lg.jp/documents/d/kankyo/leaflet_setsumei_260306", "2026-10-05"),
+  tokyoTaxDepreciable: src("tokyo-tax-depreciable", "tokyo", "東京都主税局「固定資産税（償却資産）」", "https://www.tax.metro.tokyo.lg.jp/kazei/work/shokyak_sis", "2026-10-05"),
+  tokyoTaxAssetTable: src("tokyo-tax-asset-table", "tokyo", "東京都主税局「償却資産と家屋の区分表（東京都（23区）の取扱い）」（令和6年4月1日時点）", "https://www.tax.metro.tokyo.lg.jp/documents/d/tax/kubunhyou", "2026-10-05"),
   tokyoKohoMandate: src("tokyo-koho-mandate", "tokyo", "広報東京都2025年3月号「太陽光パネルの設置を義務付ける制度が2025年4月から始まります」", "https://www.koho.metro.tokyo.lg.jp/2025/03/02.html", "2026-10-05"),
 
   // ───────── 東京都（クール・ネット東京）
@@ -58,6 +62,17 @@ export const sources = {
   siiBatteryRegistration: src("sii-battery-registration", "sii", "SII（環境共創イニシアチブ）「令和8年度 蓄電システム製品登録 公募要領」", "https://zehweb.jp/assets/doc/R08ZEH_moe_lib_kouboyouryou.pdf", "2026-10-02"),
 
   // ───────── 国
+  metiSurcharge2026: src("meti-surcharge-2026", "national", "経済産業省「再生可能エネルギーのFIT制度・FIP制度における2026年度以降の買取価格等と2026年度の賦課金単価を設定します」（2026年3月19日）", "https://www.meti.go.jp/press/2025/03/20260319004/20260319004.html", "2026-10-05"),
+  enechoSurcharge: src("enecho-surcharge", "national", "資源エネルギー庁「なっとく！再生可能エネルギー 制度の概要（再生可能エネルギー発電促進賦課金とは）」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/surcharge.html", "2026-10-05"),
+  enechoBillBreakdown: src("enecho-bill-breakdown", "national", "資源エネルギー庁「月々の電気料金の内訳」", "https://www.enecho.meti.go.jp/category/electricity_and_gas/electric/fee/stracture/spec.html", "2026-10-05"),
+  ntaSellingIncome: src("nta-selling-income", "national", "国税庁 質疑応答事例（所得税）「自宅に設置した太陽光発電設備による余剰電力の売却収入」", "https://www.nta.go.jp/law/shitsugi/shotoku/02/44.htm", "2026-10-05"),
+  ntaSellingConsumptionTax: src("nta-selling-consumption-tax", "national", "国税庁 質疑応答事例（消費税）「会社員が自宅に設置した太陽光発電設備による余剰電力の売却」", "https://www.nta.go.jp/law/shitsugi/shohi/02/42.htm", "2026-10-05"),
+  ntaSalaryEarnerFiling: src("nta-1900", "national", "国税庁 タックスアンサー No.1900「給与所得者で確定申告が必要な人」", "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm", "2026-10-05"),
+  ntaFilingNotRequiredQa: src("nta-1900-qa", "national", "国税庁 タックスアンサー No.1900 の Q&A「確定申告を要しない場合の意義」", "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900_qa.htm", "2026-10-05"),
+  ntaKeisanSelling: src("nta-keisan-selling", "national", "国税庁 確定申告書等作成コーナー よくある質問「太陽光発電設備による売電収入がある場合」", "https://www.keisan.nta.go.jp/r3yokuaru/cat2/cat21/cat21e/cid954.html", "2026-10-05"),
+  ntaSubsidyIncome: src("nta-2202", "national", "国税庁 タックスアンサー No.2202「国庫補助金等を受け取ったとき」", "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/2202.htm", "2026-10-05"),
+  ntaTemporaryIncomeCircular: src("nta-tsutatsu-34", "national", "国税庁 所得税基本通達「法第34条《一時所得》関係」", "https://www.nta.go.jp/law/tsutatsu/kihon/shotoku/04/08.htm", "2026-10-05"),
+  ntaTemporaryIncome: src("nta-1490", "national", "国税庁 タックスアンサー No.1490「一時所得」", "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1490.htm", "2026-10-05"),
   enechoStandalone: src("enecho-standalone", "national", "資源エネルギー庁「停電時の住宅用太陽光発電パネルの自立運転機能について」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/dl/announce/20200706.pdf", "2026-10-02"),
 
   metiProcurementOpinion: src("meti-procurement-opinion-2026", "national", "調達価格等算定委員会「令和8年度以降の調達価格等に関する意見」", "https://www.meti.go.jp/shingikai/santeii/pdf/20260205_1.pdf", "2026-10-02"),

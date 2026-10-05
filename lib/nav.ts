@@ -125,6 +125,8 @@ const allFooterNav: NavGroup[] = [
       { href: "/guide/solar-safety", label: "火災・台風・水害のリスク" },
       { href: "/guide/zero-yen-solar", label: "0円ソーラーと購入の違い" },
       { href: "/guide/tokyo-solar-mandate", label: "東京都の設置義務化" },
+      { href: "/guide/renewable-energy-surcharge", label: "再エネ賦課金" },
+      { href: "/guide/solar-tax", label: "売電収入と税金" },
       { href: "/glossary", label: "用語集" },
     ],
   },

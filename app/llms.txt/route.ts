@@ -50,6 +50,7 @@ export function GET() {
     `- 所在地: ${addressWithPostal()}`,
     `- 主要対応エリア: ${siteConfig.primaryArea.prefecture}${siteConfig.primaryArea.name}（周辺: 足立区・江戸川区・墨田区）`,
     `- 連絡先: お問い合わせフォーム ${url("/contact")}${siteConfig.contact.telDisplay ? `／電話 ${siteConfig.contact.telDisplay}` : ""}${contactEmail() ? `／メール ${contactEmail()}` : ""}`,
+    ...(siteConfig.contact.hours ? [`- 営業時間: ${siteConfig.contact.hours}${siteConfig.contact.businessDays ? `（${siteConfig.contact.businessDays}）` : ""}`] : []),
     `- 編集方針: ${url("/editorial-policy")}`,
     ``,
     `## 補助金（${date}時点の公式情報）`,

@@ -548,6 +548,10 @@ export default function KatsushikaSubsidyPage() {
                 { href: "/area/katsushika", label: "葛飾区の太陽光・蓄電池の相談先", description: "対応エリアと、業者選びの確認点" },
                 { href: "/solar-battery", label: "太陽光＋蓄電池", description: "同時に導入するときの考え方" },
                 { href: "/flow", label: "導入までの流れ", description: "相談から設置後まで" },
+                { href: "/subsidy/tokyo", label: "東京都の補助金", description: "区と併用できる都の助成の金額と条件" },
+                { href: "/guide/solar-payback", label: "何年で元が取れるか", description: "補助金を引いた実質の負担で試算" },
+                { href: "/guide/zero-yen-solar", label: "0円ソーラーと区の助成", description: "リース・レンタルは区の助成の対象外" },
+                { href: "/guide/solar-tax", label: "補助金・売電収入と税金", description: "補助金を受けた年の申告の考え方" },
               ].map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="group flex h-full min-h-14 items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">

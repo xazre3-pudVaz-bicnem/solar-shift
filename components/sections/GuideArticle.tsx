@@ -59,7 +59,10 @@ export function GuideArticle({
   withSubsidyDisclaimer?: boolean;
   cta: { title: string; body: string };
 }) {
-  const related = guides.filter((g) => entry.related.includes(g.path) || (g.slug !== entry.slug && g.related.includes(entry.path))).slice(0, 4);
+  // ページ側が名指しした順（entry.related）を先に、そのあとに、こちらを名指ししているガイドを並べる
+  const named = entry.related.map((p) => guides.find((g) => g.path === p && g.slug !== entry.slug)).filter((g): g is GuideEntry => Boolean(g));
+  const backlinks = guides.filter((g) => g.slug !== entry.slug && g.related.includes(entry.path) && !named.includes(g));
+  const related = [...named, ...backlinks].slice(0, 4);
   const posts = getPostsForPillar(relatedCategories, 3, { path: entry.path });
   const crumbs = [
     { name: "ホーム", href: "/" },

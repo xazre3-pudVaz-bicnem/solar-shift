@@ -27,6 +27,8 @@ export interface PaybackDefaults {
   fitSteps: readonly { fromYear: number; toYear: number; yenPerKwh: number; label: string }[];
   /** 計算する年数 */
   maxYears: number;
+  /** 再エネ賦課金の単価（説明に出すだけ。data/surcharge.ts の値をページ側から渡す） */
+  surcharge: { fiscalYear: string; yenPerKwh: string };
 }
 
 const num = (s: string): number => {
@@ -129,7 +131,7 @@ export function PaybackCalculator({ defaults }: { defaults: PaybackDefaults }) {
             <div className="mt-3 grid gap-4 pb-2 sm:grid-cols-2">
               <Field label="1kWあたりの年間発電量" unit="kWh" value={yearly} onChange={setYearly} hint="初めの値は、太陽光発電協会の計算例です。屋根の向きや影で変わります。" />
               <Field label="自宅で使う割合" unit="％" value={selfUse} onChange={setSelfUse} hint="初めの値は、国の委員会の想定です。昼に家で電気を使うほど、高くなります。" />
-              <Field label="買っている電気の単価" unit="円/kWh" value={retail} onChange={setRetail} hint="初めの値は、国の委員会の資料にある値です（大手電力の、直近10年間の単価をもとにした値）。検針票の単価に直すと、わが家に近づきます。" />
+              <Field label="買っている電気の単価" unit="円/kWh" value={retail} onChange={setRetail} hint={`初めの値は、国の委員会の資料にある値です（大手電力の、直近10年間の単価をもとにした値）。検針票で直すときは、電力量料金の単価に、燃料費調整額の単価を足し引きし、再エネ賦課金（${defaults.surcharge.fiscalYear}は${defaults.surcharge.yenPerKwh}円/kWh）を足します。`} />
               <Field label="買取期間が終わったあとの売電単価" unit="円/kWh" value={postFit} onChange={setPostFit} hint="初めの値は、国の委員会の想定です。実際の単価は、電力会社によって違います。" />
             </div>
           </details>

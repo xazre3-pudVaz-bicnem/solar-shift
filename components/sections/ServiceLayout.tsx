@@ -18,6 +18,8 @@ import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
+import { WorksCard } from "@/components/works/WorksCard";
+import { WORK_BILL_NOTE, type Work } from "@/data/works";
 import { getPostsForPillar } from "@/lib/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, serviceSchema, webPageSchema } from "@/lib/schema";
@@ -57,6 +59,7 @@ export function ServiceLayout({
   subsidies,
   subsidyNote,
   faq,
+  works,
   sources = [],
   related,
   relatedCategories,
@@ -79,6 +82,8 @@ export function ServiceLayout({
   subsidies: Subsidy[];
   subsidyNote?: ReactNode;
   faq: { q: string; a: string; link?: { href: string; label: string } }[];
+  /** 設備の種類が合う施工事例（label は「太陽光発電」のような設備の名前。見出しは「◯◯の施工事例」になる） */
+  works?: { label: string; items: Work[] };
   sources?: SourceItem[];
   related: { href: string; label: string; description: string }[];
   relatedCategories: string[];
@@ -92,6 +97,7 @@ export function ServiceLayout({
   const toc = [
     ...sections.map((s) => ({ id: s.id, label: s.heading })),
     ...(subsidies.length > 0 ? [{ id: "subsidy", label: "関連する補助金" }] : []),
+    ...(works && works.items.length > 0 ? [{ id: "works", label: `${works.label}の施工事例` }] : []),
     ...(faq.length > 0 ? [{ id: "faq", label: "よくある質問" }] : []),
   ];
   return (
@@ -200,6 +206,28 @@ export function ServiceLayout({
       )}
 
       <Container className="py-14 sm:py-20">
+        {works && works.items.length > 0 && (
+          <section id="works" aria-labelledby="works-h" className="cv-block mb-16 scroll-mt-24">
+            <h2 id="works-h" className="text-center text-[24px] font-black text-navy-900 sm:text-[30px]" {...reveal()}>
+              {works.label}の<span className="marker">施工事例</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-3xl text-center text-base leading-[1.9] text-ink-2">掲載の許可をいただいたお客様の事例です。お名前はイニシャル、地域は市区までの掲載です。</p>
+            <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {works.items.map((w, i) => (
+                <li key={w.slug} {...reveal(i * 90)}>
+                  <WorksCard work={w} />
+                </li>
+              ))}
+            </ul>
+            <p className="mx-auto mt-4 max-w-4xl text-[13px] leading-[1.8] text-ink-2">※ {WORK_BILL_NOTE}</p>
+            <div className="mt-6 flex justify-center">
+              <LinkButton href="/works" variant="secondary">
+                施工事例をすべて見る <ArrowIcon />
+              </LinkButton>
+            </div>
+          </section>
+        )}
+
         {faq.length > 0 && (
           <section id="faq" aria-labelledby="faq-h" className="cv-block mx-auto max-w-4xl scroll-mt-24">
             <h2 id="faq-h" className="text-center text-[24px] font-black text-navy-900 sm:text-[30px]" {...reveal()}>

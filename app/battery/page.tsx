@@ -6,6 +6,7 @@ import { subsidiesByEquipment, getSubsidy } from "@/data/subsidies";
 import { siteConfig } from "@/lib/site";
 import { faqsByIds } from "@/data/faq";
 import { ServiceLayout } from "@/components/sections/ServiceLayout";
+import { worksWithEquipment } from "@/data/works";
 import { images } from "@/data/images";
 
 const PATH = "/battery";
@@ -149,8 +150,9 @@ export default function BatteryPage() {
         { href: "/guide/battery-cost", label: "蓄電池の費用", description: "価格を決める要素と助成の考え方" },
         { href: "/guide/battery-how-to-choose", label: "蓄電池の選び方", description: "容量・負荷タイプ・方式の違い" },
         { href: "/products/battery", label: "蓄電池の比べ方", description: "容量・出力・負荷タイプの見方" },
-        { href: "/products/battery", label: "蓄電池の比べ方", description: "比べる項目と、取扱メーカー" },
+        { href: "/guide/blackout", label: "停電時の備え", description: "停電のときに使える範囲と、自立運転" },
       ]}
+      works={{ label: "蓄電池", items: worksWithEquipment({ battery: true }, siteConfig.primaryArea.name) }}
       relatedCategories={["battery", "tokyo-subsidy"]}
       cta={{
         title: "夜に使う電気の量から、必要な容量を一緒に考えます。",

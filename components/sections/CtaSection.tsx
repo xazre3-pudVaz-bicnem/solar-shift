@@ -61,7 +61,7 @@ export function CtaSection({
                   <span className="text-left leading-none">
                     <span className="block text-[12px] font-bold text-ink-2">
                       お電話でのご相談
-                      {siteConfig.contact.hours && <span className="ml-1 font-normal">（{siteConfig.contact.hours}）</span>}
+                      {siteConfig.contact.hours && <span className="ml-1 font-normal">（営業時間 {siteConfig.contact.hours}）</span>}
                     </span>
                     <span className="mt-1 block font-en text-[20px] font-extrabold tracking-[0.02em]">{siteConfig.contact.telDisplay}</span>
                   </span>

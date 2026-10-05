@@ -60,7 +60,7 @@ export default function CompanyPage() {
                 <a href={`tel:${siteConfig.contact.tel}`} className="inline-flex font-en text-[17px] font-extrabold tracking-[0.02em] text-navy-900 underline decoration-orange-400 decoration-2 underline-offset-4 items-center min-h-11">
                   {siteConfig.contact.telDisplay}
                 </a>
-                {siteConfig.contact.hours && <span className="ml-2 text-[13px] text-ink-2">（{siteConfig.contact.hours}）</span>}
+                {siteConfig.contact.hours && <span className="ml-2 text-[13px] text-ink-2">（営業時間 {siteConfig.contact.hours}）</span>}
               </>
             ),
           },

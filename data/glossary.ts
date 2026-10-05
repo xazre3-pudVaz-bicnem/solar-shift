@@ -3,6 +3,7 @@ import { getSubsidy } from "./subsidies";
 import { KATSUSHIKA_PRE_CONSULTATION_WEEKS, KATSUSHIKA_REPORT_DEADLINE, KATSUSHIKA_REPORT_WITHIN_MONTHS } from "./subsidies/katsushika-details";
 import { fit } from "./fit";
 import { solarAssumptions } from "./solar-assumptions";
+import { surcharge, surchargeYen } from "./surcharge";
 
 /**
  * 用語集（/glossary）。見積書・区の案内・申請書類に出てくる言葉の、短い説明。
@@ -189,6 +190,24 @@ export const glossary: GlossaryTerm[] = [
     group: "selling",
     definition: "設置費用から補助金を引いた実質の負担額を、1年あたりの効果額で割った年数です。設置費用・屋根の条件・電気の使い方で変わるため、わが家の数字で計算します。",
     link: { href: "/guide/solar-payback", label: "回収年数の計算の考え方" },
+  },
+  {
+    id: "renewable-surcharge",
+    term: "再エネ賦課金",
+    reading: "さいえねふかきん",
+    group: "selling",
+    definition: `固定価格買取制度で再エネの電気を買い取る費用を、電気を使う人が、毎月の電気料金とあわせて負担するものです。負担額は電気の使用量に比例し、${surcharge.fiscalYear}の単価は1kWhあたり${surchargeYen(surcharge.yenPerKwh)}円です。`,
+    link: { href: "/guide/renewable-energy-surcharge", label: "再エネ賦課金のガイド" },
+    source: sources.metiSurcharge2026,
+  },
+  {
+    id: "miscellaneous-income",
+    term: "雑所得（売電収入）",
+    reading: "ざつしょとく",
+    group: "selling",
+    definition: "国税庁の質疑応答事例によると、会社員が自宅の太陽光で余った電気を売った収入は、設備を家事用に使っている場合、雑所得に当たります。所得は、売電収入から必要経費を引いた金額です。",
+    link: { href: "/guide/solar-tax", label: "売電収入と税金のガイド" },
+    source: sources.ntaSellingIncome,
   },
   {
     id: "kw-kwh",

@@ -4,6 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getGuide } from "@/data/guides";
 import { sources as verified } from "@/data/sources";
 import { fit } from "@/data/fit";
+import { surcharge, surchargeYen } from "@/data/surcharge";
 import { solarAssumptions as A, JPEA_YEARLY_KWH_PER_KW } from "@/data/solar-assumptions";
 import { GuideArticle } from "@/components/sections/GuideArticle";
 import { ProseTable } from "@/components/ui/ProseTable";
@@ -102,7 +103,7 @@ export default function Page() {
                     <td>自宅で使った分</td>
                     <td>買っている電気の単価</td>
                     <td>
-                      検針票の単価。国の資料では、大手電力の直近10年間（{A.retailPeriod}）の平均は{A.retailYenPerKwh}円/kWh
+                      検針票の単価。電力量料金の単価に、燃料費調整額の単価を足し引きし、<Link href="/guide/renewable-energy-surcharge">再エネ賦課金</Link>（{surcharge.fiscalYear}は{surchargeYen(surcharge.yenPerKwh)}円/kWh）を足したもの。国の資料では、大手電力の直近10年間（{A.retailPeriod}）の平均は{A.retailYenPerKwh}円/kWh
                     </td>
                   </tr>
                   <tr>
@@ -182,6 +183,7 @@ export default function Page() {
                 postFitYenPerKwh: A.postFitYenPerKwh,
                 fitSteps: fit.residential.steps,
                 maxYears,
+                surcharge: { fiscalYear: surcharge.fiscalYear, yenPerKwh: surchargeYen(surcharge.yenPerKwh) },
               }}
             />
           ),

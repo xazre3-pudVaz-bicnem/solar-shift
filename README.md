@@ -158,12 +158,12 @@ scripts/             generate-blog-post.ts / blog-audit.ts / blog-selftest.ts / 
 
 `data/works.ts` / `data/voices.ts` に、掲載許可を得た実際の事例・声だけを追加する。0件の間は「準備中」表示で `noindex`・メニュー非表示・sitemap 対象外（1件入れると自動で公開に切り替わる。判定は `lib/indexing.ts`）。
 
-- 施工事例は、2026-10-02 に運営者から「実際のお客様の事例」として受け取った5件を掲載している。見出し・本文・電気代・設備は、受け取った表記のまま
+- 施工事例は、2026-10-02 に運営者から「実際のお客様の事例」として受け取った5件を掲載している。2026-10-05 に運営者から「載せてよい」と連絡があった。見出し・本文・電気代・設備は、受け取った表記のまま
 - 受け取っていない項目（築年数・屋根形状・メーカー・施工した年月・工事期間・写真）は `null` / 空。空の項目は画面に出ない
 - **写真は、その事例の実際の写真だけ**。イメージ写真や生成画像を、事例の写真として使わない（写真が無い事例は、設備の種類のアイコンで表示する）
 - **電気代は、受け取った金額をそのまま出す**。差額・削減率・年間の金額を、こちらで計算して書かない。注記（`WORK_BILL_NOTE`）を必ず添える
 - 事例の金額は、`docs/VERIFIED_FACTS.md` の「施工事例」の節（出典 URL なし）にも書く。固定ページの点検（`facts:audit`）では既知の数値として扱うが、記事・チャットの根拠には使えない
-- 事例は TOP（葛飾区の事例を3件まで）、`/works`、葛飾区のエリアページ（その区の事例）に出る
+- 事例は TOP（葛飾区の事例を3件まで）、`/works`、エリアページ（その区の事例）、太陽光・蓄電池・太陽光＋蓄電池のページ（設備の種類が合う事例を3件まで。`worksWithEquipment`）に出る
 - お客様の声（`/voice`）は、ご本人の言葉をそのまま掲載できる場合だけ追加する。いまは0件で `noindex`
 - Review / AggregateRating の構造化データは出さない
 
@@ -267,6 +267,8 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 - **ブログ一覧**：1ページ12件でページを分ける（`/blog/page/2` …）
 - **導入ガイド**：一覧ページ `/guide` がハブ。ガイドを足したら `data/guides.ts` に登録し、`app/guide/page.tsx` の `GROUPS` に入れる
 - **周辺の区のページ**（`/area/adachi` `/area/sumida` `/area/edogawa`）：主キーワードは「◯◯区 太陽光 補助金」。内容は `data/ward-programs.ts` だけから出す（`components/area/NeighborAreaPage.tsx`）。区ごとに制度が違うので、葛飾区の説明を流用しない
+- **再エネ賦課金のガイド**（`/guide/renewable-energy-surcharge`）：単価・目安・推移は `data/surcharge.ts` だけから出す。毎年3月ごろに経済産業省が翌年度の単価を公表するので、そのときに `data/surcharge.ts` と事実シートを直す（タイトルも自動で変わる）
+- **売電収入と税金のガイド**（`/guide/solar-tax`）：国税庁・葛飾区・東京都主税局の公開情報だけで書く。税額の計算例は書かない。住宅の太陽光が償却資産の申告の対象になるかは断定しない
 - **東京都の資料にもとづくガイド**（`/guide/tokyo-solar-mandate` `/guide/solar-safety` `/guide/zero-yen-solar`）：主な出典は東京都環境局「太陽光パネル設置に関するQ&A」（`data/sources.ts` の `tokyoSolarQa`）。文中では「東京都のQ&Aによると」と主語を付ける。都の試算（4kW・117万円など）は、時点（令和7年10月）と条件を必ず添え、SOLAR SHIFT の試算と混ぜない
 - **用語集**（`/glossary`）：`data/glossary.ts`。説明は事実シートで確かめられる内容だけ。構造化データは DefinedTermSet
 - **回収年数のガイド**（`/guide/solar-payback`）：式と前提を示し、見積書の数字を入れて試算する道具（`components/guide/PaybackCalculator.tsx`、計算は `lib/payback.ts`）。初期値は、国の委員会の想定値（`data/solar-assumptions.ts`）と FIT の単価だけ。相場の金額は初期値にしない
@@ -315,7 +317,8 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 ## 未確定で空欄にしている情報（lib/site.ts）
 
 - 施工体制・施工会社・許認可・有資格者・メーカーの施工ID・保証・工事保険・導入後のサポート（`trust.*`）
-- LINE・営業時間（`contact.lineUrl` / `contact.hours`。電話の受付時間が決まったら `hours` に入れると電話番号の横に出る）
+- LINE（`contact.lineUrl`）
+- 営業する曜日・定休日（`contact.businessDays`）。営業時間（`contact.hours` ＝ 9:00〜20:00、2026-10-05 に運営者から連絡）は記入済みで、電話番号の横に「（営業時間 9:00〜20:00）」と出る。曜日が空の間は、構造化データに営業時間を出さず、チャットにも曜日・定休日を書かせない（`lib/chat/guard.ts`）
 - 法人番号（`company.corporateNumber`）
 - Googleビジネスプロフィール（`gbp.*`）。`gbp.embedUrl` にプロフィールの埋め込み用 URL を入れると、運営会社ページと葛飾区のエリアページに地図が出る（住所だけで埋め込むと建物名のカードが出るため、プロフィール登録までは地図を出さない）
 - SNS（`social.*`）

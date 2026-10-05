@@ -5,6 +5,8 @@ import { buildMetadata } from "@/lib/seo";
 import { subsidiesByEquipment } from "@/data/subsidies";
 import { faqsByIds } from "@/data/faq";
 import { ServiceLayout } from "@/components/sections/ServiceLayout";
+import { worksWithEquipment } from "@/data/works";
+import { siteConfig } from "@/lib/site";
 import { images } from "@/data/images";
 import { FitStepChart } from "@/components/sections/FitStepChart";
 
@@ -146,7 +148,10 @@ export default function SolarPage() {
         { href: "/products/solar", label: "太陽光パネルの比べ方", description: "比べる項目と、取扱メーカー" },
         { href: "/area/katsushika", label: "葛飾区の太陽光・蓄電池業者", description: "区内の対応エリアと、相談の進め方" },
         { href: "/guide/solar-cost", label: "太陽光発電の費用", description: "内訳と補助金を差し引いた考え方" },
+        { href: "/guide/zero-yen-solar", label: "0円ソーラーと購入の違い", description: "リース・PPAの仕組みと、区の助成の扱い" },
+        { href: "/guide/solar-safety", label: "火災・台風・水害のリスク", description: "東京都のQ&Aにもとづく備えと火災保険" },
       ]}
+      works={{ label: "太陽光発電", items: worksWithEquipment({ solar: true }, siteConfig.primaryArea.name) }}
       relatedCategories={["solar", "katsushika-subsidy"]}
       cta={{
         title: "わが家の屋根に、何kW載るのか。現地調査から始めます。",

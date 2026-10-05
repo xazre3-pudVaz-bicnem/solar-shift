@@ -15,6 +15,7 @@ import { siteConfig } from "../site";
 const SITE_TEL: string = siteConfig.contact.tel;
 const SITE_LINE: string = siteConfig.contact.lineUrl;
 const SITE_HOURS: string = siteConfig.contact.hours;
+const SITE_DAYS: string = siteConfig.contact.businessDays;
 
 /** 連絡手段のうち、lib/site.ts でまだ空のものは案内させない */
 const UNSET_CONTACT: { re: RegExp; msg: string }[] = [
@@ -24,10 +25,21 @@ const UNSET_CONTACT: { re: RegExp; msg: string }[] = [
     ? []
     : [
         {
-          re: /営業時間は|定休日は|(受付|営業|対応)時間(は|：|:)?\s*(平日|土日|毎日|午前|午後|[\d０-９])|24時間(対応|受付)|年中無休/,
+          re: /営業時間は|(受付|営業|対応)時間(は|：|:)?\s*(平日|土日|毎日|午前|午後|[\d０-９])/,
           msg: "未確定の営業時間・受付時間",
         },
       ]),
+  // 営業する曜日（定休日）が未確定の間は、曜日や「年中無休」を書かせない。
+  // 「定休日は、このサイトに掲載していません」のような案内は通す（読点の前に曜日・有無が来るものだけを落とす）
+  ...(SITE_DAYS
+    ? []
+    : [
+        {
+          re: /定休日は[^。、]{0,6}(曜|祝|ありません|なし|ない)|年中無休|無休で|(土日|土曜|日曜|祝日|毎日)[^。]{0,6}(営業|対応|受付|お休み|休み)|(平日|土日)(のみ|だけ)/,
+          msg: "未確定の営業日・定休日",
+        },
+      ]),
+  { re: /24時間(対応|受付|営業)/, msg: "営業時間と違う表現（24時間）" },
 ];
 
 const BANNED: { re: RegExp; msg: string }[] = [
@@ -55,10 +67,10 @@ const BANNED: { re: RegExp; msg: string }[] = [
  * 案内してよい電話番号（数字だけにしたもの）。
  * 事実シートに載っている公的窓口の番号と、lib/site.ts に入っている SOLAR SHIFT の番号だけ。
  */
-const ALLOWED_PHONE_DIGITS = new Set(["0356548228", "0356548531", "0367377006", ...(SITE_TEL ? [SITE_TEL.replace(/\D/g, "")] : [])]);
+const ALLOWED_PHONE_DIGITS = new Set(["0356548228", "0356548531", "0367377006", "0356548550", "0359905236", "0362585315", ...(SITE_TEL ? [SITE_TEL.replace(/\D/g, "")] : [])]);
 
 /** 単価（円/kW・円/kWh）として書いてよい値（事実シートの値だけ） */
-const ALLOWED_UNIT = new Set(["24", "8.3", "19", "6万", "10万", "12万", "15万", "18万", "28.9万", "29.4万", "12.5万"]);
+const ALLOWED_UNIT = new Set(["24", "8.3", "19", "4.18", "6万", "10万", "12万", "15万", "18万", "28.9万", "29.4万", "12.5万"]);
 
 /**
  * 「上限」「最大」として書いてよい金額（円）。制度ごとの上限額だけ。
@@ -119,14 +131,20 @@ export function checkReply(reply: string, userText = ""): string[] {
       break;
     }
   }
-  // 営業時間・受付時間が未確定の間は、連絡先の話の中に時刻の範囲（9時〜18時 など）を書かせない。
+  // 連絡先の話の中の時刻の範囲（9時〜18時 など）。営業時間が未確定の間は書かせない。決まったあとは lib/site.ts と同じ時刻だけ許す
   // （「昼の10時〜14時に発電が多い」のような一般論まで落とさないよう、連絡先の語がある文だけを見る）
-  if (!SITE_HOURS) {
-    for (const sentence of half.split(/[。\n]/)) {
-      if (/(受付|営業|電話|問い合わせ|窓口|対応|連絡|定休)/.test(sentence) && /\d{1,2}\s*(時|:|：)\s*\d{0,2}\s*分?\s*(〜|～|~|-|から)\s*\d{1,2}\s*(時|:|：)/.test(sentence)) {
-        errors.push("未確定の営業時間・受付時間（時刻の範囲）");
-        break;
-      }
+  const siteHours = new Set((toHalfWidth(SITE_HOURS).match(/\d{1,2}(?=\s*[:：時])/g) ?? []).map(Number));
+  for (const sentence of half.split(/[。\n]/)) {
+    if (!/(受付|営業|電話|問い合わせ|窓口|対応|連絡|定休)/.test(sentence)) continue;
+    const range = sentence.match(/(\d{1,2})\s*(?:時|:|：)\s*\d{0,2}\s*分?\s*(?:〜|～|~|-|から)\s*(\d{1,2})\s*(?:時|:|：)/);
+    if (!range) continue;
+    if (!SITE_HOURS) {
+      errors.push("未確定の営業時間・受付時間（時刻の範囲）");
+      break;
+    }
+    if (!siteHours.has(Number(range[1])) || !siteHours.has(Number(range[2]))) {
+      errors.push("サイトの営業時間と違う時刻");
+      break;
     }
   }
   return errors;

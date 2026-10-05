@@ -87,7 +87,8 @@ export function organizationSchema(): JsonLd {
     address: postalAddress(),
     areaServed: areaServed(),
     knowsAbout: KNOWS_ABOUT,
-    // 電話番号は siteConfig に入っているときだけ出る（空なら compact が落とす）。受付時間は未確定のため出さない
+    // 電話番号は siteConfig に入っているときだけ出る（空なら compact が落とす）。
+    // 営業時間は、営業する曜日（siteConfig.contact.businessDays）が未確定の間は出さない（曜日の無い openingHours は書けない）
     contactPoint: compact({
       "@type": "ContactPoint",
       contactType: "customer service",

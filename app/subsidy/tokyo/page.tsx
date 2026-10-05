@@ -218,6 +218,9 @@ export default function TokyoSubsidyPage() {
             { href: "/battery", label: "家庭用蓄電池について" },
             { href: "/guide/battery-cost", label: "蓄電池の費用の考え方" },
             { href: "/subsidy/national", label: "国の補助制度" },
+            { href: "/guide/tokyo-solar-mandate", label: "東京都の太陽光パネル設置義務化" },
+            { href: "/guide/zero-yen-solar", label: "初期費用ゼロの助成と0円ソーラー" },
+            { href: "/guide/solar-tax", label: "補助金・売電収入と税金" },
           ].map((l) => (
             <Link key={l.href} href={l.href} className="rounded-2xl border border-line bg-white px-4 py-3 text-[14px] font-bold text-navy-900 shadow-card transition-transform duration-200 hover:-translate-y-0.5 hover:border-orange-400">
               {l.label} →

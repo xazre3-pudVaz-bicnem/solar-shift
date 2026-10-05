@@ -20,13 +20,14 @@ function contactRule(): string {
   const tel: string = siteConfig.contact.telDisplay;
   const line: string = siteConfig.contact.lineUrl;
   const hours: string = siteConfig.contact.hours;
+  const days: string = siteConfig.contact.businessDays;
   const office = "葛飾区役所とクール・ネット東京の窓口番号は、事実シートのとおりに案内してかまいません。";
   if (!tel) {
     return `SOLAR SHIFT の電話番号・LINE・営業時間は未確定です。連絡手段は「お問い合わせフォーム」とだけ案内します。${office}`;
   }
-  const unknown = [line ? "" : "LINEでの受付", hours ? "" : "電話の受付時間・営業時間・定休日"].filter(Boolean).join("、");
+  const unknown = [line ? "" : "LINEでの受付", hours ? "" : "電話の受付時間・営業時間", days ? "" : "定休日・営業する曜日"].filter(Boolean).join("、");
   return [
-    `SOLAR SHIFT の電話番号は ${tel} です${hours ? `（受付時間：${hours}）` : ""}。連絡方法を聞かれたときは、この電話番号とお問い合わせフォームを案内します。電話番号は必ずこの表記のまま書き、SOLAR SHIFT の番号としてほかの番号は書きません。`,
+    `SOLAR SHIFT の電話番号は ${tel} です${hours ? `（営業時間：${hours}${days ? `・${days}` : ""}）` : ""}。連絡方法を聞かれたときは、この電話番号とお問い合わせフォームを案内します。電話番号は必ずこの表記のまま書き、SOLAR SHIFT の番号としてほかの番号は書きません。`,
     unknown ? `${unknown}は未確定なので書きません。聞かれたら「このサイトには掲載していません」と答えます。` : "",
     office,
   ].join("");

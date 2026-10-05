@@ -66,8 +66,8 @@ const GROUPS: { id: string; heading: string; lead: string; slugs: string[] }[] =
   {
     id: "selling",
     heading: "売電と電気の使い方",
-    lead: "FITの価格と、売るより使うほうが合う場面の考え方です。",
-    slugs: ["selling-electricity", "post-fit", "all-electric"],
+    lead: "FITの価格、再エネ賦課金、売電収入の税金と、売るより使うほうが合う場面の考え方です。",
+    slugs: ["selling-electricity", "renewable-energy-surcharge", "solar-tax", "post-fit", "all-electric"],
   },
   {
     id: "after",

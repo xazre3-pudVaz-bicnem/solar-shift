@@ -7,6 +7,8 @@ import { getSubsidy } from "@/data/subsidies";
 import { faqsByIds } from "@/data/faq";
 import { simulate } from "@/lib/subsidy-calc";
 import { ServiceLayout } from "@/components/sections/ServiceLayout";
+import { worksWithEquipment } from "@/data/works";
+import { siteConfig } from "@/lib/site";
 import { images } from "@/data/images";
 import { SubsidyBars } from "@/components/subsidy/SubsidyBars";
 
@@ -160,7 +162,10 @@ export default function SolarBatteryPage() {
         { href: "/guide/all-electric", label: "オール電化との相性", description: "電気を使う家ほど効く組み合わせ" },
         { href: "/guide/blackout", label: "停電時の備え", description: "どこまで使えるかを具体的に" },
         { href: "/flow", label: "導入までの流れ", description: "申請の順番と工事日程" },
+        { href: "/guide/renewable-energy-surcharge", label: "再エネ賦課金", description: "買う電気1kWhごとの負担。家で使う電気が増えると減る" },
+        { href: "/guide/solar-payback", label: "何年で元が取れるか", description: "見積書の数字で回収年数を試算" },
       ]}
+      works={{ label: "太陽光＋蓄電池", items: worksWithEquipment({ solar: true, battery: true }, siteConfig.primaryArea.name) }}
       relatedCategories={["battery", "solar", "katsushika-subsidy"]}
       cta={{
         title: "太陽光のみ・セット・後付け。3案を並べて比べられる提案を。",

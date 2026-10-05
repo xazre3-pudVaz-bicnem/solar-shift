@@ -244,6 +244,14 @@ export const faqs: FaqItem[] = [
     link: { href: "/area", label: "対応エリアを見る" },
   },
   {
+    id: "service-hours",
+    category: "service",
+    scope: "service",
+    q: "営業時間を教えてください。",
+    a: `営業時間は${siteConfig.contact.hours}です。お電話（${siteConfig.contact.telDisplay}）、メール、お問い合わせフォームでご連絡いただけます。`,
+    link: { href: "/contact", label: "お問い合わせ" },
+  },
+  {
     id: "service-makers",
     category: "service",
     scope: "service",

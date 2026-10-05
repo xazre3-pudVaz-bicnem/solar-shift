@@ -24,6 +24,7 @@ export interface ScriptedAnswer {
 const TEL: string = siteConfig.contact.telDisplay;
 const LINE_URL: string = siteConfig.contact.lineUrl;
 const HOURS: string = siteConfig.contact.hours;
+const DAYS: string = siteConfig.contact.businessDays;
 const OFFICE_NOTE = "なお、葛飾区の助成制度そのものについては、葛飾区役所 環境部環境課 環境計画係（410番窓口）TEL 03-5654-8228 が窓口です。";
 
 /** 連絡先の案内。電話・LINE・受付時間は lib/site.ts に入っているものだけを書く */
@@ -32,9 +33,9 @@ function contactInfoAnswer(): string {
     return `SOLAR SHIFT へのご連絡は、お問い合わせフォームで承っています。フォーム送信後、内容を確認のうえ、担当者よりご連絡します。${OFFICE_NOTE}`;
   }
   const email = contactEmail();
-  const notListed = [LINE_URL ? "" : "LINEでの受付", HOURS ? "" : "電話の受付時間"].filter(Boolean).join("と");
+  const notListed = [LINE_URL ? "" : "LINEでの受付", HOURS ? "" : "電話の受付時間", DAYS ? "" : "定休日"].filter(Boolean).join("と");
   return [
-    `SOLAR SHIFT へのご連絡は、お電話（${TEL}${HOURS ? `・${HOURS}` : ""}）${email ? `、メール（${email}）` : ""}、お問い合わせフォームで承っています。`,
+    `SOLAR SHIFT へのご連絡は、お電話（${TEL}${HOURS ? `・営業時間 ${HOURS}${DAYS ? `・${DAYS}` : ""}` : ""}）${email ? `、メール（${email}）` : ""}、お問い合わせフォームで承っています。`,
     notListed ? `${notListed}は、現時点でこのサイトに掲載していません。` : "",
     "フォーム送信後は、内容を確認のうえ、担当者よりご連絡します。",
     OFFICE_NOTE,

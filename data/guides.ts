@@ -6,6 +6,7 @@
  */
 
 import type { ImageKey } from "./images";
+import { surcharge, surchargeYen } from "./surcharge";
 
 export interface GuideEntry {
   slug: string;
@@ -98,7 +99,7 @@ export const guides: GuideEntry[] = [
     title: "太陽光の売電とは？2026年度のFIT買取価格と仕組み",
     description: "FIT制度の仕組み、2026年度の買取価格、自家消費とのバランスの考え方。",
     intent: "太陽光 売電 価格",
-    related: ["/guide/post-fit", "/solar", "/guide/solar-cost"],
+    related: ["/guide/post-fit", "/guide/renewable-energy-surcharge", "/guide/solar-tax", "/solar"],
     publishedAt: "2026-10-01",
     updatedAt: "2026-10-01",
   },
@@ -153,7 +154,7 @@ export const guides: GuideEntry[] = [
     title: "太陽光発電は何年で元が取れる？回収年数の計算の考え方",
     description: "回収年数の式、1年あたりの効果額の出し方、国の想定値を使った試算。確かめたい前提も整理します。",
     intent: "太陽光発電 元が取れる 何年",
-    related: ["/guide/solar-cost", "/guide/selling-electricity", "/guide/solar-merit-demerit"],
+    related: ["/guide/solar-cost", "/guide/renewable-energy-surcharge", "/guide/selling-electricity", "/guide/solar-merit-demerit"],
     publishedAt: "2026-10-02",
     updatedAt: "2026-10-02",
   },
@@ -187,6 +188,29 @@ export const guides: GuideEntry[] = [
     description: "所有権と費用の負担、東京都の初期費用ゼロの助成、区の補助金の扱い、契約前に書面で確かめることを整理します。",
     intent: "0円ソーラー リース PPA 違い",
     related: ["/guide/solar-cost", "/guide/solar-payback", "/subsidy/tokyo"],
+    publishedAt: "2026-10-05",
+    updatedAt: "2026-10-05",
+  },
+  {
+    slug: "renewable-energy-surcharge",
+    image: "iconGHouseYenLeaf",
+    path: "/guide/renewable-energy-surcharge",
+    // 単価は data/surcharge.ts から入る（年度が変わったら、そちらだけを直す）
+    title: `再エネ賦課金とは？${surcharge.fiscalYear}は${surchargeYen(surcharge.yenPerKwh)}円/kWh｜計算方法と太陽光の効果`,
+    description: "再エネ賦課金の単価と家庭の負担の目安、計算のしかた、2012年度からの推移、太陽光の電気を家で使うと負担がどう変わるかを、国と東京都の資料で整理します。",
+    intent: "再エネ賦課金 2026 計算 太陽光",
+    related: ["/guide/solar-payback", "/guide/selling-electricity", "/solar-battery"],
+    publishedAt: "2026-10-05",
+    updatedAt: "2026-10-05",
+  },
+  {
+    slug: "solar-tax",
+    image: "iconHouseYen",
+    path: "/guide/solar-tax",
+    title: "太陽光の売電収入は確定申告が必要？｜雑所得・住民税・補助金の扱い",
+    description: "会社員が自宅の太陽光で余った電気を売った収入の税金を、国税庁・葛飾区・東京都主税局の資料で整理します。確定申告の20万円、住民税の申告、消費税、補助金、固定資産税。",
+    intent: "太陽光 売電 確定申告 税金",
+    related: ["/guide/selling-electricity", "/subsidy/katsushika", "/guide/renewable-energy-surcharge"],
     publishedAt: "2026-10-05",
     updatedAt: "2026-10-05",
   },

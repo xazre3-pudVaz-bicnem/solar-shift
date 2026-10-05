@@ -2,6 +2,7 @@
  * 施工事例データ。
  *
  * 2026-10-02 に、運営者から「実際のお客様の事例」として5件を受け取り、掲載した。
+ * 2026-10-05 に、運営者から「施工事例は載せてよい」と連絡があった。
  * 見出し・本文・電気代・設備は、運営者から受け取った表記のまま載せている（こちらで数値を足したり、言い換えたりしない）。
  *
  * 決まり
@@ -253,6 +254,15 @@ export function workArea(w: Work): string {
 /** その地域（市区）の事例 */
 export function worksInCity(city: string): Work[] {
   return publishedWorks.filter((w) => w.city === city);
+}
+
+/**
+ * 設備の種類で絞った事例（太陽光・蓄電池などのサービスのページ用）。
+ * preferCity の事例を先に並べ、最大 limit 件にする。
+ */
+export function worksWithEquipment(opts: { solar?: boolean; battery?: boolean }, preferCity: string, limit = 3): Work[] {
+  const list = publishedWorks.filter((w) => (!opts.solar || w.solarKw !== null) && (!opts.battery || w.hasBattery));
+  return [...list.filter((w) => w.city === preferCity), ...list.filter((w) => w.city !== preferCity)].slice(0, limit);
 }
 
 /**

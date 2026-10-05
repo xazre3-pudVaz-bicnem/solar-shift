@@ -52,7 +52,7 @@ export function Footer() {
                   <dt className="w-[4.5rem] shrink-0 text-navy-100/70">電話</dt>
                   <dd>
                     <a href={`tel:${siteConfig.contact.tel}`} className="-my-2 inline-flex min-h-11 items-center font-en text-[17px] font-bold tracking-[0.03em] text-white hover:text-orange-300">{siteConfig.contact.telDisplay}</a>
-                    {siteConfig.contact.hours && <span className="ml-2">（{siteConfig.contact.hours}）</span>}
+                    {siteConfig.contact.hours && <span className="ml-2">（営業時間 {siteConfig.contact.hours}）</span>}
                   </dd>
                 </div>
               )}
