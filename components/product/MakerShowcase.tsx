@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { handlingManufacturers, manufacturerCategoryLabel, type Manufacturer, type ManufacturerCategory } from "@/data/manufacturers";
@@ -8,8 +9,8 @@ import { reveal } from "@/lib/reveal";
  * 取扱メーカーの一覧。メーカー名のタイルを並べ、見出しに社数を大きく出す。
  *
  * - 出すのは、運営者に取扱いを確認できたメーカーだけ（data/manufacturers.ts の relationship）。
- * - ロゴは、メーカーから使用許諾を得たもの（logo）があればそれを、無ければ社名を文字で出す。
- *   他社の商標を、許諾なしに画像で使わない。
+ * - ロゴ（logo）があればそれを、無ければ社名を文字で出す。ロゴは、使用を確認できたものだけ（data/manufacturers.ts）。
+ * - ロゴは縦横比がばらばらなので、高さをそろえると横長のロゴだけが大きく見える。面積をそろえて、見た目の大きさを近づける。
  * - 個別の商品は載せない方針なので、型番・仕様・価格は出さない。
  * - 流れ続けるアニメーション（ロゴのマーキー）にはしない。動き続けるものがあると、スマホの表示が重くなる。
  *   タイルは、画面に入ったときに1枚ずつ順番に現れる。
@@ -75,15 +76,21 @@ export function MakerShowcase({
       </ul>
 
       <p className="mt-4 text-[13px] leading-[1.8] text-ink-2">
-        ※ 個別の商品は掲載していません。機種は、屋根と電気の使い方を伺ったうえでご提案します。保証の年数と条件は、メーカー・製品によって異なります。取扱メーカー・機種は、変更になる場合があります。記載の会社名・ブランド名は、各社の商標または登録商標です。
+        ※ 個別の商品は掲載していません。機種は、屋根と電気の使い方を伺ったうえでご提案します。保証の年数と条件は、メーカー・製品によって異なります。取扱メーカー・機種は、変更になる場合があります。記載の会社名・ブランド名・ロゴは、各社の商標または登録商標です。
       </p>
 
       {detail && (
         <ul className="mt-8 space-y-3">
           {list.map((m, i) => (
-            <li key={m.id} className="grid gap-1 rounded-2xl bg-white px-5 py-4 shadow-card sm:grid-cols-[13rem_1fr_auto] sm:items-center sm:gap-6" {...reveal(Math.min(i, 4) * 50)}>
-              <Sub className="flex items-start gap-2.5 text-base leading-[1.5] font-bold text-navy-900">
-                <span className="mt-[9px] h-2 w-2 shrink-0 rounded-full bg-orange-500" aria-hidden="true" />
+            <li key={m.id} className="grid gap-1 rounded-2xl bg-white px-5 py-4 shadow-card sm:grid-cols-[19rem_1fr_auto] sm:items-center sm:gap-6" {...reveal(Math.min(i, 4) * 50)}>
+              <Sub className="flex items-center gap-3 text-base leading-[1.5] font-bold text-navy-900">
+                {m.logo ? (
+                  <span className="flex h-10 w-[6.5rem] shrink-0 items-center" aria-hidden="true">
+                    <Image src={m.logo.src} alt="" width={m.logo.width} height={m.logo.height} sizes="104px" className="h-auto" style={{ width: `${logoWidth(m.logo, LIST_LOGO_AREA, LIST_LOGO_MAX_WIDTH)}px` }} />
+                  </span>
+                ) : (
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-orange-500" aria-hidden="true" />
+                )}
                 <span>
                   {m.brand}
                   {m.name !== m.brand && <span className="block text-[13px] font-normal text-ink-2">{m.name}</span>}
@@ -110,10 +117,34 @@ export function MakerShowcase({
   );
 }
 
-/** ロゴ（使用許諾を得たもの）があれば画像で、無ければ英字の社名を文字で出す */
+/** ロゴの表示の面積（px²）と、横幅の上限（px）。面積をそろえると、縦横比が違っても見た目の大きさが近くなる */
+const LOGO_AREA = 3400;
+const LOGO_MAX_WIDTH = 150;
+/** 商品ページの一覧で、社名の横に添えるロゴ */
+const LIST_LOGO_AREA = 1150;
+const LIST_LOGO_MAX_WIDTH = 104;
+
+function logoWidth(logo: { width: number; height: number }, area: number, max: number): number {
+  return Math.round(Math.min(max, Math.sqrt(area * (logo.width / logo.height))));
+}
+
+/** ロゴがあれば画像で、無ければ英字の社名を文字で出す。社名はすぐ下に文字で出しているので、画像は飾り（alt は空） */
 function MakerMark({ maker }: { maker: Manufacturer }) {
   if (maker.logo) {
-    return <Image src={maker.logo.src} alt="" width={maker.logo.width} height={maker.logo.height} sizes="160px" className="h-9 w-auto max-w-[9.5rem] object-contain" />;
+    const w = logoWidth(maker.logo, LOGO_AREA, LOGO_MAX_WIDTH);
+    return (
+      <span className="flex h-11 items-center justify-center sm:h-12">
+        <Image
+          src={maker.logo.src}
+          alt=""
+          width={maker.logo.width}
+          height={maker.logo.height}
+          sizes="(max-width: 639px) 150px, 180px"
+          className="h-auto w-[var(--logo-w)] sm:w-[calc(var(--logo-w)*1.15)]"
+          style={{ "--logo-w": `${w}px` } as CSSProperties}
+        />
+      </span>
+    );
   }
   return (
     <span className="font-en text-[19px] leading-[1.2] font-extrabold tracking-[0.01em] text-navy-900 sm:text-[21px]" aria-hidden="true">

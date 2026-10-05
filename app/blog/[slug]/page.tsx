@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
-import { getAllPosts, getPost, getRelatedPosts, getAdjacentPosts } from "@/lib/blog";
+import { getAllPosts, getPost, getRelatedPosts, getAdjacentPosts, isCategoryIndexable } from "@/lib/blog";
 import { getCategory } from "@/data/blog-categories";
 import { findPageLabel } from "@/lib/page-labels";
 import { Container } from "@/components/ui/Container";
@@ -67,7 +67,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const crumbs = [
     { name: "ホーム", href: "/" },
     { name: "ブログ", href: "/blog" },
-    { name: post.categoryName, href: `/blog/category/${post.category}` },
+    // 記事がまだ少なく noindex のカテゴリは、パンくず（BreadcrumbList）に入れない
+    ...(isCategoryIndexable(post.category) ? [{ name: post.categoryName, href: `/blog/category/${post.category}` }] : []),
     { name: post.title, href: path },
   ];
   const mentionsSubsidy = SUBSIDY_CATEGORIES.has(post.category) || /補助金|助成/.test(post.body);

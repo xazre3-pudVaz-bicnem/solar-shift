@@ -16,7 +16,8 @@
     "blog:audit": "tsx scripts/blog-audit.ts",
     "seo:check": "tsx scripts/seo-check.ts",
     "blog:selftest": "tsx scripts/blog-selftest.ts",
-    "facts:audit": "tsx scripts/facts-audit.ts"
+    "facts:audit": "tsx scripts/facts-audit.ts",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",

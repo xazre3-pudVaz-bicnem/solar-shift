@@ -37,6 +37,14 @@ for (const s of index.sections) {
   if (s.sources.length > 0) continue;
   for (const b of s.bullets) for (const y of extractYenAmounts(b.text)) operatorYen.add(y.value);
 }
+// ブログ記事の公開日・更新日（固定ページの「関連記事」のカードに出る）。事実の主張ではないので見ない
+const blogDates = new Set<string>();
+const BLOG_DIR = path.join(process.cwd(), "content", "blog");
+for (const f of fs.existsSync(BLOG_DIR) ? fs.readdirSync(BLOG_DIR) : []) {
+  if (!f.endsWith(".md")) continue;
+  const head = fs.readFileSync(path.join(BLOG_DIR, f), "utf8").split(/^---\s*$/m)[1] ?? "";
+  for (const m of head.matchAll(/^(?:publishedAt|updatedAt):\s*["']?(\d{4})-(\d{2})-(\d{2})/gm)) blogDates.add(`D:${m[1]}-${m[2]}-${m[3]}`);
+}
 // 一般化・伝聞の言い回しと、「出どころを同じ文で示しているか」の判定は、記事の検査と同じものを使う（規則を1か所に置く）
 const GENERALIZATION = new RegExp(GENERALIZATION_RE.source);
 const HEARSAY = new RegExp(`${HEARSAY_RE.source}|といわれ`);
@@ -77,15 +85,19 @@ for (const file of walk(APP).sort()) {
   if (route.startsWith("/_") || route.startsWith("/blog/") || /\/(og|api)\//.test(route) || route === "/sitemap" || route === "/privacy") continue;
   if (only && route !== only) continue;
   const findings: string[] = [];
-  for (const line of blocks(fs.readFileSync(file, "utf8"))) {
+  for (const raw of blocks(fs.readFileSync(file, "utf8"))) {
+    // 行頭の「01」「02」…は目次や手順の番号（「02 台風」が「2台」と読まれるのを防ぐ）
+    const line = raw.replace(/^0\d\s+/, "");
     const issues: string[] = [];
     for (const t of extractNumTokens(line)) {
       if ((t.kind === "quantity" || t.kind === "range") && isNeutralQuantity(t.key, true)) continue;
       if (index.operator.has(t.key)) continue;
       if (t.kind === "date" && index.neutral.has(t.key)) continue;
+      if (t.kind === "date" && blogDates.has(t.key)) continue;
       if (!index.tokens.has(t.key)) issues.push(`数値「${t.raw.trim()}」`);
     }
-    for (const y of extractYenAmounts(line)) if (!yenOk.has(y.value) && !operatorYen.has(y.value)) issues.push(`金額「${y.raw}」`);
+    // 「0円」は「初期費用0円のサービス（0円ソーラー）」の呼び名として使う。金額の主張ではない
+    for (const y of extractYenAmounts(line)) if (y.value !== 0 && !yenOk.has(y.value) && !operatorYen.has(y.value)) issues.push(`金額「${y.raw}」`);
     // 「」の中（言葉そのものを引用しているところ）は見ない
     const plain = line.replace(/「[^」]*」/g, "「」");
     if (GENERALIZATION.test(plain) && !NAMED_SOURCE.test(line)) issues.push("一般化");

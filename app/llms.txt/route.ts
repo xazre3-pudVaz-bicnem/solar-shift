@@ -77,6 +77,7 @@ export function GET() {
     `- [太陽光発電](${url("/solar")}) / [家庭用蓄電池](${url("/battery")}) / [太陽光＋蓄電池](${url("/solar-battery")}) / [V2H](${url("/v2h")}) / [HEMS](${url("/hems")})`,
     `- [導入・施工の流れ](${url("/flow")}): 相談から申請・工事・運転開始まで`,
     `- [よくある質問](${url("/faq")}): ${faqs.length}問`,
+    `- [用語集](${url("/glossary")}): 見積書・区の案内・申請書類に出てくる言葉の短い説明`,
     `- [運営会社](${url("/company")})`,
     ``,
     `## 導入ガイド`,

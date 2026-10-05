@@ -21,6 +21,7 @@ npm run blog:dry-run   # 保存せず内容だけ確認
 npm run blog:audit     # 公開済みの全記事を、生成時と同じ品質ゲートで点検（API は呼ばない）
 npm run blog:selftest  # 品質ゲートそのものの自己診断（通すべき記事・落とすべき記事の見本で確認）
 npm run fonts:fetch    # 見出し用の日本語フォント（public/fonts）を取り直す
+npm run indexnow -- --all --dry-run  # IndexNow で送る URL を表示するだけ（実際に送るのは本番デプロイ後のワークフロー）
 ```
 
 `seo:check` を本番と同じ条件で試すときは `VERCEL_ENV=production npm run build` のあとに実行する。
@@ -145,7 +146,9 @@ scripts/             generate-blog-post.ts / blog-audit.ts / blog-selftest.ts / 
 - `/products`・`/products/solar`・`/products/battery` は「選び方・比べ方のガイド」＋「取扱メーカーの一覧」
 - 取扱メーカーは `data/manufacturers.ts`。画面に出るのは `relationship` が `handling` / `authorized` のものだけ。足すときは、運営者に取扱いを確認してから（推測で足さない）
 - 一覧の表示は `components/product/MakerShowcase.tsx`（TOP と商品ページ）。見出しの社数は、データの件数から自動で出る
-- **ロゴ画像は、メーカーから使用許諾を得たものだけ**。`public/images/makers/` に置いて `logo` に登録すると、社名の文字の代わりにロゴが出る。許諾の無いロゴ（他社サイトから取った画像など）は使わない
+- **ロゴ**：2026-10-05 に運営者から「使ってよい」と連絡があり、各社の公式サイトに載っているロゴを `public/images/makers/` に置いている（取得元は `data/manufacturers.ts` の `logo.source`）。形・色は変えず、余白だけ切り詰めている。並べたときの見た目の大きさは、面積をそろえて決めている（`MakerShowcase.tsx` の `LOGO_AREA`）
+  - メーカーを足すときは、ロゴを使ってよいかを運営者に確かめてから。使えないときは `logo` を入れなければ、社名の文字で出る
+  - ロゴを並べても、正規取扱店・認定店であることを示すものではない（その表記は下の条件のときだけ）
 - 「正規取扱店」「認定店」「メーカー認定」の表記は、証憑を確認できたとき（`authorized`）だけ
 - 社数を変えたら `docs/VERIFIED_FACTS.md` の取扱メーカーの行も直す（`npm run facts:audit` が食い違いを見つける）
 - `/recommend/*`（おすすめ商品）は廃止し、`/products/*` へ転送している（`next.config.ts` の `redirects`）
@@ -257,10 +260,14 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 - **canonical**：全ページが自分自身の URL を指す。ブログ一覧の2ページ目以降（`/blog/page/2` …）も自分自身を指し、index のまま（sitemap には載せない）
 - **sitemap.xml**：検索結果に出すページだけ。`lastmod` は記事の更新日、固定ページは `siteConfig.contentUpdatedAt` と補助金情報の基準日の新しいほう
 - **robots.txt**：AI 検索のクローラー（GPTBot・ClaudeBot・PerplexityBot・Google-Extended など）も許可
+- **IndexNow**：本番のデプロイが終わると、`.github/workflows/indexnow.yml` が変わったページの URL を Bing などに知らせる（`scripts/indexnow.mjs`）。ブログの記事だけが増えた日は、その記事と `/blog`・カテゴリ・ピラーのページだけ。共通の部品やデータが変わった日は sitemap.xml の全 URL。ChatGPT の検索は Bing の索引を使うので、AI 検索に載るまでの時間も縮む。Google は参加していない（sitemap.xml と Search Console で知らせる）
+  - 鍵は `public/19065891757ebf0ce0ff4633cc0c34b7.txt`（公開してよい文字列）。作り直すときは、ファイル名と中身を同じ32文字にして、古いファイルは消す
+  - Actions の画面から手動で動かすと、sitemap.xml の全 URL を送る（Bing Webmaster Tools を登録した直後などに使う）
 - **/llms.txt**：AI 検索向けの要約（運営・補助金の数値と確認日・主要ページ）。補助金の数値は `data/subsidies` から自動で出る
 - **ブログ一覧**：1ページ12件でページを分ける（`/blog/page/2` …）
 - **導入ガイド**：一覧ページ `/guide` がハブ。ガイドを足したら `data/guides.ts` に登録し、`app/guide/page.tsx` の `GROUPS` に入れる
 - **周辺の区のページ**（`/area/adachi` `/area/sumida` `/area/edogawa`）：主キーワードは「◯◯区 太陽光 補助金」。内容は `data/ward-programs.ts` だけから出す（`components/area/NeighborAreaPage.tsx`）。区ごとに制度が違うので、葛飾区の説明を流用しない
+- **東京都の資料にもとづくガイド**（`/guide/tokyo-solar-mandate` `/guide/solar-safety` `/guide/zero-yen-solar`）：主な出典は東京都環境局「太陽光パネル設置に関するQ&A」（`data/sources.ts` の `tokyoSolarQa`）。文中では「東京都のQ&Aによると」と主語を付ける。都の試算（4kW・117万円など）は、時点（令和7年10月）と条件を必ず添え、SOLAR SHIFT の試算と混ぜない
 - **用語集**（`/glossary`）：`data/glossary.ts`。説明は事実シートで確かめられる内容だけ。構造化データは DefinedTermSet
 - **回収年数のガイド**（`/guide/solar-payback`）：式と前提を示し、見積書の数字を入れて試算する道具（`components/guide/PaybackCalculator.tsx`、計算は `lib/payback.ts`）。初期値は、国の委員会の想定値（`data/solar-assumptions.ts`）と FIT の単価だけ。相場の金額は初期値にしない
 - **よくある質問の構造化データ**：共通の質問（`data/faq.ts`）は `/faq` だけでマークアップする。ほかのページは、そのページにしか無い質問だけを出す（`FaqSection`）。重複は `seo:check` が落とす

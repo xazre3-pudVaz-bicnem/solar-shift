@@ -54,8 +54,8 @@ const GROUPS: { id: string; heading: string; lead: string; slugs: string[] }[] =
   {
     id: "solar",
     heading: "太陽光発電を検討する",
-    lead: "導入するかどうかを決めるための4本です。",
-    slugs: ["solar-merit-demerit", "solar-cost", "solar-payback", "roof-conditions"],
+    lead: "導入するかどうかを決めるための5本です。",
+    slugs: ["solar-merit-demerit", "solar-cost", "solar-payback", "roof-conditions", "zero-yen-solar"],
   },
   {
     id: "battery",
@@ -74,6 +74,12 @@ const GROUPS: { id: string; heading: string; lead: string; slugs: string[] }[] =
     heading: "設置したあとのこと",
     lead: "寿命・保証・点検。長く使うために知っておきたい内容です。",
     slugs: ["solar-lifespan", "maintenance"],
+  },
+  {
+    id: "tokyo",
+    heading: "東京都の義務化と、安全性",
+    lead: "東京都の資料にもとづいて、制度と、災害への備えを整理しています。",
+    slugs: ["tokyo-solar-mandate", "solar-safety"],
   },
 ];
 

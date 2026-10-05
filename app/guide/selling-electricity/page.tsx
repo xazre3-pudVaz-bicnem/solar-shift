@@ -146,6 +146,10 @@ export default function Page() {
           a: "住宅用（10kW未満）は余剰買取のため、家で使った残りだけが売電されます。発電中に家で電気を使えば、その分は売電に回りません。自家消費が増えるほど売電量は減ります。",
         },
         {
+          q: "東京電力管内の住宅の太陽光でも、出力制御で売電が止まることはありますか？",
+          a: "東京都のQ&Aによると、東京電力管内のルールでは、住宅用の太陽光（10kW未満）は、当面の間、出力制御の実施対象外です。東京都のQ&Aによると、2026年度の東京電力管内の再エネ出力制御の見通し（出力制御率）は0.03％で、10kW未満の太陽光はその対象外とされています。",
+        },
+        {
           q: "売電収入はいくらになりますか？",
           a: "余剰電力量と単価で決まり、余剰電力量は屋根条件・容量・電気の使い方でご家庭ごとに大きく異なります。一律の目安は示せないため、現地調査のうえで個別に試算します。",
         },
@@ -154,6 +158,7 @@ export default function Page() {
         verified.jpeaSelling,
         verified.jpeaSellUser,
         FIT_SOURCE,
+        verified.tokyoSolarQa,
         { name: kSolar.sourceName, url: kSolar.sourceUrl, verifiedAt: kSolar.lastVerified },
       ]}
       relatedCategories={["fit", "solar"]}

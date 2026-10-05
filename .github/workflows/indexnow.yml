@@ -1,0 +1,40 @@
+name: 検索エンジンに更新を知らせる（IndexNow）
+
+# Vercel の本番デプロイが終わったとき（Vercel が GitHub に「Production：success」を送ったとき）に動く。
+# 前回の本番デプロイからの変更を見て、変わったページの URL を IndexNow で Bing などに知らせる（scripts/indexnow.mjs）。
+# ブログのボットの push（GITHUB_TOKEN）は他のワークフローを起動しないが、Vercel はデプロイするので、ここで拾える。
+# Secrets は要らない（鍵は public/ に置いた公開の文字列。GitHub の API は、このワークフローの GITHUB_TOKEN で読む）。
+# 手動で動かすと、sitemap.xml の全 URL を送る（Bing Webmaster Tools を登録した直後などに使う）。
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    if: github.event_name == 'workflow_dispatch' || (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 変わったページを IndexNow で知らせる
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOY_SHA: ${{ github.event.deployment.sha }}
+          DEPLOY_ID: ${{ github.event.deployment.id }}
+        run: node scripts/indexnow.mjs ${{ github.event_name == 'workflow_dispatch' && '--all' || '' }}

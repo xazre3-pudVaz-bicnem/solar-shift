@@ -129,6 +129,43 @@ export default function Page() {
           ),
         },
         {
+          id: "tokyo-estimate",
+          heading: "東京都の試算：4kWの太陽光パネルの場合",
+          body: (
+            <>
+              <p>東京都は、太陽光パネルを設置した場合の経済性を試算して、公表しています。令和7年10月時点、東京都区部・2人以上の世帯を想定した試算です。</p>
+              <ProseTable>
+                <thead>
+                  <tr>
+                    <th>項目</th>
+                    <th>東京都の試算（4kW）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>初期費用</td>
+                    <td>117万円（株式会社資源総合システム調べ、令和6年度末の新築住宅の場合の価格）</td>
+                  </tr>
+                  <tr>
+                    <td>回収できる計算の年数</td>
+                    <td>13.8年程度。都の試算で想定した補助（10万円/kW）を使うと8.4年程度</td>
+                  </tr>
+                  <tr>
+                    <td>30年間の支出と収入の差</td>
+                    <td>87万円程度。補助を使うと127万円程度</td>
+                  </tr>
+                  <tr>
+                    <td>試算の条件</td>
+                    <td>売電単価 24円/kWh（1〜4年目）・8.3円/kWh（5〜10年目）・8.5円/kWh（11〜30年目）、電気料金 33.50円/kWh、期間中にパワーコンディショナを一度交換（33万円）</td>
+                  </tr>
+                </tbody>
+              </ProseTable>
+              <p>東京都は、一定の条件をもとに算出したもので、今後の状況の変化で変わる場合があるとしています。期間中に点検費用（1回約5万円）がかかる場合があり、リサイクルの際には約30万円の費用が別にかかるとも書いています。</p>
+              <p>既存の住宅に載せる場合は、屋根の状態や足場の条件で費用が変わります。東京都の補助金の単価も、新築と既存住宅で違います。下の試算に、見積書の数字を入れて確かめてください。</p>
+            </>
+          ),
+        },
+        {
           id: "calc",
           heading: "わが家の数字で、回収年数を計算してみる",
           body: (
@@ -230,6 +267,7 @@ export default function Page() {
       ]}
       sources={[
         verified.metiProcurementOpinion,
+        verified.tokyoSolarQa,
         { name: fit.sourceName, url: fit.sourceUrl, verifiedAt: fit.lastVerified },
         verified.jpeaOutput,
         verified.katsushikaPublicSolar,

@@ -41,12 +41,17 @@ export const sources = {
   // ───────── 東京都（環境局）
   tokyoSolarPortal: src("tokyo-solar-portal", "tokyo", "東京都環境局「太陽光ポータル」", "https://www.kankyo.metro.tokyo.lg.jp/climate/solar_portal", "2026-10-02"),
 
+  tokyoSolarQa: src("tokyo-solar-qa-2026", "tokyo", "東京都環境局「太陽光パネル設置に関するQ&A【新築・中小規模制度】」（令和8年4月1日）", "https://www.kankyo.metro.tokyo.lg.jp/documents/d/kankyo/q-a_260401", "2026-10-05"),
+  tokyoReportLeaflet: src("tokyo-report-leaflet", "tokyo", "東京都環境局「環境性能の説明が必要です～東京都建築物環境報告書制度～」", "https://www.kankyo.metro.tokyo.lg.jp/documents/d/kankyo/leaflet_setsumei_260306", "2026-10-05"),
+  tokyoKohoMandate: src("tokyo-koho-mandate", "tokyo", "広報東京都2025年3月号「太陽光パネルの設置を義務付ける制度が2025年4月から始まります」", "https://www.koho.metro.tokyo.lg.jp/2025/03/02.html", "2026-10-05"),
+
   // ───────── 東京都（クール・ネット東京）
   tokyoSolarPage: src("tokyo-solar-page", "tokyo", "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業」", "https://www.tokyo-co2down.jp/subsidy/fam_solar/r8/", "2026-10-02"),
   tokyoSolarHandbook: src("tokyo-solar-handbook", "tokyo", "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業 助成金の手引き」", "https://tokyo-co2down.g.kuroco-img.app/files/user/files/subsidy/fam_solar/r8/r8taiyouko_tebiki_20260630.pdf", "2026-10-02"),
   tokyoBatteryPage: src("tokyo-battery-page", "tokyo", "クール・ネット東京「令和8年度 家庭における蓄電池導入促進事業」", "https://www.tokyo-co2down.jp/subsidy/family_tikudenchi/r8/", "2026-10-02"),
   tokyoBatteryOutline: src("tokyo-battery-outline", "tokyo", "東京都「家庭における蓄電池導入促進事業 実施要綱」", "https://tokyo-co2down.g.kuroco-img.app/files/user/files/subsidy/family_tikudenchi/r8/r8battery_jisshiyoko_20260417.pdf", "2026-10-02"),
 
+  tokyoInitialCostZero: src("tokyo-initial-cost-zero", "tokyo", "クール・ネット東京「住宅用太陽光発電初期費用ゼロ促進の増強事業」", "https://www.tokyo-co2down.jp/subsidy/initial-cost0-zokyo/", "2026-10-05"),
   tokyoBatteryGrantRules: src("tokyo-battery-grant-rules", "tokyo", "クール・ネット東京（東京都環境公社）「家庭における蓄電池導入促進事業助成金交付要綱」", "https://tokyo-co2down.g.kuroco-img.app/files/user/files/subsidy/family_tikudenchi/r8/r8battery_kofuyoko_20260605.pdf", "2026-10-02"),
 
   // ───────── SII（環境共創イニシアチブ）
