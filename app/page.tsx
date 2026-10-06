@@ -11,6 +11,7 @@ import { faqsByIds } from "@/data/faq";
 import { worksInCity, publishedWorks, WORK_BILL_NOTE } from "@/data/works";
 import { images } from "@/data/images";
 import { getLatestPosts } from "@/lib/blog";
+import { getGuide, type GuideEntry } from "@/data/guides";
 import { headline } from "@/lib/subsidy-headline";
 import { reveal, growDelay } from "@/lib/reveal";
 import { Container } from "@/components/ui/Container";
@@ -174,6 +175,10 @@ export default function HomePage() {
 
   const faqItems = faqsByIds(["subsidy-katsushika-overview", "subsidy-pre-consultation", "subsidy-combination", "battery-set", "service-area"]);
   const posts = getLatestPosts(3);
+  // TOP から入口を出す導入ガイド（検索の多いテーマを先に）
+  const homeGuides = ["solar-cost", "solar-payback", "battery-merit-demerit", "zero-yen-solar", "renewable-energy-surcharge", "solar-safety"]
+    .map((slug) => getGuide(slug))
+    .filter((g): g is GuideEntry => Boolean(g));
   // TOP に出す施工事例：葛飾区の事例を先に。無ければ、掲載している事例から3件まで
   const katsushikaWorks = worksInCity(siteConfig.primaryArea.name);
   const homeWorks = (katsushikaWorks.length > 0 ? katsushikaWorks : publishedWorks).slice(0, 3);
@@ -612,6 +617,45 @@ export default function HomePage() {
           </Container>
         </section>
       )}
+
+      {/* ───────── 導入ガイドへの入口（知りたいことから選ぶ） */}
+      <section className="cv-auto bg-paper-2 py-16 sm:py-24" aria-labelledby="guides">
+        <Container>
+          <SectionHeading
+            align="center"
+            eyebrow="導入ガイド"
+            title={
+              <span id="guides">
+                知りたいことから<span className="marker">読む</span>
+              </span>
+            }
+          />
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {homeGuides.map((g, i) => {
+              const img = images[g.image];
+              return (
+                <li key={g.slug} {...reveal((i % 3) * 90)}>
+                  <Link href={g.path} className="group flex h-full items-center gap-4 rounded-3xl border border-line bg-white p-4 shadow-card transition-transform duration-200 hover:-translate-y-1 hover:border-orange-300">
+                    <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-cream">
+                      <Image src={img.src} alt="" width={img.width} height={img.height} sizes="64px" className="h-12 w-12 object-contain" />
+                    </span>
+                    <span className="min-w-0 flex-1 font-heading text-[15px] leading-[1.55] font-black text-navy-900 group-hover:text-accent-text">{g.title}</span>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream text-navy-900">
+                      <ArrowIcon className="h-3.5 w-3.5" />
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-8 text-center">
+            <LinkButton href="/guide" variant="secondary">
+              導入ガイドの一覧を見る
+              <ArrowIcon />
+            </LinkButton>
+          </p>
+        </Container>
+      </section>
 
       {/* ───────── 11. よくある質問 */}
       <section className="cv-auto relative overflow-hidden bg-cream py-16 sm:py-24" aria-labelledby="faq">

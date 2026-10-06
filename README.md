@@ -267,6 +267,9 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 - **ブログ一覧**：1ページ12件でページを分ける（`/blog/page/2` …）
 - **導入ガイド**：一覧ページ `/guide` がハブ。ガイドを足したら `data/guides.ts` に登録し、`app/guide/page.tsx` の `GROUPS` に入れる
 - **周辺の区のページ**（`/area/adachi` `/area/sumida` `/area/edogawa`）：主キーワードは「◯◯区 太陽光 補助金」。内容は `data/ward-programs.ts` だけから出す（`components/area/NeighborAreaPage.tsx`）。区ごとに制度が違うので、葛飾区の説明を流用しない
+- **TOP の「知りたいことから読む」**：検索の多いテーマのガイド6本への入口（`app/page.tsx` の `homeGuides`）。いちばん強いページからガイドへリンクを渡すための区画
+- **ブログのカテゴリの親ページ**（`data/blog-categories.ts` の `pillarLinks`）：記事の末尾に出る「このテーマの固定ページ」。新しいガイドを足したら、合うカテゴリに入れる
+- **蓄電池のメリット・デメリットのガイド**（`/guide/battery-merit-demerit`）：付けるかどうかの判断材料に絞る。寿命・保証は SII の登録基準として書けることだけ
 - **再エネ賦課金のガイド**（`/guide/renewable-energy-surcharge`）：単価・目安・推移は `data/surcharge.ts` だけから出す。毎年3月ごろに経済産業省が翌年度の単価を公表するので、そのときに `data/surcharge.ts` と事実シートを直す（タイトルも自動で変わる）
 - **売電収入と税金のガイド**（`/guide/solar-tax`）：国税庁・葛飾区・東京都主税局の公開情報だけで書く。税額の計算例は書かない。住宅の太陽光が償却資産の申告の対象になるかは断定しない
 - **東京都の資料にもとづくガイド**（`/guide/tokyo-solar-mandate` `/guide/solar-safety` `/guide/zero-yen-solar`）：主な出典は東京都環境局「太陽光パネル設置に関するQ&A」（`data/sources.ts` の `tokyoSolarQa`）。文中では「東京都のQ&Aによると」と主語を付ける。都の試算（4kW・117万円など）は、時点（令和7年10月）と条件を必ず添え、SOLAR SHIFT の試算と混ぜない
@@ -318,7 +321,7 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 
 - 施工体制・施工会社・許認可・有資格者・メーカーの施工ID・保証・工事保険・導入後のサポート（`trust.*`）
 - LINE（`contact.lineUrl`）
-- 営業する曜日・定休日（`contact.businessDays`）。営業時間（`contact.hours` ＝ 9:00〜20:00、2026-10-05 に運営者から連絡）は記入済みで、電話番号の横に「（営業時間 9:00〜20:00）」と出る。曜日が空の間は、構造化データに営業時間を出さず、チャットにも曜日・定休日を書かせない（`lib/chat/guard.ts`）
+- 年末年始の休み。営業時間（`contact.hours` ＝ 9:00〜20:00）と定休日なし（`contact.businessDays`・`contact.openDays`）は記入済み（2026-10-05・06 に運営者から連絡）。電話番号の横に「（営業時間 9:00〜20:00・定休日なし）」と出て、LocalBusiness の `openingHoursSpecification` に毎日 9:00〜20:00 が出る。年末年始の休みは未確認なので、チャットに「年中無休」とは書かせない（`lib/chat/guard.ts`）
 - 法人番号（`company.corporateNumber`）
 - Googleビジネスプロフィール（`gbp.*`）。`gbp.embedUrl` にプロフィールの埋め込み用 URL を入れると、運営会社ページと葛飾区のエリアページに地図が出る（住所だけで埋め込むと建物名のカードが出るため、プロフィール登録までは地図を出さない）
 - SNS（`social.*`）

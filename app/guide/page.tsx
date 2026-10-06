@@ -60,8 +60,8 @@ const GROUPS: { id: string; heading: string; lead: string; slugs: string[] }[] =
   {
     id: "battery",
     heading: "蓄電池と停電への備え",
-    lead: "容量・種類の決め方と、停電時に使える範囲を整理しています。",
-    slugs: ["battery-how-to-choose", "battery-cost", "blackout"],
+    lead: "付けるかどうかの判断、容量・種類の決め方、停電時に使える範囲を整理しています。",
+    slugs: ["battery-merit-demerit", "battery-how-to-choose", "battery-cost", "blackout"],
   },
   {
     id: "selling",

@@ -248,7 +248,7 @@ export const faqs: FaqItem[] = [
     category: "service",
     scope: "service",
     q: "営業時間を教えてください。",
-    a: `営業時間は${siteConfig.contact.hours}です。お電話（${siteConfig.contact.telDisplay}）、メール、お問い合わせフォームでご連絡いただけます。`,
+    a: `営業時間は${siteConfig.contact.hours}${siteConfig.contact.businessDays ? `（${siteConfig.contact.businessDays}）` : ""}です。お電話（${siteConfig.contact.telDisplay}）、メール、お問い合わせフォームでご連絡いただけます。`,
     link: { href: "/contact", label: "お問い合わせ" },
   },
   {

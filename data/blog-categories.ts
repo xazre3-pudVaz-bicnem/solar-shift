@@ -36,7 +36,7 @@ export const blogCategories: BlogCategory[] = [
     name: "東京都の補助金",
     description: "クール・ネット東京の太陽光・蓄電池助成を中心とした東京都の制度情報。",
     lead: "東京都（クール・ネット東京）の家庭向け太陽光・蓄電池助成について、容量区分の考え方、事前申込から交付申請までの流れ、対象機器の条件を記事ごとに解説しています。葛飾区の制度とは窓口も手続きも別です。制度の全体像は「東京都の補助金」のページにまとめています。",
-    pillarLinks: ["/subsidy/tokyo", "/simulation"],
+    pillarLinks: ["/subsidy/tokyo", "/simulation", "/guide/tokyo-solar-mandate"],
   },
   {
     slug: "solar",
@@ -44,7 +44,7 @@ export const blogCategories: BlogCategory[] = [
     name: "太陽光発電",
     description: "住宅用太陽光発電の仕組み・費用・選び方・導入の考え方。",
     lead: "住宅用太陽光発電を検討するときに出てくる疑問を、屋根の条件・費用の内訳・見積もりの読み方・契約前の確認点といった切り口で、1記事ずつ取り上げています。隣の建物との距離が近い敷地での考え方も扱います。基礎から知りたい方は「太陽光発電」のページもあわせてご覧ください。",
-    pillarLinks: ["/solar", "/guide/solar-cost"],
+    pillarLinks: ["/solar", "/guide/solar-cost", "/guide/zero-yen-solar"],
   },
   {
     slug: "battery",
@@ -52,7 +52,7 @@ export const blogCategories: BlogCategory[] = [
     name: "蓄電池",
     description: "家庭用蓄電池の容量・費用・選び方・太陽光との組み合わせ。",
     lead: "家庭用蓄電池の容量の決め方、全負荷型と特定負荷型の違い、太陽光への後付けの判断など、機種を選ぶ前に整理しておきたい点を記事にしています。補助金の条件と合わせて考えるための材料としてお使いください。",
-    pillarLinks: ["/battery", "/guide/battery-how-to-choose"],
+    pillarLinks: ["/battery", "/guide/battery-how-to-choose", "/guide/battery-merit-demerit"],
   },
   {
     slug: "v2h",
@@ -68,7 +68,7 @@ export const blogCategories: BlogCategory[] = [
     name: "電気代",
     description: "電気代の仕組みと、太陽光・蓄電池で電気代を抑える考え方。",
     lead: "電気代の仕組みと、太陽光発電・蓄電池で買う電気を減らす考え方を扱う記事です。どれだけ減るかは住宅・使用量・料金プランで変わるため、具体的な金額ではなく、考え方と確認の手順を中心に解説しています。",
-    pillarLinks: ["/solar-battery", "/guide/all-electric"],
+    pillarLinks: ["/solar-battery", "/guide/all-electric", "/guide/renewable-energy-surcharge"],
   },
   {
     slug: "blackout",
@@ -92,7 +92,7 @@ export const blogCategories: BlogCategory[] = [
     name: "施工・メンテナンス",
     description: "屋根条件・工事の流れ・設置後の点検とメンテナンス。",
     lead: "現地調査から工事、設置後の点検までを扱う記事です。見積書の内訳の読み方、業者を選ぶときの確認点、パワーコンディショナの交換時期など、契約の前後で役立つ内容をまとめています。",
-    pillarLinks: ["/flow", "/guide/maintenance"],
+    pillarLinks: ["/flow", "/guide/maintenance", "/guide/solar-safety"],
   },
   {
     slug: "fit",
@@ -100,7 +100,7 @@ export const blogCategories: BlogCategory[] = [
     name: "FIT・売電",
     description: "売電の仕組み、FIT価格、卒FIT後の選択肢。",
     lead: "売電の仕組みとFIT（固定価格買取制度）の価格、卒FIT後の選択肢を扱う記事です。2026年度の住宅用FITは前半に手厚い設定のため、売電と自家消費のバランスの考え方もあわせて解説しています。",
-    pillarLinks: ["/guide/selling-electricity", "/guide/post-fit"],
+    pillarLinks: ["/guide/selling-electricity", "/guide/post-fit", "/guide/solar-tax"],
   },
   {
     slug: "energy-saving",

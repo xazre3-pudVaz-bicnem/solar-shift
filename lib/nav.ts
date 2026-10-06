@@ -116,6 +116,7 @@ const allFooterNav: NavGroup[] = [
       { href: "/guide/solar-lifespan", label: "太陽光パネルの寿命" },
       { href: "/guide/battery-cost", label: "蓄電池の費用" },
       { href: "/guide/battery-how-to-choose", label: "全負荷型と特定負荷型の違い" },
+      { href: "/guide/battery-merit-demerit", label: "蓄電池のメリット・デメリット" },
       { href: "/guide/blackout", label: "停電時の備え" },
       { href: "/guide/selling-electricity", label: "売電とFIT価格" },
       { href: "/guide/post-fit", label: "卒FIT後の選択肢" },

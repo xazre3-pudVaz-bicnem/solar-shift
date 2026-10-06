@@ -60,7 +60,7 @@ export default function ContactPage() {
                   <span className="min-w-0 leading-none">
                     <span className="block text-[12px] font-bold text-ink-2">
                       お電話でのご相談
-                      {siteConfig.contact.hours && <span className="ml-1 font-normal">（営業時間 {siteConfig.contact.hours}）</span>}
+                      {siteConfig.contact.hours && <span className="ml-1 font-normal">（営業時間 {siteConfig.contact.hours}{siteConfig.contact.businessDays ? `・${siteConfig.contact.businessDays}` : ""}）</span>}
                     </span>
                     <span className="mt-1.5 block font-en text-[20px] font-extrabold tracking-[0.02em] min-[400px]:text-[24px]">{siteConfig.contact.telDisplay}</span>
                   </span>

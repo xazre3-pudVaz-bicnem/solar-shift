@@ -69,6 +69,25 @@ const OFFERED_SERVICES: { name: string; path?: string }[] = [
   { name: "現地調査・見積もり", path: "/contact" },
 ];
 
+/**
+ * 営業時間（lib/site.ts の hours ＝ "9:00〜20:00" と openDays）。
+ * 曜日が決まっていないとき、時刻の形が読めないときは出さない（曜日の無い営業時間は書けない）。
+ */
+function openingHoursSpecification(): JsonLd[] | undefined {
+  const days = siteConfig.contact.openDays;
+  const m = siteConfig.contact.hours.match(/(\d{1,2}):(\d{2})\s*[〜～~-]\s*(\d{1,2}):(\d{2})/);
+  if (days.length === 0 || !m) return undefined;
+  const hm = (h: string, min: string) => `${h.padStart(2, "0")}:${min}`;
+  return [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: days.map((d) => `https://schema.org/${d}`),
+      opens: hm(m[1], m[2]),
+      closes: hm(m[3], m[4]),
+    },
+  ];
+}
+
 export function organizationSchema(): JsonLd {
   const email = contactEmail();
   return compact({
@@ -88,7 +107,7 @@ export function organizationSchema(): JsonLd {
     areaServed: areaServed(),
     knowsAbout: KNOWS_ABOUT,
     // 電話番号は siteConfig に入っているときだけ出る（空なら compact が落とす）。
-    // 営業時間は、営業する曜日（siteConfig.contact.businessDays）が未確定の間は出さない（曜日の無い openingHours は書けない）
+    // 営業時間は、営業する曜日（siteConfig.contact.openDays）が決まっているときだけ出る
     contactPoint: compact({
       "@type": "ContactPoint",
       contactType: "customer service",
@@ -97,6 +116,7 @@ export function organizationSchema(): JsonLd {
       url: absoluteUrl("/contact"),
       availableLanguage: "ja",
       areaServed: "JP",
+      hoursAvailable: openingHoursSpecification(),
     }),
     // 記事と補助金情報をどう作り、どう確かめているか（編集方針のページ）
     publishingPrinciples: absoluteUrl(siteConfig.editorial.policyPath),
@@ -119,6 +139,7 @@ export function localBusinessSchema(): JsonLd {
     parentOrganization: { "@id": ORG_ID },
     address: postalAddress(),
     areaServed: areaServed(),
+    openingHoursSpecification: openingHoursSpecification(),
     hasMap: companyMapUrl(),
     knowsAbout: KNOWS_ABOUT,
     // 各サービスは、その説明ページ（/solar など）の Service と同じ @id で結ぶ

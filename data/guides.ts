@@ -214,6 +214,17 @@ export const guides: GuideEntry[] = [
     publishedAt: "2026-10-05",
     updatedAt: "2026-10-05",
   },
+  {
+    slug: "battery-merit-demerit",
+    image: "iconGHouseBattery",
+    path: "/guide/battery-merit-demerit",
+    title: "家庭用蓄電池はいらない？メリット・デメリットと判断の目安",
+    description: "昼の電気を夜に回せる・停電に備えられるメリットと、費用・容量の劣化・置き場所のデメリットを、SIIの登録基準や国・東京都・葛飾区の資料で整理します。向いている家の目安と補助金も。",
+    intent: "蓄電池 メリット デメリット いらない 後悔",
+    related: ["/guide/battery-how-to-choose", "/guide/battery-cost", "/guide/blackout", "/guide/renewable-energy-surcharge"],
+    publishedAt: "2026-10-06",
+    updatedAt: "2026-10-06",
+  },
 ];
 
 export function getGuide(slug: string): GuideEntry | undefined {

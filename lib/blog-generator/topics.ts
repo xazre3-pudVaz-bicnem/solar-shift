@@ -50,13 +50,19 @@ export const topics: Topic[] = [
   // ───────── 東京都の補助金
   { intent: "東京都 太陽光 補助金 3.75kW 境目 容量", slug: "tokyo-solar-subsidy-3-75kw-threshold", title: "東京都の太陽光助成は3.75kWが境目：容量の決め方への影響", angle: "15万円/kW（上限45万円）と12万円/kWの区分が、容量全体に適用される仕組みの計算例。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/simulation"] },
   { intent: "東京都 蓄電池 増設 助成 6万円", slug: "tokyo-battery-expansion-subsidy", title: "蓄電池を増設するときの東京都の助成（6万円/kWh）の考え方", angle: "新規10万円/kWhと増設6万円/kWh（DR不参加時 上限72万円/戸）の違い。2026年10月1日以降の事前申込はSII登録機器に限ること。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/battery"] },
+  { intent: "東京都 太陽光 補助金 新築 3.6kW 単価", slug: "tokyo-solar-subsidy-new-build-3-6kw", title: "新築住宅の東京都の太陽光助成は3.6kWが境目：既存住宅との単価の違い", angle: "東京都の家庭向けの太陽光の助成は、新築住宅が3.6kW以下12万円/kW（上限36万円）、3.6kW超〜50kW未満10万円/kW。既存住宅（3.75kWが境、15万円/kW・12万円/kW）とは単価も境目も違う。区分は容量全体に適用される。新築では、ハウスメーカー等に設置が義務付けられる東京都の制度（延床2,000㎡未満・年間供給2万㎡以上の事業者）との関係にも触れるが、義務化の説明そのものは /guide/tokyo-solar-mandate に任せる。区と都の金額は合算しない。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/guide/tokyo-solar-mandate"] },
   { intent: "東京都 太陽光 陸屋根 架台 防水 助成", slug: "tokyo-solar-flat-roof-mount-waterproof", title: "陸屋根の家で太陽光：東京都の架台・防水工事の追加助成", angle: "既存戸建の架台設置10万円/kW、防水工事18万円/kW（条件あり）の位置づけ。太陽光発電協会の説明する、屋根置き型（勾配屋根・陸屋根）の設置方法。詳細な条件は公式で確認する。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/guide/roof-conditions"] },
 
   // ───────── 太陽光・導入の進め方（太陽光発電協会の資料の範囲で書けるもの）
   { intent: "太陽光 現地調査 何を見る 準備", slug: "solar-site-survey-what-to-prepare", title: "太陽光の現地調査では何を見る？事前に用意しておくもの", angle: "太陽光発電協会の説明：屋根の面積・形状・方位・傾斜は発電量に影響する。周りに太陽光を遮るものがないか。設計図面や検針票を用意する。見積もりは屋根の方位・形状・屋根材をもとに作られる。", category: "install-maintenance", links: ["/flow", "/guide/roof-conditions"] },
   { intent: "太陽光 工事 当日 流れ 連系 立会い", slug: "solar-installation-day-to-operation", title: "太陽光の工事当日から運転開始まで：連系立会いと保証書の受け取り", angle: "太陽光発電協会の説明：機器設置工事と電気配線工事、竣工検査と引き渡し、電力会社との電力受給契約と連系立会い、メーカー発行の保証書の受け取り。葛飾区の助成では、このあとに完了報告を出す。期間の断定はしない。", category: "install-maintenance", links: ["/flow", "/subsidy/katsushika"] },
 
+  // ───────── 設置したあと（東京都のQ&Aと太陽光発電協会の資料の範囲で書けるもの）
+  { intent: "太陽光 発電量 落ちた 前年比 不具合 確認", slug: "solar-output-drop-25-percent-check", title: "発電量が前年より25％減ったら？太陽光の不具合に気づくための確認", angle: "東京都のQ&Aによると、一般的な住宅地では定期的に屋根に登って掃除する必要はほとんどなく、発電量を日常的に確認することを都は勧めている。1か月の発電電力量が前年の同じ月とくらべて25％程度低下する場合は、不具合の可能性があるのでメーカーなどに相談する。太陽光発電協会の説明する定期点検（3〜5年ごと）や、点検は専門の業者に任せること。屋根の上の作業は自分でしない。", category: "install-maintenance", links: ["/guide/maintenance", "/guide/solar-safety"] },
+  { intent: "太陽光 撤去 補助金 返還 17年 廃止届", slug: "solar-removal-subsidy-refund-17-years", title: "補助金で付けた太陽光を早めに外すと、返還が必要になる？撤去の前に確かめること", angle: "東京都のQ&A（太陽光発電協会のサイトから引用）：FITの認定を受けている場合は廃止届が必要。補助金を受けて設置した場合、法定耐用年数（17年）に満たないうちに廃棄する場合などは、補助金を返還しないといけないケースがある。架台を屋根に固定する金具を外す場合は、屋根の防水処理が必要。撤去はまず購入した販売店か施工店に相談し、連絡がつかない場合はメーカーの相談窓口へ。太陽光パネルはリサイクルできる。区や都の個別の返還の条件は、それぞれの交付要綱で確かめる（事実シートに無い条件は書かない）。", category: "install-maintenance", links: ["/guide/solar-safety", "/subsidy/katsushika"] },
+
   // ───────── FIT・売電
+  { intent: "東京電力 出力制御 住宅用 太陽光 対象外 2026", slug: "tepco-output-curtailment-residential-solar", title: "東京電力管内の住宅用太陽光は、出力制御で売電が止まる？", angle: "東京都のQ&Aによると、固定価格買取制度の東京電力管内のルールでは、住宅用太陽光（10kW未満）は当面の間、出力制御の実施対象外。2026年度の東京電力管内の再エネ出力制御の見通し（出力制御率）は0.03％で、10kW未満の太陽光は当面の間、対象外。住宅用（10kW未満）は余剰買取で、家で使った残りが売電される（資源エネルギー庁・太陽光発電協会）。将来ルールが変わるかどうかの予想は書かない。売電の単価は /guide/selling-electricity に任せる。", category: "fit", links: ["/guide/selling-electricity", "/solar"] },
   { intent: "FIT 5年目 8.3円 どうする 自家消費", slug: "fit-fifth-year-8-3yen-self-consumption", title: "FIT5年目から売電が8.3円に：そのとき家でできること", angle: "2026年度の住宅用は最初の4年間24円/kWh、5〜10年目8.3円/kWh。太陽光発電協会の説明：昼間に電気を使う、エコキュートを太陽光の電気で沸かす、蓄電池や電気自動車と組み合わせる。効果の数値は書かない。", category: "fit", links: ["/guide/selling-electricity", "/solar-battery"] },
 
 ];

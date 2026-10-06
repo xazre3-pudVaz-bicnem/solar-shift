@@ -151,6 +151,8 @@ export default function BatteryPage() {
         { href: "/guide/battery-how-to-choose", label: "蓄電池の選び方", description: "容量・負荷タイプ・方式の違い" },
         { href: "/products/battery", label: "蓄電池の比べ方", description: "容量・出力・負荷タイプの見方" },
         { href: "/guide/blackout", label: "停電時の備え", description: "停電のときに使える範囲と、自立運転" },
+        { href: "/guide/battery-merit-demerit", label: "蓄電池のメリット・デメリット", description: "付けるか迷ったときの判断の目安" },
+        { href: "/guide/renewable-energy-surcharge", label: "再エネ賦課金", description: "買う電気1kWhごとの負担。ためて使うと減る" },
       ]}
       works={{ label: "蓄電池", items: worksWithEquipment({ battery: true }, siteConfig.primaryArea.name) }}
       relatedCategories={["battery", "tokyo-subsidy"]}
