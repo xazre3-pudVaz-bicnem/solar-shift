@@ -4,7 +4,8 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
 import { siteConfig, addressWithPostal } from "@/lib/site";
-import { getSubsidy, katsushikaProgram } from "@/data/subsidies";
+import { getSubsidy, katsushikaProgram, subsidySources } from "@/data/subsidies";
+import { SourceNote } from "@/components/ui/SourceNote";
 import { primaryAreas, secondaryAreas, areasWithPage, areaPageLabel } from "@/data/areas";
 import { AreaMapFigure } from "@/components/area/AreaMapFigure";
 import { faqsByIds } from "@/data/faq";
@@ -327,6 +328,7 @@ export default function HomePage() {
           <p className="mx-auto mt-5 max-w-4xl text-[13px] leading-[1.8] text-ink-3">
             ※ {infoDate}時点の葛飾区公式情報。対象可否・助成額は住宅条件・機器・申請時期で異なります。東京都の助成は別の制度です。併用できますが、補助金の合計は助成対象経費が上限です。
           </p>
+          <SourceNote sources={subsidySources([solar, battery, addon])} className="mx-auto mt-1 max-w-4xl" />
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
             <LinkButton href="/subsidy/katsushika" variant="primary">
               葛飾区の補助金を詳しく見る

@@ -42,6 +42,17 @@ export function getSubsidy(id: string): Subsidy | undefined {
   return allSubsidies.find((s) => s.id === id);
 }
 
+/**
+ * メニュー（または制度）の出典を、画面に出す形（名前・URL・確認日）にする。同じ URL はまとめる。
+ * 金額のすぐ近くに出典を置くときに使う（components/ui/SourceNote.tsx）。
+ */
+export function subsidySources(items: Pick<Subsidy, "sourceName" | "sourceUrl" | "lastVerified">[]): { name: string; url: string; verifiedAt: string }[] {
+  const seen = new Set<string>();
+  return items
+    .filter((s) => (seen.has(s.sourceUrl) ? false : (seen.add(s.sourceUrl), true)))
+    .map((s) => ({ name: s.sourceName, url: s.sourceUrl, verifiedAt: s.lastVerified }));
+}
+
 /** 全制度のうち最も古い確認日（「情報確認日」の表示に使う） */
 export function oldestVerifiedDate(subsidies: Subsidy[] = allSubsidies): string {
   return subsidies.map((s) => s.lastVerified).sort()[0] ?? "";

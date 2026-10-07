@@ -6,6 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getGuide } from "@/data/guides";
 import { getSubsidy } from "@/data/subsidies";
 import { GuideArticle } from "@/components/sections/GuideArticle";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 const entry = getGuide("selling-electricity")!;
 
@@ -86,6 +87,7 @@ export default function Page() {
                   </tr>
                 </tbody>
               </ProseTable>
+              <SourceNote sources={[FIT_SOURCE]} className="mt-2" />
               <p>住宅用の特徴は、前半4年間が高く、5年目以降が大きく下がる二段階の構造です。これは「初期投資支援スキーム」と呼ばれ、導入直後の負担を軽くする一方、長期的には自家消費を促す設計になっています。</p>
               <p>売電収入は「余剰電力量 × 単価」で決まります。余剰電力量は発電量と自家消費量の差であり、屋根条件や電気の使い方でご家庭ごとに大きく変わります。発電量の見込みは屋根条件で変わるため、現地調査のうえで個別に試算します。</p>
             </>

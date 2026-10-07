@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { getGuide } from "@/data/guides";
-import { getSubsidy } from "@/data/subsidies";
+import { getSubsidy, subsidySources } from "@/data/subsidies";
+import { SourceNote } from "@/components/ui/SourceNote";
 import { GuideArticle } from "@/components/sections/GuideArticle";
 
 const entry = getGuide("solar-cost")!;
@@ -40,6 +41,7 @@ export default function Page() {
           body: (
             <>
               <p>太陽光発電協会は、経済産業省の資料をもとに、2025年のシステム費用は、10kW未満の新築設置で平均28.9万円/kW（中央値29.4万円/kW）だったと紹介しています。これは新築に設置する場合の全国の平均で、SOLAR SHIFT の見積もり額ではありません。既存の住宅では、屋根の状態や足場の条件によって費用が変わります。</p>
+              <SourceNote sources={[verified.jpeaCost]} className="mt-2" />
               <p>太陽光発電の見積書は、おおよそ次の6項目で構成されます。どの項目がいくらかが分かる見積もりであることが、比較の前提です。</p>
               <ol>
                 <li><strong>太陽光パネル（モジュール）</strong>：容量（kW）に応じて枚数が決まる。</li>
@@ -98,6 +100,7 @@ export default function Page() {
                   </tr>
                 </tbody>
               </ProseTable>
+              <SourceNote sources={subsidySources([kSolar, tSolar])} className="mt-2" />
               <p>葛飾区の助成は上限30万円のため、5kWを超えると助成額は増えません。東京都の既存住宅向け助成は3.75kWを境に単価が変わります。容量を決めるときは、屋根に載る枚数と電気の使用量だけでなく、制度の区分も踏まえて検討します。</p>
               <p>葛飾区の助成は東京都の助成と併用できますが、補助金の合計は助成対象経費が上限です。想定額の目安は<Link href="/simulation">補助金シミュレーター</Link>で、制度の詳細は<Link href="/subsidy/katsushika">葛飾区の補助金ページ</Link>で確認できます。</p>
             </>

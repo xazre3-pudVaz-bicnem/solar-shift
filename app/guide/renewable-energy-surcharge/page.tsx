@@ -7,6 +7,7 @@ import { surcharge, surchargeYen } from "@/data/surcharge";
 import { reveal, growDelay } from "@/lib/reveal";
 import { GuideArticle } from "@/components/sections/GuideArticle";
 import { ProseTable } from "@/components/ui/ProseTable";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 /**
  * 再エネ賦課金のガイド。
@@ -203,6 +204,7 @@ export default function Page() {
                   </tr>
                 </tbody>
               </ProseTable>
+              <SourceNote sources={[verified.metiSurcharge2026]} className="mt-2" />
               <p>東京都のQ&Aも、計算のしかたを「自分が使用した電気の量（kWh）× 単価」と示しています。わが家の負担は、検針票などで1か月に使った電気の量を確かめて、単価をかけると分かります。</p>
               <p>単価は年度ごとに変わります。このページの金額は{s.fiscalYear}の単価で計算した目安で、実際の負担は電気の使用量によって変わります。最新の単価は、経済産業省の発表で確かめてください。</p>
             </>
@@ -245,6 +247,7 @@ export default function Page() {
                   </tr>
                 </tbody>
               </ProseTable>
+              <SourceNote sources={[verified.tokyoSolarQa, verified.enechoSurcharge]} className="mt-2" />
             </>
           ),
           figure: <HistoryFigure />,

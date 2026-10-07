@@ -3,7 +3,7 @@ import { TableScroll } from "@/components/ui/TableScroll";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
-import { tokyoSolarProgram, tokyoBatteryProgram, getSubsidy } from "@/data/subsidies";
+import { tokyoSolarProgram, tokyoBatteryProgram, getSubsidy, subsidySources } from "@/data/subsidies";
 import { faqsByIds } from "@/data/faq";
 import { simulate } from "@/lib/subsidy-calc";
 import { Container } from "@/components/ui/Container";
@@ -13,6 +13,7 @@ import { SubsidyProgramSection } from "@/components/subsidy/SubsidyProgramSectio
 import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { LastUpdated } from "@/components/ui/LastUpdated";
 import { SourceList } from "@/components/ui/SourceList";
+import { SourceNote } from "@/components/ui/SourceNote";
 import { Callout } from "@/components/ui/Callout";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
@@ -104,6 +105,7 @@ export default function TokyoSubsidyPage() {
               { subsidy: bt, label: "蓄電池", icon: images.iconGHouseBattery2 },
             ]}
           />
+          <SourceNote sources={subsidySources([ex, nw, bt])} className="mt-4 text-center" />
           <StaffTip className="mx-auto mt-8 max-w-3xl" title="2026年10月から変わった点" image={images.poseIdea} tone="orange">
             蓄電池は、2026年10月1日以降に事前申込をする場合、<strong className="marker">SII登録機器に限る</strong>という要件が加わりました。機種を決める前に、型番が登録済みかを確認しましょう。
           </StaffTip>
@@ -140,7 +142,8 @@ export default function TokyoSubsidyPage() {
               </tbody>
             </table>
           </TableScroll>
-          <p className="mt-3 text-[13px] text-ink-3">助成対象経費（税抜）が上限になります。機能性PV認定による上乗せ、リフォーム瑕疵保険加入時の加算、陸屋根の架台・防水工事への追加助成は含んでいません。</p>
+          <SourceNote sources={subsidySources([S])} className="mt-2.5" />
+          <p className="mt-2 text-[13px] text-ink-3">助成対象経費（税抜）が上限になります。機能性PV認定による上乗せ、リフォーム瑕疵保険加入時の加算、陸屋根の架台・防水工事への追加助成は含んでいません。</p>
         </section>
 
         <section className="cv-block mt-16" aria-labelledby="battery-ex">
@@ -170,6 +173,7 @@ export default function TokyoSubsidyPage() {
               </tbody>
             </table>
           </TableScroll>
+          <SourceNote sources={subsidySources([B])} className="mt-2.5" />
           <Callout tone="warn" title="2026年10月1日以降の事前申込は、SII登録機器に限定" className="mt-6">
             東京都の公式案内には「令和8年10月1日以降に事前申込をする場合においては、補助対象機器としてSIIが登録している機器に限る」と記載されています。検討中の蓄電池が登録済みかどうか、型番でメーカー・施工店に確認し、SIIの登録一覧でも確かめてから事前申込を行ってください。
           </Callout>

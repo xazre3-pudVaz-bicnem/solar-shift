@@ -325,7 +325,7 @@ export default function KatsushikaSubsidyPage() {
               個人住宅用のうち、太陽光発電・蓄電池・V2H・HEMSに関するメニューです。助成金額の1,000円未満の端数は切り捨てになります。
             </p>
             <div className="mt-6">
-              <SubsidyTable menus={P.menus} />
+              <SubsidyTable menus={P.menus} showSources={false} />
             </div>
             <p className="mt-3 text-[13px] leading-[1.8] text-ink-3">
               出典：{sourceLink({ name: P.sourceName, url: P.sourceUrl })}（{formatDateJa(P.lastVerified)} 確認）

@@ -8,6 +8,7 @@ import { surcharge, surchargeYen } from "@/data/surcharge";
 import { solarAssumptions as A, JPEA_YEARLY_KWH_PER_KW } from "@/data/solar-assumptions";
 import { GuideArticle } from "@/components/sections/GuideArticle";
 import { ProseTable } from "@/components/ui/ProseTable";
+import { SourceNote } from "@/components/ui/SourceNote";
 import { PaybackCalculator } from "@/components/guide/PaybackCalculator";
 import { PaybackFormulaFigure } from "@/components/guide/PaybackFormulaFigure";
 import { PublicSolarFigure } from "@/components/area/PublicSolarFigure";
@@ -24,6 +25,8 @@ import { PublicSolarFigure } from "@/components/area/PublicSolarFigure";
 const entry = getGuide("solar-payback")!;
 const [early, late] = fit.residential.steps;
 const maxYears = A.operatingYears;
+/** FIT の単価の出典（表のすぐ下と、ページ末尾の一覧で使う） */
+const FIT_NOTE = { name: fit.sourceName, url: fit.sourceUrl, verifiedAt: fit.lastVerified };
 
 export const metadata: Metadata = buildMetadata({
   title: "太陽光発電は何年で元が取れる？回収年数の計算の考え方と試算",
@@ -123,6 +126,7 @@ export default function Page() {
                   </tr>
                 </tbody>
               </ProseTable>
+              <SourceNote sources={[FIT_NOTE, verified.metiProcurementOpinion]} className="mt-2" />
               <p>
                 上の表の数字で比べると、売るよりも、自宅で使うほうが、1kWhあたりの効果は大きくなります。5年目からは売る単価が下がるので、その差が広がります。売電の仕組みは、<Link href="/guide/selling-electricity">売電とFIT価格のガイド</Link>で解説しています。
               </p>
@@ -161,6 +165,7 @@ export default function Page() {
                   </tr>
                 </tbody>
               </ProseTable>
+              <SourceNote sources={[verified.tokyoSolarQa]} className="mt-2" />
               <p>東京都は、一定の条件をもとに算出したもので、今後の状況の変化で変わる場合があるとしています。期間中に点検費用（1回約5万円）がかかる場合があり、リサイクルの際には約30万円の費用が別にかかるとも書いています。</p>
               <p>既存の住宅に載せる場合は、屋根の状態や足場の条件で費用が変わります。東京都の補助金の単価も、新築と既存住宅で違います。下の試算に、見積書の数字を入れて確かめてください。</p>
             </>
@@ -172,6 +177,7 @@ export default function Page() {
           body: (
             <>
               <p>見積書にある、設置費用・補助金の見込み額・容量を入れると、回収の目安が出ます。初めから入っている前提の数値は、国の委員会の想定値と、太陽光発電協会の計算例です。「計算の前提を変える」を開くと、わが家の数字に直せます。</p>
+              <SourceNote sources={[verified.metiProcurementOpinion, verified.jpeaOutput, FIT_NOTE]} className="mt-2" />
             </>
           ),
           figure: (
@@ -270,7 +276,7 @@ export default function Page() {
       sources={[
         verified.metiProcurementOpinion,
         verified.tokyoSolarQa,
-        { name: fit.sourceName, url: fit.sourceUrl, verifiedAt: fit.lastVerified },
+        FIT_NOTE,
         verified.jpeaOutput,
         verified.katsushikaPublicSolar,
       ]}

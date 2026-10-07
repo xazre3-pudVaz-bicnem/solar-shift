@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { getGuide } from "@/data/guides";
-import { getSubsidy } from "@/data/subsidies";
+import { getSubsidy, subsidySources } from "@/data/subsidies";
+import { SourceNote } from "@/components/ui/SourceNote";
 import { GuideArticle } from "@/components/sections/GuideArticle";
 
 const entry = getGuide("battery-cost")!;
@@ -97,6 +98,7 @@ export default function Page() {
                   </tr>
                 </tbody>
               </ProseTable>
+              <SourceNote sources={subsidySources([kBattery, kAddon, tBattery])} className="mt-2" />
               <p>東京都の助成は容量に応じた金額で、DR（デマンドレスポンス）実証に参加すると加算や上限の扱いが変わります。また、2026年10月1日以降に事前申込をする場合、助成対象はSIIが登録している機器に限られます。検討中の機種が登録済みかどうかは、見積もりの段階で確認が必要です。</p>
               <p>国の制度は状況が変わりやすく、{nDr.programName}（令和7年度補正）は2026年5月29日に予算到達で公募終了しています。葛飾区の助成は国や都の制度と併用できますが、補助金の合計は助成対象経費が上限です。想定額は<Link href="/simulation">補助金シミュレーター</Link>で、都の制度の詳細は<Link href="/subsidy/tokyo">東京都の補助金ページ</Link>でご確認ください。</p>
             </>

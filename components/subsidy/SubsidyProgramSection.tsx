@@ -43,7 +43,7 @@ export function SubsidyProgramSection({
         </p>
       </div>
 
-      <SubsidyTable menus={program.menus} />
+      <SubsidyTable menus={program.menus} showSources={false} />
 
       {program.notes.length > 0 && (
         <Callout tone="warn" title="この制度の注意点">

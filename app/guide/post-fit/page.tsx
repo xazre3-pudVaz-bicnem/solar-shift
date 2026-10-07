@@ -6,6 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getGuide } from "@/data/guides";
 import { getSubsidy } from "@/data/subsidies";
 import { GuideArticle } from "@/components/sections/GuideArticle";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 const entry = getGuide("post-fit")!;
 
@@ -48,6 +49,7 @@ export default function Page() {
               <p>住宅用太陽光発電（10kW未満）のFIT調達期間は10年です。設置から10年が経つと、国が定めた固定価格での買取は終了します。これが「卒FIT」です。</p>
               <p>卒FIT後も、電気が売れなくなるわけではありません。余った電気は引き続き小売電気事業者に売ることができます。ただし単価は国が決めるのではなく、各小売電気事業者が独自に設定します。単価も条件も、事業者によって違います。太陽光発電協会は、電力会社の買取メニューを比べて契約することを勧めています。</p>
               <p>変わるのは単価だけで、太陽光パネルは発電を続けます。つまり卒FIT後は「売る価値が下がり、使う価値が相対的に上がる」状態になります。この変化に合わせて、電気の使い方を組み替えるのが卒FIT対策の本質です。FIT制度の仕組みは<Link href="/guide/selling-electricity">売電の仕組みと2026年度の買取価格</Link>で解説しています。</p>
+              <SourceNote sources={[FIT_SOURCE, verified.jpeaSellUser]} className="mt-2" />
             </>
           ),
         },

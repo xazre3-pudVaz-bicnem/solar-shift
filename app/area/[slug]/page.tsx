@@ -12,7 +12,7 @@ import { areasWithPage, areaPageTitle, getArea, secondaryAreas } from "@/data/ar
 import { getWardProgram } from "@/data/ward-programs";
 import { NeighborAreaPage } from "@/components/area/NeighborAreaPage";
 import { PublicSolarFigure } from "@/components/area/PublicSolarFigure";
-import { getSubsidy } from "@/data/subsidies";
+import { getSubsidy, subsidySources } from "@/data/subsidies";
 import { KATSUSHIKA_PRE_CONSULTATION_WEEKS } from "@/data/subsidies/katsushika-details";
 import { sources as verified } from "@/data/sources";
 import { headline } from "@/lib/subsidy-headline";
@@ -27,6 +27,7 @@ import { MapEmbed } from "@/components/ui/MapEmbed";
 import { Steps } from "@/components/ui/Steps";
 import { LastUpdated } from "@/components/ui/LastUpdated";
 import { SourceList } from "@/components/ui/SourceList";
+import { SourceNote } from "@/components/ui/SourceNote";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
@@ -376,6 +377,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
               {area.name}の「かつしかエコ助成金」の、主な金額です（{formatDateJa(solar.lastVerified)}時点）。東京都の助成と併用できますが、合計は助成対象経費が上限です。
             </p>
             <BigNumbers className="mt-6" items={numbers.map(({ label, s }) => ({ subsidy: s, label }))} />
+            <SourceNote sources={subsidySources(numbers.map((n) => n.s))} className="mt-3" />
             <div className="mt-6 flex flex-wrap gap-3">
               <LinkButton href="/subsidy/katsushika" variant="primary" size="lg">
                 金額・条件・必要書類を詳しく見る <ArrowIcon />

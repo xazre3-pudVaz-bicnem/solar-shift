@@ -3,6 +3,8 @@ import { formatDateJa } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { CountUp } from "@/components/ui/CountUp";
 import { TableScroll } from "@/components/ui/TableScroll";
+import { SourceNote } from "@/components/ui/SourceNote";
+import { katsushikaProgram, tokyoSolarProgram, tokyoBatteryProgram, subsidySources } from "@/data/subsidies";
 import { reveal } from "@/lib/reveal";
 
 /**
@@ -95,9 +97,12 @@ function MatrixTable() {
 
 function Note({ className = "" }: { className?: string }) {
   return (
-    <p className={`text-[13px] leading-[1.8] text-ink-3 ${className}`}>
-      ※ {formatDateJa(siteConfig.subsidyInfoDate)}時点の公式情報による概算（既存住宅）。葛飾区の蓄電池は「助成対象経費の1/4」で決まるため、容量にかかわらず上限額を示しています。葛飾区と東京都は別の制度で、金額は合算していません（併用できますが、合計は助成対象経費が上限です）。
-    </p>
+    <div className={className}>
+      <p className="text-[13px] leading-[1.8] text-ink-3">
+        ※ {formatDateJa(siteConfig.subsidyInfoDate)}時点の公式情報による概算（既存住宅）。葛飾区の蓄電池は「助成対象経費の1/4」で決まるため、容量にかかわらず上限額を示しています。葛飾区と東京都は別の制度で、金額は合算していません（併用できますが、合計は助成対象経費が上限です）。
+      </p>
+      <SourceNote sources={subsidySources([katsushikaProgram, tokyoSolarProgram, tokyoBatteryProgram])} className="mt-1" />
+    </div>
   );
 }
 

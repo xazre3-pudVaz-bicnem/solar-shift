@@ -35,7 +35,7 @@ export const guides: GuideEntry[] = [
     intent: "太陽光発電 費用",
     related: ["/subsidy/katsushika", "/simulation", "/solar"],
     publishedAt: "2026-10-01",
-    updatedAt: "2026-10-02",
+    updatedAt: "2026-10-07",
   },
   {
     slug: "solar-merit-demerit",
@@ -101,7 +101,7 @@ export const guides: GuideEntry[] = [
     intent: "太陽光 売電 価格",
     related: ["/guide/post-fit", "/guide/renewable-energy-surcharge", "/guide/solar-tax", "/solar"],
     publishedAt: "2026-10-01",
-    updatedAt: "2026-10-01",
+    updatedAt: "2026-10-07",
   },
   {
     slug: "post-fit",
@@ -112,7 +112,7 @@ export const guides: GuideEntry[] = [
     intent: "卒FIT どうする",
     related: ["/guide/selling-electricity", "/battery", "/v2h"],
     publishedAt: "2026-10-01",
-    updatedAt: "2026-10-02",
+    updatedAt: "2026-10-07",
   },
   {
     slug: "all-electric",
@@ -156,7 +156,7 @@ export const guides: GuideEntry[] = [
     intent: "太陽光発電 元が取れる 何年",
     related: ["/guide/solar-cost", "/guide/renewable-energy-surcharge", "/guide/selling-electricity", "/guide/solar-merit-demerit", "/solar", "/simulation"],
     publishedAt: "2026-10-02",
-    updatedAt: "2026-10-02",
+    updatedAt: "2026-10-07",
   },
   {
     slug: "tokyo-solar-mandate",

@@ -23,7 +23,7 @@ export const STATIC_ROUTES: StaticRoute[] = [
   { path: "/", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光発電・蓄電池｜補助金の整理から設置・導入後まで", updatedAt: "2026-10-07" },
   { path: "/subsidy", priority: 0.9, changeFrequency: "weekly", ogTitle: "太陽光・蓄電池の補助金｜区・都・国の3つの制度と申請の順番" },
   { path: "/subsidy/katsushika", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光・蓄電池補助金｜かつしかエコ助成金の金額・条件・申請", updatedAt: "2026-10-07" },
-  { path: "/subsidy/tokyo", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の太陽光・蓄電池補助金｜クール・ネット東京の家庭向け助成", updatedAt: "2026-10-05" },
+  { path: "/subsidy/tokyo", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の太陽光・蓄電池補助金｜クール・ネット東京の家庭向け助成", updatedAt: "2026-10-07" },
   { path: "/subsidy/national", priority: 0.7, changeFrequency: "weekly", ogTitle: "国の太陽光・蓄電池補助金｜DR補助金・CEV補助金・みらいエコ住宅の現状" },
   { path: "/simulation", priority: 0.9, changeFrequency: "weekly", ogTitle: "補助金シミュレーション｜葛飾区・東京都の助成額を試算" },
   { path: "/solar", priority: 0.8, changeFrequency: "monthly", ogTitle: "住宅用太陽光発電｜仕組みと向いている家", updatedAt: "2026-10-05" },

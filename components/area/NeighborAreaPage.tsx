@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Area } from "@/data/areas";
 import { areas } from "@/data/areas";
 import { wardPrograms, type WardProgram } from "@/data/ward-programs";
-import { getSubsidy } from "@/data/subsidies";
+import { getSubsidy, subsidySources } from "@/data/subsidies";
 import { KATSUSHIKA_PRE_CONSULTATION_WEEKS } from "@/data/subsidies/katsushika-details";
 import { worksInCity } from "@/data/works";
 import { images } from "@/data/images";
@@ -19,6 +19,7 @@ import { Callout } from "@/components/ui/Callout";
 import { StaffTip } from "@/components/ui/StaffTip";
 import { LastUpdated } from "@/components/ui/LastUpdated";
 import { SourceList } from "@/components/ui/SourceList";
+import { SourceNote } from "@/components/ui/SourceNote";
 import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { BigNumbers } from "@/components/subsidy/BigNumbers";
@@ -292,6 +293,7 @@ export function NeighborAreaPage({ area, program: w }: { area: Area; program: Wa
                 { subsidy: tokyoBattery, label: "蓄電池", icon: images.iconGHouseBattery2 },
               ]}
             />
+            <SourceNote sources={subsidySources([tokyoSolarExisting, tokyoSolarNew, tokyoBattery])} className="mt-3" />
             <div className="mt-6 flex flex-wrap gap-3">
               <LinkButton href="/subsidy/tokyo" variant="primary">
                 東京都の補助金を詳しく見る <ArrowIcon />
