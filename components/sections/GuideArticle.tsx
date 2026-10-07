@@ -18,6 +18,7 @@ import { ArrowIcon } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { articleSchema, graph } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
+import { findPageLabel } from "@/lib/page-labels";
 import { getPostsForPillar } from "@/lib/blog";
 import { reveal } from "@/lib/reveal";
 
@@ -63,6 +64,11 @@ export function GuideArticle({
   const named = entry.related.map((p) => guides.find((g) => g.path === p && g.slug !== entry.slug)).filter((g): g is GuideEntry => Boolean(g));
   const backlinks = guides.filter((g) => g.slug !== entry.slug && g.related.includes(entry.path) && !named.includes(g));
   const related = [...named, ...backlinks].slice(0, 4);
+  // ガイド以外の関連ページ（サービス・補助金・エリアのページ）。表示名は、メニューの登録から取る
+  const relatedPages = entry.related
+    .filter((p) => !guides.some((g) => g.path === p))
+    .map((href) => ({ href, label: findPageLabel(href) }))
+    .filter((p): p is { href: string; label: string } => Boolean(p.label));
   const posts = getPostsForPillar(relatedCategories, 3, { path: entry.path });
   const crumbs = [
     { name: "ホーム", href: "/" },
@@ -72,8 +78,10 @@ export function GuideArticle({
 
   return (
     <>
+      {/* 見出しから本文・出典・関連ガイドまでが、この記事の内容 */}
+      <article>
       <PageHeader crumbs={crumbs} eyebrow="導入ガイド" title={entry.title} lead={entry.description} image={images[entry.image]}>
-        <LastUpdated updatedAt={entry.updatedAt} publishedAt={entry.publishedAt} className="mt-5" />
+        <LastUpdated updatedAt={entry.updatedAt} publishedAt={entry.publishedAt} showPublished className="mt-5" />
       </PageHeader>
 
       <Container size="prose" className="py-10 sm:py-14">
@@ -135,7 +143,35 @@ export function GuideArticle({
             </ul>
           </section>
         )}
+
+        <nav className="mt-8" aria-label="関連するページ">
+          {relatedPages.length > 0 && (
+            <p className="text-[14px] leading-[1.9] text-ink-2">
+              あわせて見るページ：
+              {relatedPages.map((p, i) => (
+                <span key={p.href}>
+                  {i > 0 && "／"}
+                  <Link href={p.href} className="mx-1 inline-block py-2 font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text">
+                    {p.label}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          )}
+          <p className="text-[14px] leading-[1.9] text-ink-2">
+            ほかのテーマは
+            <Link href="/guide" className="mx-1 inline-block py-2 font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text">
+              太陽光・蓄電池の導入ガイドの一覧
+            </Link>
+            から、見積書や区の案内に出てくることばは
+            <Link href="/glossary" className="mx-1 inline-block py-2 font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text">
+              用語集
+            </Link>
+            で確かめられます。
+          </p>
+        </nav>
       </Container>
+      </article>
 
       {posts.length > 0 && (
         <Container className="pb-14">

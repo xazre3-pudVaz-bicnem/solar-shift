@@ -17,6 +17,7 @@ import { CtaSection } from "@/components/sections/CtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webApplicationSchema, webPageSchema } from "@/lib/schema";
 import { images } from "@/data/images";
+import { routeUpdatedAt } from "@/lib/routes";
 
 const PATH = "/simulation";
 
@@ -51,7 +52,7 @@ export default function SimulationPage() {
         lead="補助金のシミュレーションができるページです。条件を選ぶと、葛飾区と東京都それぞれの制度について「制度名・計算式・想定額・上限・注意事項」を分けて表示します。国の制度は受付状況とともに参考表示します。"
         image={images.peopleWomanThink}
       >
-        <LastUpdated updatedAt={siteConfig.contentUpdatedAt} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={routeUpdatedAt(PATH)} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
@@ -103,7 +104,7 @@ export default function SimulationPage() {
 
       <JsonLd
         data={graph(
-          webPageSchema({ path: PATH, mainEntity: "app", name: "太陽光・蓄電池の補助金シミュレーション", description: metadata.description as string, lastReviewed: siteConfig.subsidyInfoDate, dateModified: siteConfig.contentUpdatedAt }),
+          webPageSchema({ path: PATH, mainEntity: "app", name: "太陽光・蓄電池の補助金シミュレーション", description: metadata.description as string, lastReviewed: siteConfig.subsidyInfoDate, dateModified: routeUpdatedAt(PATH) }),
           webApplicationSchema({
             path: PATH,
             name: "太陽光・蓄電池 補助金シミュレーター",

@@ -15,6 +15,7 @@
     "fonts:fetch": "node scripts/fetch-fonts.mjs",
     "blog:audit": "tsx scripts/blog-audit.ts",
     "seo:check": "tsx scripts/seo-check.ts",
+    "seo:audit": "tsx scripts/seo-check.ts && tsx scripts/seo-audit.ts",
     "blog:selftest": "tsx scripts/blog-selftest.ts",
     "facts:audit": "tsx scripts/facts-audit.ts",
     "indexnow": "node scripts/indexnow.mjs"

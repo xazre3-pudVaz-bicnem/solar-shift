@@ -14,6 +14,7 @@ import {
   KATSUSHIKA_REPORT_WITHIN_MONTHS,
   KATSUSHIKA_PAYMENT_WEEKS,
   KATSUSHIKA_PRE_CONSULTATION_WEEKS,
+  KATSUSHIKA_REPLY_WEEKS,
 } from "@/data/subsidies/katsushika-details";
 import { sources as verified } from "@/data/sources";
 import { faqsByIds } from "@/data/faq";
@@ -41,10 +42,13 @@ import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, articleSchema, financialIncentiveSchema } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
-import { getPostsForPillar } from "@/lib/blog";
+import { getPostsForPillar, getPostsByCategory } from "@/lib/blog";
+import { DeadlineChecker } from "@/components/subsidy/DeadlineChecker";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
 import { reveal } from "@/lib/reveal";
+import { routeUpdatedAt } from "@/lib/routes";
+import { siteConfig } from "@/lib/site";
 
 /**
  * 葛飾区の補助金ページ（このサイトでいちばん大事なページ）。
@@ -57,7 +61,7 @@ import { reveal } from "@/lib/reveal";
 const PATH = "/subsidy/katsushika";
 const P = katsushikaProgram;
 /** このページの本文を最後に書き直した日 */
-const UPDATED = "2026-10-02";
+const UPDATED = routeUpdatedAt(PATH);
 
 const solar = getSubsidy("katsushika-solar")!;
 const battery = getSubsidy("katsushika-battery")!;
@@ -147,7 +151,49 @@ export default function KatsushikaSubsidyPage() {
   ]);
   const posts = getPostsForPillar(["katsushika-subsidy"], 3, { path: PATH });
 
+  // 申込期間・完了報告の期限を、日付の計算に使える形（YYYY-MM-DD）にする
+  const iso = (jp: string): string[] => [...jp.matchAll(/(\d{4})年(\d{1,2})月(\d{1,2})日/g)].map((m) => `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}`);
+  const [applyStart, applyEnd] = iso(solar.applicationPeriod);
+  const [reportDeadline] = iso(KATSUSHIKA_REPORT_DEADLINE);
+
+  // 冒頭の「5つの答え」。金額・期限はデータから出す
+  const quick = [
+    {
+      q: "自分は対象？",
+      a: "区内の、自分が住む住宅に、新しく機器を入れる個人が対象です。リース・レンタルと、過去10年間に同じ建物・同じ種類の機器で助成を受けた場合は対象外です。",
+      href: "#eligibility",
+      label: "対象になる方の要件を見る",
+    },
+    {
+      q: "いくら出る？",
+      a: `太陽光発電は${solar.amount}（${solar.maxAmount}）、蓄電池は${battery.amount}（${battery.maxAmount}）です。併設すると${addon.amount}が加わります。`,
+      href: "#capacity",
+      label: "容量別の助成額を見る",
+    },
+    {
+      q: "いつ申請する？",
+      a: `着工の${KATSUSHIKA_PRE_CONSULTATION_WEEKS}週間前までに事前協議書を申し込み、区の回答書が届いてから着工します。申込みは${solar.deadline}までです。`,
+      href: "#checker",
+      label: "着工日から期限を逆算する",
+    },
+    {
+      q: "何を用意する？",
+      a: "内訳の分かる見積書、パネルの割付図、型番の分かるカタログ、設置前の写真、納税証明書などを用意します。",
+      href: "#documents",
+      label: "必要書類のチェックリストを見る",
+    },
+    {
+      q: "次に何をする？",
+      a: "容量と費用から助成額を試算し、現地調査と見積もりで機種と容量を決めます。決まったら、事前協議書を申し込みます。",
+      href: "/simulation",
+      label: "区と都の助成額を試算する",
+    },
+  ];
+  // このページを親にしている記事（細かい疑問に1本ずつ答えている）
+  const clusterPosts = getPostsByCategory("katsushika-subsidy");
+
   const toc = [
+    { id: "checker", label: "着工日から、申請の期限を逆算する" },
     { id: "amounts", label: "助成額の一覧" },
     { id: "capacity", label: "容量別の助成額（3〜6kW・5〜10kWh）" },
     { id: "flow", label: "申請の時系列" },
@@ -193,7 +239,7 @@ export default function KatsushikaSubsidyPage() {
         lead="葛飾区にお住まいの方が、太陽光発電・蓄電池・V2H・HEMSを導入するときに使える区の助成制度です。区の案内と機器別の手引きを読み、金額・申請の順番・必要書類を1ページにまとめました。"
         image={images.peopleStaffPoint}
       >
-        <LastUpdated updatedAt={UPDATED} verifiedAt={P.lastVerified} className="mt-5" />
+        <LastUpdated updatedAt={UPDATED} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={P.lastVerified} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
@@ -213,6 +259,23 @@ export default function KatsushikaSubsidyPage() {
             {formatDateJa(P.lastVerified)}時点の公式情報（出典：{sourceLink(verified.katsushikaGuide, "葛飾区「かつしかエコ助成金のご案内」")}）。{combination.note}
           </p>
 
+          <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5" aria-label="先に知りたい5つのこと">
+            {quick.map((item, i) => (
+              <li key={item.q} className="flex flex-col rounded-2xl border-2 border-line bg-white p-4 shadow-card">
+                <p className="flex items-center gap-2 font-heading text-[15px] font-black text-navy-900">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 font-en text-[12px] font-extrabold text-navy-900" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  {item.q}
+                </p>
+                <p className="mt-2 flex-1 text-[14px] leading-[1.75] text-ink">{item.a}</p>
+                <Link href={item.href} className={`mt-2 inline-flex min-h-11 items-center text-[13px] ${TEXT_LINK}`}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ol>
+
           <div className="mt-6 flex flex-wrap gap-3">
             <LinkButton href="/simulation" variant="accent" size="lg">
               わが家の条件で試算する <ArrowIcon />
@@ -226,6 +289,33 @@ export default function KatsushikaSubsidyPage() {
         </div>
 
         <div className="mx-auto mt-14 max-w-5xl space-y-16 sm:mt-16 sm:space-y-20">
+          {/* ───────── 着工日から、申請の期限を逆算する */}
+          <section id="checker" aria-labelledby="checker-h" className="scroll-mt-24">
+            <h2 id="checker-h" className={H2}>
+              着工の予定日から、申請の期限を逆算する
+            </h2>
+            <p className={LEAD}>
+              かつしかエコ助成金は、着工の{KATSUSHIKA_PRE_CONSULTATION_WEEKS}週間前までに事前協議書を申し込み、区の回答書が届いてから工事を始める決まりです。着工の予定日を入れると、申し込みの期限の目安が分かります。
+            </p>
+            <DeadlineChecker
+              className="mt-10"
+              rules={{
+                fiscalYear: P.fiscalYear.split("（")[0],
+                preConsultationWeeks: KATSUSHIKA_PRE_CONSULTATION_WEEKS,
+                applyStart,
+                applyEnd,
+                replyWeeks: KATSUSHIKA_REPLY_WEEKS,
+                reportWithinMonths: KATSUSHIKA_REPORT_WITHIN_MONTHS,
+                reportDeadline,
+                addonAmount: addon.amount,
+                verifiedAt: formatDateJa(P.lastVerified),
+              }}
+            />
+            <p className="mt-4 text-[13px] leading-[1.8] text-ink-3">
+              出典：{sourceLink(verified.katsushikaGuide, "葛飾区「かつしかエコ助成金のご案内（事前協議分）」")}、{sourceLink(verified.katsushikaQa, "葛飾区「よくあるご質問」")}（{formatDateJa(P.lastVerified)} 確認）
+            </p>
+          </section>
+
           {/* ───────── 助成額の一覧 */}
           <section id="amounts" aria-labelledby="amounts-h" className="scroll-mt-24">
             <h2 id="amounts-h" className={H2}>
@@ -573,6 +663,22 @@ export default function KatsushikaSubsidyPage() {
       {posts.length > 0 && (
         <Container className="pb-14">
           <RelatedArticles posts={posts} title="葛飾区の補助金に関する記事" />
+          {clusterPosts.length > posts.length && (
+            <nav aria-label="申請の細かい疑問に答える記事" className="mt-8">
+              <h2 className="border-l-[6px] border-green-500 pl-3 text-[20px] leading-[1.35] font-black text-navy-900">申請の細かい疑問に、1つずつ答える記事</h2>
+              <ul className="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+                {clusterPosts
+                  .filter((p) => !posts.some((x) => x.slug === p.slug))
+                  .map((p) => (
+                    <li key={p.slug} className="border-b border-dashed border-line-2">
+                      <Link href={`/blog/${p.slug}`} className={`flex min-h-11 items-center py-2 text-[15px] leading-[1.6] ${TEXT_LINK}`}>
+                        {p.title}
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </nav>
+          )}
         </Container>
       )}
 

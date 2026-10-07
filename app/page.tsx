@@ -32,6 +32,7 @@ import { MakerShowcase } from "@/components/product/MakerShowcase";
 import { ArticleCard } from "@/components/blog/ArticleCard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webPageSchema } from "@/lib/schema";
+import { routeUpdatedAt } from "@/lib/routes";
 
 /**
  * TOP ページ。役割は「概要を伝えて、詳しいページへ送る」こと。
@@ -44,7 +45,7 @@ import { graph, webPageSchema } from "@/lib/schema";
  * - 運営者について書くのは、確認できていることだけ（運営会社・拠点・対応エリア・相談と現地調査が無料であること）。
  */
 export const metadata: Metadata = buildMetadata({
-  title: "葛飾区の太陽光発電・蓄電池なら SOLAR SHIFT｜補助金の整理から導入後まで",
+  title: "葛飾区の太陽光発電・蓄電池なら SOLAR SHIFT｜補助金の相談・見積もり無料",
   description:
     "葛飾区の太陽光発電・蓄電池の導入をサポートするSOLAR SHIFT（株式会社サイプレス運営）。葛飾区・東京都の補助金を一次情報で確認し、住まいに合う設備と申請の順番を整理します。現地調査・お見積もりは無料。",
   path: "/",
@@ -238,7 +239,7 @@ export default function HomePage() {
               />
               <p className="mt-6 text-base leading-[2] text-ink" {...reveal(100)}>
                 {siteConfig.name}（{siteConfig.nameJa}）は、{siteConfig.company.address.locality}の{siteConfig.company.name}
-                が運営する、住宅用太陽光発電・家庭用蓄電池の導入サポートサービスです。葛飾区と東京都の補助金を一次情報で確認し、住まいの条件に合う設備と、申請の順番を一緒に整理します。
+                が運営する、住宅用太陽光発電（ソーラーパネル）・家庭用蓄電池の導入サポートサービスです。葛飾区と東京都の補助金を一次情報で確認し、住まいの条件に合う設備と、申請の順番を一緒に整理します。
               </p>
               <div className="mt-7 flex flex-wrap gap-3" {...reveal(140)}>
                 <LinkButton href="/reason" variant="secondary">
@@ -787,7 +788,7 @@ export default function HomePage() {
             path: "/",
             name: `${siteConfig.name}｜葛飾区の太陽光発電・蓄電池`,
             description: siteConfig.description,
-            dateModified: siteConfig.contentUpdatedAt,
+            dateModified: routeUpdatedAt("/"),
           }),
         )}
       />

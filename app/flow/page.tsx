@@ -20,6 +20,7 @@ import { images } from "@/data/images";
 import { ApplicationTimeline } from "@/components/subsidy/ApplicationTimeline";
 import { StaffTip } from "@/components/ui/StaffTip";
 import { reveal } from "@/lib/reveal";
+import { routeUpdatedAt } from "@/lib/routes";
 
 const PATH = "/flow";
 const DESC =
@@ -33,7 +34,7 @@ export const metadata: Metadata = buildMetadata({
 });
 
 export default function FlowPage() {
-  const posts = getPostsForPillar(["install-maintenance", "katsushika-subsidy"], 3, { path: PATH, prefer: ["katsushika-eco-subsidy-solar-procedure-2026"] });
+  const posts = getPostsForPillar(["install-maintenance", "katsushika-subsidy"], 3, { path: PATH, prefer: ["katsushika-subsidy-change-after-consultation"] });
   const k = getSubsidy("katsushika-solar")!;
   const t = getSubsidy("tokyo-solar-existing")!;
   const steps = [
@@ -196,7 +197,7 @@ export default function FlowPage() {
       />
       <JsonLd
         data={graph(
-          webPageSchema({ path: PATH, name: "導入・施工の流れ", description: DESC, dateModified: siteConfig.contentUpdatedAt }),
+          webPageSchema({ path: PATH, name: "導入・施工の流れ", description: DESC, dateModified: routeUpdatedAt(PATH) }),
           howToSchema({
             path: PATH,
             name: "太陽光発電・蓄電池を導入する流れ（相談から運転開始まで）",

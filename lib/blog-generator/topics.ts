@@ -48,9 +48,8 @@ export const topics: Topic[] = [
   { local: true, intent: "葛飾区 東京都 補助金 併用 申請 順番", slug: "katsushika-tokyo-subsidy-combination-order", title: "区と都の補助金を両方使うときの順番：区の交付が先、都の実績報告があと", angle: "葛飾区の案内では国や都の制度との併用が可能（合計は助成対象経費が上限）。東京都の太陽光の助成は、区の補助金を受給した後で交付申請兼実績報告を行う。区と都の金額は別々に示す。", category: "katsushika-subsidy", links: ["/subsidy/katsushika", "/subsidy/tokyo"] },
 
   // ───────── 東京都の補助金
-  { intent: "東京都 太陽光 補助金 3.75kW 境目 容量", slug: "tokyo-solar-subsidy-3-75kw-threshold", title: "東京都の太陽光助成は3.75kWが境目：容量の決め方への影響", angle: "15万円/kW（上限45万円）と12万円/kWの区分が、容量全体に適用される仕組みの計算例。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/simulation"] },
+  // 東京都の太陽光の単価の境目（既存 3.75kW・新築 3.6kW）は、既存の記事 tokyo-solar-subsidy-2026-examples が計算例つきで受けている（新しく書かない）
   { intent: "東京都 蓄電池 増設 助成 6万円", slug: "tokyo-battery-expansion-subsidy", title: "蓄電池を増設するときの東京都の助成（6万円/kWh）の考え方", angle: "新規10万円/kWhと増設6万円/kWh（DR不参加時 上限72万円/戸）の違い。2026年10月1日以降の事前申込はSII登録機器に限ること。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/battery"] },
-  { intent: "東京都 太陽光 補助金 新築 3.6kW 単価", slug: "tokyo-solar-subsidy-new-build-3-6kw", title: "新築住宅の東京都の太陽光助成は3.6kWが境目：既存住宅との単価の違い", angle: "東京都の家庭向けの太陽光の助成は、新築住宅が3.6kW以下12万円/kW（上限36万円）、3.6kW超〜50kW未満10万円/kW。既存住宅（3.75kWが境、15万円/kW・12万円/kW）とは単価も境目も違う。区分は容量全体に適用される。新築では、ハウスメーカー等に設置が義務付けられる東京都の制度（延床2,000㎡未満・年間供給2万㎡以上の事業者）との関係にも触れるが、義務化の説明そのものは /guide/tokyo-solar-mandate に任せる。区と都の金額は合算しない。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/guide/tokyo-solar-mandate"] },
   { intent: "東京都 太陽光 陸屋根 架台 防水 助成", slug: "tokyo-solar-flat-roof-mount-waterproof", title: "陸屋根の家で太陽光：東京都の架台・防水工事の追加助成", angle: "既存戸建の架台設置10万円/kW、防水工事18万円/kW（条件あり）の位置づけ。太陽光発電協会の説明する、屋根置き型（勾配屋根・陸屋根）の設置方法。詳細な条件は公式で確認する。", category: "tokyo-subsidy", links: ["/subsidy/tokyo", "/guide/roof-conditions"] },
 
   // ───────── 太陽光・導入の進め方（太陽光発電協会の資料の範囲で書けるもの）

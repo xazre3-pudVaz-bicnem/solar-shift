@@ -1,6 +1,7 @@
 import { allowedYenAmounts } from "./facts";
 import { checkNumericClaims, normalizeDigits, sourceTypeOf, type Claim, type FactIndex } from "./claims";
 import { findCannibalPage } from "../seo-map";
+import { scoreQuality, qualityErrors, type QualityScores } from "./score";
 
 /**
  * 生成記事の品質ゲート。1つでも引っかかったら公開しない。
@@ -19,6 +20,7 @@ import { findCannibalPage } from "../seo-map";
  *  10. 根拠なしの No.1・最上級
  *  11. 薄い記事（本文 1,800 字未満・見出しごとの中身が無い）
  *  12. 同じ構成の焼き直し（見出しの並びが既存記事とほぼ同じ・本文の言い換え）
+ *  13. 品質スコア（独自性・検索意図との一致・出典の質・地域との結び付き・内部リンク・取り合いの少なさ）が基準に届かない（score.ts）
  */
 
 export interface GeneratedArticle {
@@ -58,6 +60,8 @@ export interface ValidateResult {
   errors: string[];
   /** 数値ごとの「主張・出典・種類・確認済み」（frontmatter に残す） */
   claims: Claim[];
+  /** 品質スコア（6項目・各1〜5点）。基準に届かないと、errors に理由が入る（既存記事の点検のときは、点を出すだけ） */
+  scores: QualityScores;
 }
 
 /** 本文の最低文字数（Markdown 記法を除く）。これより短い記事は薄いとみなして公開しない */
@@ -246,7 +250,8 @@ export function validate(article: GeneratedArticle, ctx: ValidateContext): Valid
 
   // ── 形式
   if (!article.title || typeof article.title !== "string") errors.push("title がありません");
-  if (article.title && article.title.length > 42) errors.push(`title が長すぎます（${article.title.length}文字、40文字以内）`);
+  const maxTitle = ctx.audit ? 42 : 36;
+  if (article.title && article.title.length > maxTitle) errors.push(`title が長すぎます（${article.title.length}文字、${ctx.audit ? 40 : 35}文字以内）`);
   if (!article.description || article.description.length < 70) errors.push("description が短すぎます（90〜120文字）");
   if (article.description && article.description.length > 150) errors.push("description が長すぎます（90〜120文字）");
   if (!Array.isArray(article.tags) || article.tags.length < 3) errors.push("tags が3つ未満です");
@@ -500,5 +505,33 @@ export function validate(article: GeneratedArticle, ctx: ValidateContext): Valid
     }
   }
 
-  return { errors, claims };
+  // ── 品質スコア（数えられるものだけで付ける。基準に届かなければ公開しない）
+  const intentTerms = String(ctx.intent ?? "").split(/\s+/).filter(Boolean);
+  const coverage = (text: string) => (intentTerms.length === 0 ? 0 : intentTerms.filter((t) => normalizeDigits(text).includes(normalizeDigits(t))).length / intentTerms.length);
+  const introText = body.split(/^##\s+/m)[0] ?? "";
+  const localPage = /^\/(subsidy\/(katsushika|tokyo)|area(\/|$)|simulation)/;
+  const sourceTypes = sourceUrls.map((u) => sourceTypeOf(u));
+  const fixedLinks = [...new Set(links.filter((l) => !l.startsWith("/blog/")))];
+  const scores = scoreQuality({
+    maxBodyOverlap: Math.max(0, ...ctx.existing.map((p) => (p.body ? shingleOverlap(body, p.body) : 0))),
+    maxTitleSimilarity: Math.max(0, ...ctx.existing.map((p) => (p.title ? similarity(article.title ?? "", p.title) : 0))),
+    intentInTitle: coverage(article.title ?? ""),
+    intentInIntro: coverage(`${article.description ?? ""}\n${introText}`),
+    intentInHeadings: coverage(headings.join("\n")),
+    sourceCount: sourceUrls.length,
+    officialSourceCount: sourceTypes.filter((t) => t === "municipality" || t === "tokyo" || t === "national" || t === "sii").length,
+    katsushikaMentions: count(/葛飾区|かつしか/g),
+    tokyoMentions: count(/東京都|クール・ネット東京|足立区|墨田区|江戸川区/g),
+    hasLocalSource: sourceTypes.some((t) => t === "municipality" || t === "tokyo"),
+    linksToLocalPage: links.some((l) => localPage.test(l)),
+    fixedLinkCount: fixedLinks.length,
+    hasRequiredLinks: (ctx.requiredLinks ?? []).every((r) => links.includes(r)),
+    hasPillarLink: pillars.length === 0 || pillars.some((l) => links.includes(l)),
+    maxIntentSimilarity: Math.max(0, ...ctx.existing.map((p) => (p.intent ? similarity(ctx.intent, p.intent) : 0)), ...ctx.reservedIntents.map((r) => similarity(ctx.intent, r))),
+    cannibalHit: Boolean(findCannibalPage(ctx.intent)),
+  });
+  // 既存記事の点検（audit）では、点を出すだけ（書いた時点の基準で公開した記事を、あとから止めない）
+  if (!ctx.audit) errors.push(...qualityErrors(scores));
+
+  return { errors, claims, scores };
 }

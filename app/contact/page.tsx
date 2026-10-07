@@ -18,7 +18,7 @@ const PATH = "/contact";
 const DESC = `SOLAR SHIFTへのお問い合わせ・無料相談。葛飾区の太陽光発電・蓄電池・V2H・補助金のご相談、現地調査・お見積もりの依頼を、フォーム・メール${siteConfig.contact.telDisplay ? `・お電話（${siteConfig.contact.telDisplay}）` : ""}で受け付けています。補助金のことだけのご相談もお受けしています。`;
 
 export const metadata: Metadata = buildMetadata({
-  title: "お問い合わせ・無料相談｜葛飾区の太陽光・蓄電池・補助金",
+  title: "葛飾区の太陽光・蓄電池の無料相談・見積もり依頼｜SOLAR SHIFT",
   description: DESC,
   path: PATH,
   keywords: ["葛飾区 太陽光 相談", "太陽光 見積もり 葛飾区", "蓄電池 相談"],
@@ -38,7 +38,7 @@ export default function ContactPage() {
           { name: "お問い合わせ", href: PATH },
         ]}
         eyebrow="お問い合わせ・無料相談"
-        title="お問い合わせ・無料相談"
+        title="無料相談・見積もりのお問い合わせ"
         lead="現地調査・お見積もりは無料です。「補助金について聞きたい」「わが家が対象か知りたい」だけでも構いません。お問い合わせいただいた内容に応じて、ご案内します。"
         image={images.peopleCoupleTalk}
       />

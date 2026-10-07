@@ -24,6 +24,7 @@ import { loadFacts, allowedSourceUrls } from "../lib/blog-generator/facts";
 import { allowedInternalPaths } from "../lib/blog-generator/generate";
 import { guides } from "../data/guides";
 import { blogCategories } from "../data/blog-categories";
+import { formatQuality, qualityErrors } from "../lib/blog-generator/score";
 
 const BLOG_DIR = path.join(process.cwd(), "content", "blog");
 const args = process.argv.slice(2);
@@ -69,7 +70,7 @@ for (const p of posts) {
   if (only && p.slug !== only) continue;
   const others = posts.filter((x) => x.slug !== p.slug);
   const pillars = blogCategories.find((c) => c.slug === p.category)?.pillarLinks ?? [];
-  const { errors, claims } = validate(p.article, {
+  const { errors, claims, scores } = validate(p.article, {
     intent: p.intent,
     existing: others,
     reservedIntents,
@@ -82,7 +83,7 @@ for (const p of posts) {
   });
   totalClaims += claims.length;
   const mark = errors.length === 0 ? "OK " : "NG ";
-  console.log(`${mark} ${p.slug}${p.draft ? "（下書き）" : ""}  ${countChars(p.body)}字${showClaims ? `  主張 ${claims.length} 件` : ""}`);
+  console.log(`${mark} ${p.slug}${p.draft ? "（下書き）" : ""}  ${countChars(p.body)}字${showClaims ? `  主張 ${claims.length} 件` : ""}  ｜ ${formatQuality(scores)}${qualityErrors(scores).length > 0 ? "（いまの公開基準には届かない）" : ""}`);
   for (const e of errors) console.log(`      - ${e}`);
   if (only && showClaims) for (const c of claims) console.log(`      * [${c.sourceType}] ${c.claim.slice(0, 70)} ← ${c.source}`);
   if (errors.length > 0) failed += 1;

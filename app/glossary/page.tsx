@@ -13,6 +13,7 @@ import { CtaSection } from "@/components/sections/CtaSection";
 import { GlossaryList } from "@/components/glossary/GlossaryList";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webPageSchema, definedTermSetSchema } from "@/lib/schema";
+import { routeUpdatedAt } from "@/lib/routes";
 
 /**
  * 用語集。
@@ -38,7 +39,7 @@ export const metadata: Metadata = buildMetadata({
   description: DESC,
   path: PATH,
   keywords: ["太陽光 用語集", "蓄電池 用語", "事前協議 とは", "併設加算 とは", "卒FIT とは"],
-  modifiedTime: siteConfig.contentUpdatedAt,
+  modifiedTime: routeUpdatedAt(PATH),
 });
 
 export default function GlossaryPage() {
@@ -74,7 +75,7 @@ export default function GlossaryPage() {
         lead={`見積書や、区の申請書類には、聞きなれない言葉が並びます。よく出てくる${glossary.length}語を、公式資料をもとに、短く言い換えました。くわしい説明は、各ページへつないでいます。`}
         image={images.poseLaptop}
       >
-        <LastUpdated updatedAt={siteConfig.contentUpdatedAt} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={routeUpdatedAt(PATH)} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
@@ -120,7 +121,7 @@ export default function GlossaryPage() {
 
       <JsonLd
         data={graph(
-          webPageSchema({ path: PATH, name: TITLE, description: DESC, type: "CollectionPage", dateModified: siteConfig.contentUpdatedAt }),
+          webPageSchema({ path: PATH, name: TITLE, description: DESC, type: "CollectionPage", dateModified: routeUpdatedAt(PATH) }),
           definedTermSetSchema({
             path: PATH,
             name: "太陽光・蓄電池・補助金の用語集",

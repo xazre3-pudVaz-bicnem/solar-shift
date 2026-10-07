@@ -1,12 +1,12 @@
 ---
-title: "V2H補助金2026：葛飾区の助成と国のCEV補助金の現状"
+title: "国のV2H補助金（CEV補助金）は2026年度の受付を終了｜区の助成との違い"
 slug: "v2h-subsidy-katsushika-2026"
 description: "V2H（電気自動車の電気を家で使う設備）の2026年度の補助金を、葛飾区のかつしかエコ助成金（本体価格の1/3・上限15万円）と国のCEV補助金（2026年8月27日受付終了）に分けて整理しました。申請の順番と注意点も解説します。"
 category: "v2h"
 tags: ["V2H", "補助金", "葛飾区", "CEV補助金", "電気自動車"]
-intent: "V2H 補助金 葛飾区"
+intent: "V2H CEV補助金 2026 受付終了 区の助成 違い"
 publishedAt: "2026-10-01"
-updatedAt: "2026-10-02"
+updatedAt: "2026-10-07"
 sources:
   - name: "葛飾区公式サイト「令和8年度《個人住宅用》かつしかエコ助成金のご案内」"
     url: "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html"

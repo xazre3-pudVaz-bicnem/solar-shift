@@ -44,6 +44,8 @@ export interface BlogPost {
   categoryName: string;
   tags: string[];
   intent: string;
+  /** この記事の親になる固定ページ（frontmatter の pillar。無ければ、カテゴリの親ページの先頭） */
+  pillar: string;
   publishedAt: string;
   updatedAt: string;
   sources: BlogSource[];
@@ -98,6 +100,7 @@ function parsePost(file: string): BlogPost | null {
     categoryName: cat.name,
     tags: toStrArray(data.tags),
     intent: toStr(data.intent),
+    pillar: toStr(data.pillar) || cat.pillarLinks[0] || "",
     publishedAt,
     updatedAt: toStr(data.updatedAt, publishedAt),
     sources,
@@ -148,31 +151,53 @@ export function categoriesWithPosts() {
     .filter((c) => c.count > 0);
 }
 
+/** どの記事にも出てくる語（これだけが一致しても「近い記事」とは言えないので、点を小さくする） */
+const COMMON_TERMS = new Set(["葛飾区", "東京都", "太陽光", "太陽光発電", "蓄電池", "補助金", "助成", "助成金", "かつしかエコ助成金", "2026"]);
+
 /**
- * 関連記事の自動抽出。
- * 同カテゴリ +3、タグ一致 +2/個、タイトルのバイグラム類似 +（0〜3）で採点し上位を返す。
+ * 2つの記事の近さ（関連記事を選ぶための点数）。
+ *   同じ親ページ（pillar）            +3
+ *   検索意図（intent）の語の一致      +2/語（どの記事にも出る語は +0.5）
+ *   同じカテゴリ                      +2
+ *   タグ（制度名・機器名などの固有の語）の一致  +1/個（3個まで）
+ *   タイトルのバイグラム類似          +0〜2
+ * タグだけが同じ記事ではなく、同じ柱のページの下で、近い疑問に答えている記事が上に来る。
  */
-export function getRelatedPosts(post: BlogPost, n = 3): BlogPost[] {
+export function relatedScore(a: BlogPost, b: BlogPost): number {
   const grams = (s: string) => {
     const t = s.replace(/[\s　「」『』（）()・、。！？!?｜|]/g, "");
     const out = new Set<string>();
     for (let i = 0; i < t.length - 1; i += 1) out.add(t.slice(i, i + 2));
     return out;
   };
-  const base = grams(post.title);
+  const terms = (s: string) => new Set(s.split(/\s+/).filter(Boolean));
+  let score = 0;
+  if (a.pillar && a.pillar === b.pillar) score += 3;
+  const ta = terms(a.intent);
+  for (const t of terms(b.intent)) if (ta.has(t)) score += COMMON_TERMS.has(t) ? 0.5 : 2;
+  if (a.category === b.category) score += 2;
+  score += Math.min(3, b.tags.filter((t) => a.tags.includes(t) && !COMMON_TERMS.has(t)).length);
+  const ga = grams(a.title);
+  const gb = grams(b.title);
+  let hit = 0;
+  for (const x of gb) if (ga.has(x)) hit += 1;
+  score += (hit / Math.max(1, Math.min(ga.size, gb.size))) * 2;
+  return score;
+}
+
+/** 関連記事として出す最低の点数（これより遠い記事は、枠が余っていても出さない） */
+const RELATED_MIN_SCORE = 3;
+
+/**
+ * 関連記事の自動抽出。relatedScore の高い順に n 本。
+ * 同じ点なら、新しい記事を先にする。
+ */
+export function getRelatedPosts(post: BlogPost, n = 3): BlogPost[] {
   return getAllPosts()
     .filter((p) => p.slug !== post.slug)
-    .map((p) => {
-      let score = 0;
-      if (p.category === post.category) score += 3;
-      score += p.tags.filter((t) => post.tags.includes(t)).length * 2;
-      const g = grams(p.title);
-      let hit = 0;
-      for (const x of g) if (base.has(x)) hit += 1;
-      score += (hit / Math.max(1, Math.min(g.size, base.size))) * 3;
-      return { p, score };
-    })
-    .sort((a, b) => b.score - a.score)
+    .map((p) => ({ p, score: relatedScore(post, p) }))
+    .filter((x) => x.score >= RELATED_MIN_SCORE)
+    .sort((a, b) => b.score - a.score || (a.p.publishedAt < b.p.publishedAt ? 1 : -1))
     .slice(0, n)
     .map((x) => x.p);
 }

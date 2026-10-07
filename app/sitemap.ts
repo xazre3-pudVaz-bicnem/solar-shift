@@ -7,7 +7,7 @@ import { areasWithPage } from "@/data/areas";
 import { getWardProgram } from "@/data/ward-programs";
 import { guides } from "@/data/guides";
 import { siteConfig } from "@/lib/site";
-import { STATIC_ROUTES } from "@/lib/routes";
+import { STATIC_ROUTES, EXTRA_UPDATED_AT, routeUpdatedAt } from "@/lib/routes";
 import { HELD_BACK } from "@/lib/indexing";
 
 /**
@@ -27,11 +27,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const hidden = HELD_BACK;
 
+  // 固定ページ：そのページの内容を最後に直した日（lib/routes.ts の updatedAt）と、補助金情報の基準日の、新しいほう。
+  // 一覧のページ（/blog・/guide）と TOP は、載っている記事・ガイドの更新日も見る。ビルドした日は使わない
+  const later = (a: Date, b: Date) => (a > b ? a : b);
   const lastModifiedFor = (path: string): Date => {
-    if (path === "/blog" && latestPost) return new Date(latestPost);
-    if (path === "/guide") return new Date(latestGuide);
-    if (path === "/" && latestPost && new Date(latestPost) > infoDate) return new Date(latestPost);
-    return infoDate;
+    const own = later(new Date(routeUpdatedAt(path)), new Date(siteConfig.subsidyInfoDate));
+    if (path === "/blog" && latestPost) return later(own, new Date(latestPost));
+    if (path === "/guide") return later(own, new Date(latestGuide));
+    if (path === "/" && latestPost) return later(own, new Date(latestPost));
+    return own;
   };
 
   const statics: MetadataRoute.Sitemap = STATIC_ROUTES.filter((r) => !hidden.has(r.path)).map((r) => ({
@@ -53,7 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const ward = getWardProgram(a.slug);
     return {
       url: `${base}/area/${a.slug}`,
-      lastModified: ward ? new Date(ward.sources[0].verifiedAt) : infoDate,
+      lastModified: later(ward ? new Date(ward.sources[0].verifiedAt) : infoDate, new Date(EXTRA_UPDATED_AT[`/area/${a.slug}`] ?? siteConfig.subsidyInfoDate)),
       changeFrequency: "monthly",
       priority: a.status === "primary" ? 0.9 : 0.7,
     };

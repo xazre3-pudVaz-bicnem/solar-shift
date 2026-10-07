@@ -14,6 +14,7 @@ import { LastUpdated } from "@/components/ui/LastUpdated";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, faqSchema, webPageSchema } from "@/lib/schema";
 import { images } from "@/data/images";
+import { routeUpdatedAt } from "@/lib/routes";
 
 const PATH = "/faq";
 const DESC =
@@ -42,7 +43,7 @@ export default function FaqPage() {
         lead="補助金・費用・設備・工事・サービスについて、確認できる事実の範囲でお答えします。制度に関する回答は公式情報の確認日を基準にしています。"
         image={images.peopleStaffPoint3}
       >
-        <LastUpdated updatedAt={siteConfig.contentUpdatedAt} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={routeUpdatedAt(PATH)} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
       </PageHeader>
       <Container className="py-10 sm:py-14">
         <nav aria-label="カテゴリ" className="flex flex-wrap gap-2">
@@ -79,7 +80,7 @@ export default function FaqPage() {
       )}
 
       <CtaSection title="ここにない疑問は、直接お聞かせください。" body="住まいの条件によって答えが変わる質問は、現地調査のうえでお答えします。相談・見積もりは無料です。" />
-      <JsonLd data={graph(webPageSchema({ path: PATH, name: "よくある質問", description: DESC, dateModified: siteConfig.contentUpdatedAt }), faqSchema(faqs.map((f) => ({ q: f.q, a: f.a }))))} />
+      <JsonLd data={graph(webPageSchema({ path: PATH, name: "よくある質問", description: DESC, dateModified: routeUpdatedAt(PATH) }), faqSchema(faqs.map((f) => ({ q: f.q, a: f.a }))))} />
     </>
   );
 }

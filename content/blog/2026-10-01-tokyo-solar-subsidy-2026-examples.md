@@ -1,12 +1,12 @@
 ---
-title: "東京都の太陽光補助金2026年版：既存住宅3kW・5kW・7kWの計算例"
+title: "既存住宅3kW・5kW・7kWなら、東京都の太陽光助成はいくら？計算例"
 slug: "tokyo-solar-subsidy-2026-examples"
 description: "東京都（クール・ネット東京）の2026年度太陽光発電助成を、既存住宅3kW・5kW・7kWと新築住宅の計算例で解説します。3.75kWを境に単価が変わる仕組み、上限45万円、事前申込の時期など、申請前に知っておきたい点をまとめました。"
 category: "tokyo-subsidy"
 tags: ["東京都", "クール・ネット東京", "太陽光発電", "補助金", "計算例"]
-intent: "東京都 太陽光 補助金 2026 計算"
+intent: "東京都 太陽光 助成 3kW 5kW 7kW 計算例"
 publishedAt: "2026-10-01"
-updatedAt: "2026-10-02"
+updatedAt: "2026-10-07"
 sources:
   - name: "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業」"
     url: "https://www.tokyo-co2down.jp/subsidy/fam_solar/r8/"

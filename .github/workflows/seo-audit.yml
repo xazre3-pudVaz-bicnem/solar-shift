@@ -1,0 +1,49 @@
+name: SEO の監査（ビルド後の全 URL）
+
+# main へ push されるたびに、本番と同じ条件でビルドして、SEO の検査を回す。
+#   seo:audit   … SEO マップとの突き合わせ（title・H1・canonical・noindex・主キーワードの重複）＋ 全 URL の監査
+#                 （description の重複・孤立ページ・主要ページへのリンク数・sitemap・見出しの順番・alt・構造化データ）
+#   links:check … 内部リンク切れ
+#   facts:audit … 固定ページの数字が、事実シートの出典つきの節にあるか（一覧を出すだけ）
+# Vercel のデプロイは、このワークフローとは別に進む。赤くなったら、次の push で直す。
+# ブログの自動投稿（GITHUB_TOKEN の push）では起動しない。記事の検査は、投稿のワークフローが公開前に行っている。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: 本番と同じ条件でビルド
+        run: npm run build
+        env:
+          VERCEL_ENV: production
+
+      - name: SEO の監査
+        run: npm run seo:audit
+
+      - name: 内部リンク
+        run: npm run links:check
+
+      - name: 数字と出典の点検
+        run: npm run facts:audit

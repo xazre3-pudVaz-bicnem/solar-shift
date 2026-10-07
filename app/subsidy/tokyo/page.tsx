@@ -26,9 +26,13 @@ import { images } from "@/data/images";
 import { BigNumbers } from "@/components/subsidy/BigNumbers";
 import { StaffTip } from "@/components/ui/StaffTip";
 import { reveal } from "@/lib/reveal";
+import { routeUpdatedAt } from "@/lib/routes";
+import { siteConfig } from "@/lib/site";
 
 const PATH = "/subsidy/tokyo";
 const S = tokyoSolarProgram;
+/** 最終更新日：このページを直した日（lib/routes.ts）と、公式情報を確かめた日の、新しいほう */
+const UPDATED = routeUpdatedAt(PATH) > S.lastVerified ? routeUpdatedAt(PATH) : S.lastVerified;
 const B = tokyoBatteryProgram;
 
 export const metadata: Metadata = buildMetadata({
@@ -38,7 +42,7 @@ export const metadata: Metadata = buildMetadata({
   path: PATH,
   keywords: ["東京都 太陽光 補助金", "東京 太陽光 補助金", "東京都 蓄電池 補助金", "クール・ネット東京 太陽光", "東京都 太陽光 助成 2026"],
   type: "article",
-  modifiedTime: S.lastVerified,
+  modifiedTime: UPDATED,
 });
 
 export default function TokyoSubsidyPage() {
@@ -71,7 +75,7 @@ export default function TokyoSubsidyPage() {
         lead="東京都は、都内の住宅に太陽光発電や蓄電池を設置する費用の一部を助成しています。既存住宅と新築住宅で太陽光の単価が異なり、蓄電池は容量あたりの助成です。2026年10月1日以降の蓄電池の事前申込は、SII登録機器に限られます。"
         image={images.peopleStaffPoint2}
       >
-        <LastUpdated updatedAt={S.lastVerified} verifiedAt={S.lastVerified} className="mt-5" />
+        <LastUpdated updatedAt={UPDATED} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={S.lastVerified} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
@@ -240,7 +244,7 @@ export default function TokyoSubsidyPage() {
         body="東京都の助成は機器の登録要件と事前申込のタイミングが重要です。葛飾区の制度とあわせて、申請スケジュールを組み立てます。相談・見積もりは無料です。"
       />
 
-      <JsonLd data={graph(articleSchema({ path: PATH, title: "東京都の太陽光・蓄電池補助金（令和8年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: S.lastVerified, section: "補助金", sources: [tokyoSolarProgram, tokyoBatteryProgram].map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
+      <JsonLd data={graph(articleSchema({ path: PATH, title: "東京都の太陽光・蓄電池補助金（令和8年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: UPDATED, section: "補助金", sources: [tokyoSolarProgram, tokyoBatteryProgram].map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
     </>
   );
 }

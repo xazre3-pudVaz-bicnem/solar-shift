@@ -97,6 +97,9 @@ export const katsushikaPreConstructionChecks: { title: string; body: string }[] 
 /** 事前協議の申し込み期限（工事着工の何週間前までか） */
 export const KATSUSHIKA_PRE_CONSULTATION_WEEKS = 4;
 
+/** 申込受付から、事前協議回答書の到着までの目安（区の案内。単位は週。◯〜◯週間程度） */
+export const KATSUSHIKA_REPLY_WEEKS: [number, number] = [3, 4];
+
 /** 完了報告の最終提出期限（必着） */
 export const KATSUSHIKA_REPORT_DEADLINE = "2027年12月28日";
 

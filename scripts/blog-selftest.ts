@@ -20,6 +20,7 @@ import { buildFactIndex } from "../lib/blog-generator/claims";
 import { loadFacts, allowedSourceUrls } from "../lib/blog-generator/facts";
 import { allowedInternalPaths, reviewArticle, toMarkdown, sourceNameFor, OPERATOR_SOURCE, QUALITY_GATE_VERSION } from "../lib/blog-generator/generate";
 import { readExistingPosts } from "../lib/blog-generator/existing";
+import { scoreQuality, qualityErrors, formatQuality, QUALITY_THRESHOLD } from "../lib/blog-generator/score";
 import { guides } from "../data/guides";
 import matter from "gray-matter";
 
@@ -60,6 +61,31 @@ async function main() {
   const g = validate(good, ctx);
   check("事実シートの範囲で書いた記事が、機械の検査に通る", g.errors.length === 0, g.errors.join(" / "));
   check("数値の主張が、出典つきで記録される", g.claims.length >= 10 && g.claims.every((c) => c.verified && c.source && c.sourceType), `${g.claims.length} 件`);
+  check("品質スコア：通すべき記事は、公開の基準を満たす", qualityErrors(g.scores).length === 0 && g.scores.total >= QUALITY_THRESHOLD.total, formatQuality(g.scores));
+  {
+    // 出典が業界団体だけ・地域の話が無い・親ページへのリンクが無い原稿は、基準に届かない
+    const weak = scoreQuality({
+      maxBodyOverlap: 0.18,
+      maxTitleSimilarity: 0.5,
+      intentInTitle: 0.25,
+      intentInIntro: 0.25,
+      intentInHeadings: 0,
+      sourceCount: 1,
+      officialSourceCount: 0,
+      katsushikaMentions: 0,
+      tokyoMentions: 0,
+      hasLocalSource: false,
+      linksToLocalPage: false,
+      fixedLinkCount: 1,
+      hasRequiredLinks: false,
+      hasPillarLink: false,
+      maxIntentSimilarity: 0.65,
+      cannibalHit: false,
+    });
+    check("品質スコア：弱い原稿は、基準に届かない", qualityErrors(weak).length > 0, formatQuality(weak));
+    const cannibal = scoreQuality({ ...{ maxBodyOverlap: 0.05, maxTitleSimilarity: 0.2, intentInTitle: 1, intentInIntro: 1, intentInHeadings: 1, sourceCount: 3, officialSourceCount: 3, katsushikaMentions: 5, tokyoMentions: 2, hasLocalSource: true, linksToLocalPage: true, fixedLinkCount: 4, hasRequiredLinks: true, hasPillarLink: true, maxIntentSimilarity: 0.3 }, cannibalHit: true });
+    check("品質スコア：固定ページと取り合う原稿は、ほかが満点でも落ちる", qualityErrors(cannibal).some((e) => /取り合い/.test(e)), formatQuality(cannibal));
+  }
 
   // ── 落とすべき記事（種類ごとに、対応するエラーが出ること）
   const bad = JSON.parse(load("blog-bad.json")) as GeneratedArticle;

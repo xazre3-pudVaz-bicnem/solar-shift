@@ -29,6 +29,11 @@ export const siteConfig = {
    *   - プレビューや手元のビルドでは使わない（全ページ noindex になり、検索結果に出ない）
    */
   productionUrl: "https://www.solarshift.jp",
+  /**
+   * 公開されたままになっている、古いホスト名（Vercel の本番の別名）。next.config.ts が、ここへのアクセスを productionUrl へ転送する。
+   * プレビューのデプロイは別のホスト名（…-cypress-projects1.vercel.app）なので、この転送には当たらない。
+   */
+  legacyHosts: ["solar-shift-ten.vercel.app"] as string[],
   /** 主要対応エリア（Local SEO の軸。data/areas.ts と一致させる） */
   primaryArea: {
     name: "葛飾区",
@@ -157,6 +162,8 @@ export const siteConfig = {
    * 全体に関わる修正をしたら更新する。
    */
   contentUpdatedAt: "2026-10-02",
+  /** サイトを公開した日（固定ページの「公開日」に使う。ガイド・記事・事例は、それぞれの publishedAt） */
+  publishedAt: "2026-10-01",
 
   /** 補助金情報の基準日。制度を更新したら data/subsidies 側の lastVerified と合わせて更新する */
   subsidyInfoDate: "2026-10-01",

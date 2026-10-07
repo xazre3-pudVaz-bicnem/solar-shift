@@ -9,7 +9,7 @@ import { GuideArticle } from "@/components/sections/GuideArticle";
 const entry = getGuide("battery-cost")!;
 
 export const metadata: Metadata = buildMetadata({
-  title: "家庭用蓄電池の費用はいくら？容量別の考え方と補助金",
+  title: "家庭用蓄電池の費用はいくら？容量別の考え方と葛飾区の補助金",
   description:
     "家庭用蓄電池の価格は容量（kWh）・全負荷か特定負荷か・ハイブリッド型か単機能型か・工事条件で決まります。容量と費用のバランスの考え方と、葛飾区・東京都の蓄電池助成を差し引いた実質負担の見方を整理します。",
   path: entry.path,

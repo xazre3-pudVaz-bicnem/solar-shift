@@ -20,6 +20,8 @@ import path from "node:path";
 import { buildFactIndex, extractNumTokens, isNeutralQuantity } from "../lib/blog-generator/claims";
 import { loadFacts, allowedYenAmounts } from "../lib/blog-generator/facts";
 import { guides } from "../data/guides";
+import { STATIC_ROUTES, EXTRA_UPDATED_AT } from "../lib/routes";
+import { siteConfig } from "../lib/site";
 import { extractYenAmounts, GENERALIZATION as GENERALIZATION_RE, HEARSAY as HEARSAY_RE, ATTRIBUTION } from "../lib/blog-generator/validate";
 
 const APP = path.join(process.cwd(), ".next", "server", "app");
@@ -48,6 +50,8 @@ for (const f of fs.existsSync(BLOG_DIR) ? fs.readdirSync(BLOG_DIR) : []) {
 }
 // ガイドの公開日・更新日（ガイド一覧のカードに出る）も同じ
 for (const g of guides) for (const d of [g.publishedAt, g.updatedAt]) blogDates.add(`D:${d}`);
+// 固定ページの公開日・更新日（画面の「公開日」「最終更新日」に出る）も同じ
+for (const d of [siteConfig.publishedAt, siteConfig.contentUpdatedAt, ...STATIC_ROUTES.map((r) => r.updatedAt), ...Object.values(EXTRA_UPDATED_AT)]) if (d) blogDates.add(`D:${d}`);
 // 一般化・伝聞の言い回しと、「出どころを同じ文で示しているか」の判定は、記事の検査と同じものを使う（規則を1か所に置く）
 const GENERALIZATION = new RegExp(GENERALIZATION_RE.source);
 const HEARSAY = new RegExp(`${HEARSAY_RE.source}|といわれ`);

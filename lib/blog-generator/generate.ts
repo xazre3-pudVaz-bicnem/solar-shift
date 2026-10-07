@@ -3,6 +3,7 @@ import { topics, type Topic } from "./topics";
 import { loadFacts, allowedSourceUrls } from "./facts";
 import { validate, similarity, countChars, MIN_BODY_CHARS, type GeneratedArticle, type ExistingPost } from "./validate";
 import { buildFactIndex, compactClaims, sourceTypeOf, type Claim, type FactIndex } from "./claims";
+import { formatQuality } from "./score";
 import { findCannibalPage } from "../seo-map";
 import { findPageLabel } from "../page-labels";
 import { blogCategories } from "../../data/blog-categories";
@@ -44,7 +45,7 @@ export const DEFAULT_MODEL = "claude-sonnet-5-5";
  */
 export const DEFAULT_REVIEW_MODEL = "claude-opus-5-5";
 /** 品質ゲートの版。検査の内容を変えたら上げる（記事の frontmatter に残る） */
-export const QUALITY_GATE_VERSION = 4;
+export const QUALITY_GATE_VERSION = 5;
 const HISTORY_SIZE = 40;
 /**
  * 書き直しの回数の上限。実際のモデルで試したところ、1回目は機械の検査、2〜3回目は読み直しで落ち、
@@ -87,6 +88,20 @@ function escapeYaml(s: string): string {
  * - 固定ページとカニバリするものは選ばない（lib/seo-map.ts）
  * - 葛飾区に固有の題材（local: true）を先に使う
  */
+/**
+ * 既存の記事と検索意図・題名が近いために、新しく書かない題材（まだ同じ slug の記事は無いもの）。
+ * 新しい記事を足すのではなく、当たった既存記事を直す候補として扱う。
+ */
+export function updateCandidates(existing: ExistingPost[]): { topic: Topic; post: ExistingPost }[] {
+  const out: { topic: Topic; post: ExistingPost }[] = [];
+  for (const t of topics) {
+    if (existing.some((p) => p.slug === t.slug)) continue;
+    const post = existing.find((p) => (p.intent && similarity(p.intent, t.intent) > 0.7) || similarity(p.title, t.title) > 0.55);
+    if (post) out.push({ topic: t, post });
+  }
+  return out;
+}
+
 export function pickTopic(existing: ExistingPost[]): Topic | null {
   const usedIntents = existing.map((p) => p.intent).filter(Boolean);
   const unused = topics.filter(
@@ -189,7 +204,7 @@ ${history.length ? history.map((p) => `- ${p.title}（狙い: ${p.intent || "不
 次の形式のJSONだけを返してください。前後に説明文やコードフェンスを付けないでください。
 
 {
-  "title": "40文字以内。検索意図に沿い、具体的であること",
+  "title": "35文字以内。検索意図に沿い、具体的であること",
   "description": "90〜120文字。この記事を読むと何がわかるかを説明する",
   "tags": ["3〜5個", "日本語の短い語"],
   "sources": [{ "name": "出典名", "url": "許可されたURLのみ。本文の数値・制度の根拠にしたものをすべて" }],
@@ -418,6 +433,8 @@ export interface QualityMeta {
   gate: number;
   checkedAt: string;
   chars: number;
+  /** 品質スコア（6項目・各1〜5点）を1行にしたもの（score.ts の formatQuality） */
+  scores?: string;
   /** 読み直しに使ったモデル。読み直しを行っていなければ "none" */
   reviewer: string;
 }
@@ -440,7 +457,7 @@ export function toMarkdown(article: GeneratedArticle, topic: Topic, slug: string
     ...article.faq.flatMap((f) => [`  - q: "${escapeYaml(f.q)}"`, `    a: "${escapeYaml(f.a)}"`]),
     // 内部の管理用（画面には出さない）：数値・制度の主張と、その出典
     ...(claims.length > 0 ? ["claims:", ...claims.flatMap((c) => [`  - claim: "${escapeYaml(c.claim)}"`, `    source: "${c.source}"`, `    sourceType: "${c.sourceType}"`, `    verified: ${c.verified}`])] : []),
-    ...(quality ? ["quality:", `  gate: ${quality.gate}`, `  checkedAt: "${quality.checkedAt}"`, `  chars: ${quality.chars}`, `  reviewer: "${escapeYaml(quality.reviewer)}"`] : []),
+    ...(quality ? ["quality:", `  gate: ${quality.gate}`, `  checkedAt: "${quality.checkedAt}"`, `  chars: ${quality.chars}`, ...(quality.scores ? [`  scores: "${escapeYaml(quality.scores)}"`] : []), `  reviewer: "${escapeYaml(quality.reviewer)}"`] : []),
     "draft: false",
     "generated: true",
     "---",
@@ -486,6 +503,9 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
   // 読み直しに使うモデル。呼べなかったときは、書くモデルに切り替える（その実行のあいだ）
   let reviewModel = (opts.reviewModel ?? process.env.ANTHROPIC_REVIEW_MODEL ?? "").trim() || DEFAULT_REVIEW_MODEL;
   const existing = opts.existing;
+
+  // 既存の記事と検索意図が近い題材は、新しく書かない（その記事の更新で受ける）。どれが当たったかをログに残す
+  for (const c of updateCandidates(existing)) log(`題材「${c.topic.title}」は、既存記事「${c.post.title}」と検索意図が近いため書きません（既存記事の更新候補）`);
 
   const topic = pickTopic(existing);
   if (!topic) return { status: "skipped", reason: "未使用のトピックがありません（topics.ts に追加してください）", attempts: 0, model };
@@ -553,6 +573,7 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
 
     // ── 機械の検査
     const checked = validate(article, ctx);
+    log(`試行${attempt}: 品質スコア ${formatQuality(checked.scores)}`);
     let errors = checked.errors;
     let claims = checked.claims;
     let reviewer = "none";
@@ -621,7 +642,7 @@ export async function generateArticle(opts: GenerateOptions): Promise<GenerateRe
       const date = todayJst();
       const slug = topic.slug || slugFromIntent(topic.intent, topic.category);
       const chars = countChars(article.body);
-      const markdown = toMarkdown(article, topic, slug, date, compactClaims(claims), { gate: QUALITY_GATE_VERSION, checkedAt: date, chars, reviewer });
+      const markdown = toMarkdown(article, topic, slug, date, compactClaims(claims), { gate: QUALITY_GATE_VERSION, checkedAt: date, chars, scores: formatQuality(checked.scores), reviewer });
       log(`合格（${chars}字・主張 ${claims.length} 件）: ${article.title}`);
       return { status: "generated", topic, slug, filename: `${date}-${slug}.md`, markdown, attempts: attempt, model };
     }

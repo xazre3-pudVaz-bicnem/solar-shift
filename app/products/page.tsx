@@ -1,5 +1,4 @@
 import { handlingManufacturers } from "@/data/manufacturers";
-import { siteConfig } from "@/lib/site";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
@@ -15,6 +14,7 @@ import { CtaSection } from "@/components/sections/CtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webPageSchema, externalItemListSchema } from "@/lib/schema";
 import { images } from "@/data/images";
+import { routeUpdatedAt } from "@/lib/routes";
 
 /**
  * 商品の入口。役割は「太陽光パネル・蓄電池を、どんな項目で比べればよいか」の案内。
@@ -104,7 +104,7 @@ export default function ProductsPage() {
       />
       <JsonLd
         data={graph(
-          webPageSchema({ path: PATH, name: "太陽光パネル・蓄電池の選び方", description: DESC, type: "CollectionPage", dateModified: siteConfig.contentUpdatedAt }),
+          webPageSchema({ path: PATH, name: "太陽光パネル・蓄電池の選び方", description: DESC, type: "CollectionPage", dateModified: routeUpdatedAt(PATH) }),
           // brand（取扱ブランド）としては出さない。正規取扱店と読まれかねないため、名前と公式サイトの一覧にとどめる
           externalItemListSchema({ name: "取扱メーカー", items: handlingManufacturers().map((m) => ({ name: m.name, url: m.officialUrl })) }),
         )}

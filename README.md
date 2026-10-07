@@ -14,6 +14,7 @@ npm run typecheck      # tsc --noEmit
 npm run lint           # ESLint
 npm run links:check    # 内部リンクの存在チェック
 npm run seo:check      # ビルド結果の title / H1 / canonical / robots / sitemap を SEO マップと照合（-- --table で一覧）
+npm run seo:audit      # seo:check ＋ 全 URL の監査（description の重複・孤立ページ・主要ページへのリンク数・sitemap・見出しの順番・alt・構造化データ）
 npm run facts:audit    # 固定ページの数値が、事実シートの「出典つきの節」にあるかを点検
 npm run chat:selftest  # チャット（自動応答）の自己診断。API は呼ばない
 npm run blog:generate  # 記事の生成を1回試す。品質チェックに通ったときだけ content/blog に保存
@@ -190,7 +191,7 @@ scripts/             generate-blog-post.ts / blog-audit.ts / blog-selftest.ts / 
 
 ### 流れ
 
-1. **題材を選ぶ**（`lib/blog-generator/topics.ts`）：葛飾区に固有の題材を優先。既存の記事・ガイド・固定ページ（`lib/seo-map.ts`）と検索意図が重なる題材は選ばない
+1. **題材を選ぶ**（`lib/blog-generator/topics.ts`）：葛飾区に固有の題材を優先。既存の記事・ガイド・固定ページ（`lib/seo-map.ts`）と検索意図が重なる題材は選ばない。既存の記事と近い題材は、新しく書かずに「既存記事の更新候補」としてログに出す（`updateCandidates`）
 2. **書く**：`docs/VERIFIED_FACTS.md`（節ごとに出典 URL つき）だけを根拠に書かせる
 3. **機械の検査**（`validate.ts` / `claims.ts`）：次のどれかに当たれば不合格
    - 数値・日付・割合が、事実シートの「出典つきの節」に無い。または、その出典が記事の参考資料に入っていない
@@ -198,8 +199,9 @@ scripts/             generate-blog-post.ts / blog-audit.ts / blog-selftest.ts / 
    - 本文が 1,800 字未満、または見出しだけで中身が薄い
    - 架空の経験・事例・費用、根拠を示さない「一般的に」「多くの場合」、根拠のない No.1・最上級、メーカー資料で確認していない仕様
    - 併用や交付の断定、実績・資格の表現、存在しないページへのリンク、許可外の外部リンク、親になる固定ページへのリンクが無い
+   - **品質スコア**（`score.ts`）が基準に届かない。独自性・検索意図との一致・出典の質・地域との結び付き・内部リンク・取り合いの少なさの6項目を、数えられるものだけで各1〜5点に採点する。どの項目も3点以上（地域との結び付きだけは2点以上）、合計22点以上で合格。点数はログと、記事の frontmatter の `quality.scores` に残る。公開済みの記事の点は `npm run blog:audit` で見られる
 4. **読み直し**（`reviewArticle`）：数値以外の主張（制度の条件・手続きの順番・機器の説明）が事実シートにあるかを、別の呼び出しで1つずつ確かめる。事実シートに無い理由づけ・推測、対応エリアの広げすぎ、誤字、リンクの文言とリンク先の食い違いも挙げさせる。1つでもあれば不合格。読み直しは、書くモデルより上のモデルで行う（同じモデルで読み直すと、根拠のない理由づけを見逃した）。読み直しを最後まで終えられなかったとき（出力が上限に達した・返答を解析できなかった）は、記事の書き直しは求めずに、読み直しだけを1回やり直す。それでも終えられなければ、その回は公開しない
-5. **公開**：3と4の両方に通ったときだけ保存する。記事の frontmatter に `claims`（主張・出典・出典の種類・確認済み）、`sources[].sourceType`、`pillar`（親ページ）、`quality`（検査の版・検査日・字数・読み直したモデル）が残る
+5. **公開**：3と4の両方に通ったときだけ保存する。記事の frontmatter に `claims`（主張・出典・出典の種類・確認済み）、`sources[].sourceType`、`pillar`（親ページ）、`quality`（検査の版・検査日・字数・品質スコア・読み直したモデル）が残る
 
 不合格のときは、理由を伝えて書き直させる（最大5回まで試す）。読み直しで落ちたときは、指摘された文だけを直させる（全体を書き直させると、直した分だけ新しい説明が足されて、また落ちる）。それでも通らなければ、その回は公開しない。
 
@@ -251,11 +253,30 @@ ANTHROPIC_API_KEY=... npm run blog:dry-run                                   # �
 
 ## SEO・AIO の仕組み
 
+運用の手順は別の文書にある：Search Console で見る項目と、検索クエリから既存ページを直す手順は `docs/seo-search-console.md`、サイトの外で行う作業（Google ビジネス プロフィール・会社サイトからのリンクなど）は `docs/offsite-seo.md`。
+
+### 検索クエリから直す順番（新しい記事を作る前に）
+
+Search Console の「検索パフォーマンス」で、**表示回数があり、平均掲載順位が 8〜30 位のクエリ**を先に直す。
+
+1. そのクエリを受け持つページを `lib/seo-map.ts` で決める（無ければ、いちばん近い既存ページの `secondary` に足す。同じ語を2ページに入れると `seo:check` が落とす）
+2. そのページの title・冒頭の結論・見出し・足りない内容・内部リンクを直す
+3. 内容を変えたら、そのページの `updatedAt`（固定ページは `lib/routes.ts`、ガイドは `data/guides.ts`、記事は frontmatter）を、その日の日付にする
+
+例：「葛飾区 太陽光 費用」が14位なら、受け持ちの `/guide/solar-cost` の title と冒頭を見直し、`/subsidy/katsushika`・`/solar`・`/simulation` からのリンクを確かめる。新しい記事は作らない。
+
+### 仕組みの一覧
+
 - **SEO マップ**（`lib/seo-map.ts`）：ページごとに、主キーワード・関連キーワード・検索意図・役割・title や H1 に必ず入れる語・index するかを1か所で決めている。主キーワードが2ページで重ならないこと、title / H1 に必要な語が入っていること、canonical / robots / sitemap が設定どおりであることを `npm run seo:check` がビルド結果から確かめる
 - **役割分担**：`/` ＝ 葛飾区 太陽光／蓄電池、`/subsidy/katsushika` ＝ 葛飾区 太陽光 補助金・かつしかエコ助成金、`/area/katsushika` ＝ 葛飾区 太陽光 業者・施工・会社、`/solar` ＝ 住宅用 太陽光発電、`/battery` ＝ 家庭用 蓄電池 選び方。ブログは固定ページで扱いきれない細かい疑問（ロングテール）を受け持ち、記事の末尾から親の固定ページへ案内する
 - **メタデータ**：全ページ `buildMetadata()`（title / description / canonical / OG / Twitter / RSS）。タイトルの末尾は `｜SOLAR SHIFT`。ただし本体の幅が 50（全角25字）を超えるタイトルには付けない（`lib/seo.ts` の `fullTitle`）
 - **OG 画像**：ページごとに日本語の見出し入りで生成（`/og/…`）。対象は `lib/og-pages.ts`、固定ページの見出しは `lib/routes.ts` の `ogTitle`
 - **構造化データ**：Organization / LocalBusiness / WebSite（全ページ）、BreadcrumbList、FAQPage、Article / BlogPosting（出典を citation に）、Service、HowTo、Blog、ItemList、CollectionPage / AboutPage / ContactPage、WebApplication、Product（価格未確定なら Offer なし）。口コミ・評価は出さない
+- **全 URL の監査**（`npm run seo:audit`・`scripts/seo-audit.ts`）：ビルド後の HTML から、title・description・H1 の重複、canonical、孤立ページ、主要ページ（`KEY_PAGES`）へ本文からリンクしているページの数、sitemap.xml との食い違い、見出しの順番、「こちら」だけのリンク、alt、構造化データを見る。`--table` で URL ごとの一覧、`--live` で本番のステータス・転送・canonical の実測
+- **ページごとの更新日**（`lib/routes.ts` の `updatedAt`・`routeUpdatedAt`）：sitemap.xml の lastmod、画面の「最終更新」、構造化データの dateModified が同じ日付を使う。**内容を変えたときだけ進める**（ビルドした日を入れない。日付だけを進めない）
+- **旧 URL の転送**（`lib/site.ts` の `legacyHosts`）：`solar-shift-ten.vercel.app` へのアクセスは、同じパスの本番ドメインへ 308 で転送する。プレビューのデプロイ（別のホスト名）は対象外で、`*.vercel.app` には `X-Robots-Tag: noindex` が付く
+- **統合した記事**（`next.config.ts` の `redirects`）：柱のページの要約になっていた記事は、柱のページへ 308 で転送している。記事を消すときは、必ず転送を足し、その記事へのリンク（本文・`prefer`）を直す
+- **関連記事**（`lib/blog.ts` の `relatedScore`）：同じ親ページ・検索意図の語・カテゴリ・タグ・題名の近さで採点し、3点以上の上位3本だけを出す
 - **noindex にするページ**：お客様の声（中身が入るまで）、記事が3本未満のカテゴリ、404。どれも sitemap に載せない
 - **canonical**：全ページが自分自身の URL を指す。ブログ一覧の2ページ目以降（`/blog/page/2` …）も自分自身を指し、index のまま（sitemap には載せない）
 - **sitemap.xml**：検索結果に出すページだけ。`lastmod` は記事の更新日、固定ページは `siteConfig.contentUpdatedAt` と補助金情報の基準日の新しいほう

@@ -33,6 +33,17 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // 旧 URL（Vercel の本番の別名）は、同じパスのまま本番ドメインへ転送する。
+      // noindex のヘッダーだけでは、検索エンジンに「もう1つのサイト」として見え続けるため
+      ...siteConfig.legacyHosts.map((host) => ({
+        source: "/:path*",
+        has: [{ type: "host" as const, value: host }],
+        destination: `${siteConfig.productionUrl}/:path*`,
+        permanent: true,
+      })),
+      // 柱のページの要約になっていた記事は、柱のページへ統合した（2026-10-07）
+      { source: "/blog/katsushika-eco-subsidy-solar-procedure-2026", destination: "/subsidy/katsushika", permanent: true },
+      { source: "/blog/tokyo-solar-merit-2026", destination: "/subsidy/tokyo", permanent: true },
       // 「おすすめ商品」のページは廃止（個別の商品を載せない方針）。比べ方のページへ転送する
       { source: "/recommend/solar", destination: "/products/solar", permanent: true },
       { source: "/recommend/battery", destination: "/products/battery", permanent: true },

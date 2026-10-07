@@ -80,6 +80,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <>
       <Container size="prose" className="pt-2 pb-8 sm:pt-3 sm:pb-12">
         <Breadcrumb crumbs={crumbs} />
+        <article>
         <header className="relative mt-7 rounded-[2rem] bg-cream px-5 py-6 sm:mt-9 sm:px-8 sm:py-8">
           {category && <Image src={images[category.icon].src} alt="" width={120} height={120} className="absolute -top-6 right-4 h-20 w-20 animate-float-slow sm:h-24 sm:w-24" />}
           <p className="pr-20 sm:pr-28">
@@ -140,6 +141,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </Link>
           にまとめています。
         </p>
+        </article>
       </Container>
 
       {(newer || older) && (

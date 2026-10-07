@@ -10,12 +10,15 @@ export function LastUpdated({
   updatedAt,
   verifiedAt,
   publishedAt,
+  showPublished = false,
   showSupervisor = true,
   className = "",
 }: {
   updatedAt: string;
   verifiedAt?: string;
   publishedAt?: string;
+  /** 公開日が更新日と同じでも、公開日を出す（金額を扱うページとガイド） */
+  showPublished?: boolean;
   showSupervisor?: boolean;
   className?: string;
 }) {
@@ -24,7 +27,7 @@ export function LastUpdated({
       <span>
         最終更新日：<time dateTime={updatedAt}>{formatDateJa(updatedAt)}</time>
       </span>
-      {publishedAt && publishedAt !== updatedAt && (
+      {publishedAt && (showPublished || publishedAt !== updatedAt) && (
         <span>
           公開日：<time dateTime={publishedAt}>{formatDateJa(publishedAt)}</time>
         </span>

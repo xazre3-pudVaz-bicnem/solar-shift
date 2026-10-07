@@ -34,6 +34,7 @@ import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webPageSchema, serviceSchema } from "@/lib/schema";
+import { routeUpdatedAt } from "@/lib/routes";
 
 /**
  * エリアページ。
@@ -53,7 +54,7 @@ import { graph, webPageSchema, serviceSchema } from "@/lib/schema";
  */
 export const dynamicParams = false;
 
-const UPDATED = "2026-10-02";
+const UPDATED = routeUpdatedAt("/area/katsushika");
 
 export function generateStaticParams() {
   return areasWithPage.map((a) => ({ slug: a.slug }));
@@ -337,7 +338,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
               </Link>
               、確認点の詳しい説明は
               <Link href="/blog/katsushika-solar-contractor-checkpoints" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
-                太陽光業者を選ぶときの確認ポイント
+                太陽光業者の比べ方（4つの確認点）
               </Link>
               にまとめています。
             </p>

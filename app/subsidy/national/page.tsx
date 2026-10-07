@@ -24,6 +24,7 @@ import { graph, articleSchema } from "@/lib/schema";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
 import { StaffTip } from "@/components/ui/StaffTip";
+import { routeUpdatedAt } from "@/lib/routes";
 
 const PATH = "/subsidy/national";
 
@@ -34,7 +35,7 @@ export const metadata: Metadata = buildMetadata({
   path: PATH,
   keywords: ["太陽光 補助金 国 2026", "蓄電池 補助金 国", "DR補助金 2026", "CEV補助金 V2H", "みらいエコ住宅2026 蓄電池"],
   type: "article",
-  modifiedTime: siteConfig.contentUpdatedAt,
+  modifiedTime: routeUpdatedAt(PATH),
 });
 
 export default function NationalSubsidyPage() {
@@ -58,7 +59,7 @@ export default function NationalSubsidyPage() {
         lead="国の補助金は、年度の途中で受付が終わることがあります。2026年度は、家庭用蓄電池向けの「DR補助金」（正式な名前は、DR家庭用蓄電池事業）が、5月29日に予算に達して公募を終了しました。このページでは、家庭の太陽光・蓄電池・V2Hに関係する国の制度の「今の状況」を整理します。"
         image={images.peopleStaffWoman}
       >
-        <LastUpdated updatedAt={siteConfig.contentUpdatedAt} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={routeUpdatedAt(PATH)} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">

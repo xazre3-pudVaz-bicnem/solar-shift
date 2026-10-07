@@ -30,6 +30,7 @@ import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { ApplyOrderFigure } from "@/components/area/ApplyOrderFigure";
 import { WardCompareTable } from "@/components/area/NeighborAreaPage";
+import { routeUpdatedAt } from "@/lib/routes";
 
 /**
  * 補助金の総合ページ。役割は「区・都・国の3つの制度の全体像と、申請の順番」。
@@ -40,7 +41,7 @@ import { WardCompareTable } from "@/components/area/NeighborAreaPage";
  */
 const PATH = "/subsidy";
 const TITLE = "太陽光・蓄電池の補助金2026｜区・都・国の3つの制度と申請の順番";
-const UPDATED = "2026-10-02";
+const UPDATED = routeUpdatedAt(PATH);
 
 const s = (id: string) => getSubsidy(id)!;
 const ks = s("katsushika-solar");
@@ -128,7 +129,7 @@ export default function SubsidyIndexPage() {
         lead="太陽光発電や蓄電池の補助金は、区・都・国の3つに分かれています。金額の決まり方も、申し込む時期も、それぞれ違います。このページで全体像をつかみ、詳しい条件は各制度のページでご確認ください。"
         image={images.peopleStaffOk}
       >
-        <LastUpdated updatedAt={UPDATED} verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={UPDATED} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">

@@ -24,6 +24,7 @@ import { getPostsForPillar } from "@/lib/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, serviceSchema, webPageSchema } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
+import { routeUpdatedAt } from "@/lib/routes";
 import { reveal } from "@/lib/reveal";
 import type { Crumb } from "@/lib/schema";
 
@@ -64,7 +65,7 @@ export function ServiceLayout({
   related,
   relatedCategories,
   cta,
-  updatedAt = siteConfig.contentUpdatedAt,
+  updatedAt,
   pageName,
   description,
 }: {
@@ -93,6 +94,7 @@ export function ServiceLayout({
   description: string;
 }) {
   const posts = getPostsForPillar(relatedCategories, 3, { path });
+  const modified = updatedAt ?? routeUpdatedAt(path);
   const headlineSubsidies = subsidies.filter((s) => s.rule && s.status === "open");
   const toc = [
     ...sections.map((s) => ({ id: s.id, label: s.heading })),
@@ -103,7 +105,7 @@ export function ServiceLayout({
   return (
     <>
       <PageHeader crumbs={crumbs} eyebrow={eyebrow} title={title} lead={lead} image={heroImage}>
-        <LastUpdated updatedAt={updatedAt} className="mt-5" />
+        <LastUpdated updatedAt={modified} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
@@ -268,7 +270,7 @@ export function ServiceLayout({
       <CtaSection title={cta.title} body={cta.body} />
       <JsonLd
         data={graph(
-          webPageSchema({ path, mainEntity: "service", name: pageName, description, dateModified: updatedAt, sources: sources.map((s) => ({ name: s.name, url: s.url })) }),
+          webPageSchema({ path, mainEntity: "service", name: pageName, description, dateModified: modified, sources: sources.map((s) => ({ name: s.name, url: s.url })) }),
           serviceSchema({ path, name: pageName, description, serviceType: pageName }),
         )}
       />
