@@ -5,6 +5,7 @@ name: SEO の監査（ビルド後の全 URL）
 #                 （description の重複・孤立ページ・主要ページへのリンク数・sitemap・見出しの順番・alt・構造化データ）
 #   links:check … 内部リンク切れ
 #   facts:audit … 固定ページの数字が、事実シートの出典つきの節にあるか（一覧を出すだけ）
+#   contact:selftest … お問い合わせフォームの送信元・送信先・返信先・入力の検査（fetch を差し替えるので、メールは送らない）
 # Vercel のデプロイは、このワークフローとは別に進む。赤くなったら、次の push で直す。
 # ブログの自動投稿（GITHUB_TOKEN の push）では起動しない。記事の検査は、投稿のワークフローが公開前に行っている。
 
@@ -47,3 +48,6 @@ jobs:
 
       - name: 数字と出典の点検
         run: npm run facts:audit
+
+      - name: お問い合わせフォームの送信（メールは送らない）
+        run: npm run contact:selftest

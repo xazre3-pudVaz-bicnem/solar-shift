@@ -103,7 +103,7 @@ export const siteConfig = {
      * 年末年始などの休みは未確認なので、ここでは扱わない
      */
     openDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as string[],
-    /** 問い合わせフォームの送信先（Resend 設定時に使用。未設定ならフォームは案内のみ） */
+    /** 問い合わせフォームの下に出す案内（送信は app/api/contact/route.ts。RESEND_API_KEY が無い間は、メールと電話の案内になる） */
     formNote: "フォーム送信後、内容を確認のうえ、担当者よりご連絡します。",
   },
 

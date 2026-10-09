@@ -3,8 +3,12 @@ import { siteConfig, contactEmail } from "@/lib/site";
 
 /**
  * お問い合わせフォームの送信先。
- * RESEND_API_KEY と CONTACT_EMAIL_TO が設定されていれば Resend でメール送信する。
+ * RESEND_API_KEY が設定されていれば、Resend でメールを送る。
  * 未設定なら 503 を返し、フロント側でメールアドレスを案内する（送信したふりをしない）。
+ *
+ * 送信先 … CONTACT_EMAIL_TO。無ければ lib/site.ts の連絡先メール
+ * 送信元 … CONTACT_EMAIL_FROM。無ければ「サイト名 <noreply@本番ドメイン>」（Resend で確認済みのドメイン solarshift.jp）
+ * 返信先 … お客様がメールアドレスを書いたときは、そのアドレス（届いたメールにそのまま返信できる）
  *
  * 必須：お名前・ご相談内容・連絡先（メールアドレスか電話番号のどちらか）
  * 任意：町名・月の電気代・太陽光の有無・蓄電池の有無
@@ -24,6 +28,12 @@ interface Payload {
   hasSolar?: string;
   hasBattery?: string;
   website?: string; // ハニーポット
+}
+
+/** 送信元の既定値。本番ドメインから www. を除いたもの（Resend で確認済みのドメイン）のアドレスにする */
+function defaultFrom(): string {
+  const domain = new URL(siteConfig.productionUrl).hostname.replace(/^www\./, "");
+  return `${siteConfig.name} <noreply@${domain}>`;
 }
 
 function clean(v: unknown, max = 2000): string {
@@ -67,8 +77,8 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_EMAIL_TO || contactEmail();
-  const from = process.env.CONTACT_EMAIL_FROM;
-  if (!apiKey || !to || !from) {
+  const from = process.env.CONTACT_EMAIL_FROM || defaultFrom();
+  if (!apiKey || !to) {
     return NextResponse.json({ error: "フォーム送信は準備中です。" }, { status: 503 });
   }
 
@@ -101,6 +111,9 @@ export async function POST(req: Request) {
   });
 
   if (!res.ok) {
+    // 原因を Vercel のログで追えるようにする（お客様の入力やキーは出さない）
+    const detail = (await res.json().catch(() => null)) as { name?: string; message?: string } | null;
+    console.error("[contact] Resend での送信に失敗", res.status, detail?.name ?? "", detail?.message ?? "");
     return NextResponse.json({ error: "送信に失敗しました。時間をおいて再度お試しください。" }, { status: 502 });
   }
   return NextResponse.json({ ok: true });

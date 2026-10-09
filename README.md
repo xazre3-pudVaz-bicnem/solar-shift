@@ -17,6 +17,7 @@ npm run seo:check      # ビルド結果の title / H1 / canonical / robots / si
 npm run seo:audit      # seo:check ＋ 全 URL の監査（description の重複・孤立ページ・主要ページへのリンク数・sitemap・見出しの順番・alt・構造化データ）
 npm run facts:audit    # 固定ページの数値が、事実シートの「出典つきの節」にあるかを点検
 npm run chat:selftest  # チャット（自動応答）の自己診断。API は呼ばない
+npm run contact:selftest  # お問い合わせフォームの送信の自己診断。メールは送らない
 npm run blog:generate  # 記事の生成を1回試す。品質チェックに通ったときだけ content/blog に保存
 npm run blog:dry-run   # 保存せず内容だけ確認
 npm run blog:audit     # 公開済みの全記事を、生成時と同じ品質ゲートで点検（API は呼ばない）
@@ -41,7 +42,8 @@ npm run indexnow -- --all --dry-run  # IndexNow で送る URL を表示するだ
 | `CHAT_AI_DAILY_LIMIT` | | チャットの AI 回答の1日あたり上限。既定 300 |
 | `CRON_SECRET` | △ | Vercel Cron の認証 |
 | `GITHUB_TOKEN` / `GITHUB_REPO` / `GITHUB_BRANCH` | △ | Cron で生成した記事をコミットする |
-| `RESEND_API_KEY` / `CONTACT_EMAIL_TO` / `CONTACT_EMAIL_FROM` | △ | お問い合わせフォームのメール送信 |
+| `RESEND_API_KEY` | △ | お問い合わせフォームのメール送信（Resend）。これだけ入れれば送れる |
+| `CONTACT_EMAIL_TO` / `CONTACT_EMAIL_FROM` | | 送信先と送信元を変えたいときだけ。既定は、送信先が `lib/site.ts` の連絡先メール、送信元が `SOLAR SHIFT <noreply@solarshift.jp>` |
 | `GOOGLE_SITE_VERIFICATION` | | Search Console の所有権確認（meta タグの content 値） |
 | `BING_SITE_VERIFICATION` | | Bing Webmaster Tools の所有権確認 |
 
@@ -337,7 +339,12 @@ Search Console の「検索パフォーマンス」で、**表示回数があり
 ## お問い合わせフォーム
 
 必須は「お名前」「ご相談内容」と、連絡先（メールアドレスか電話番号のどちらか）。ご住所のエリアとご相談の種類は選ぶだけ。町名・月の電気代・太陽光の有無・蓄電池の有無は、折りたたみの中の任意項目。
-`RESEND_API_KEY` / `CONTACT_EMAIL_TO` / `CONTACT_EMAIL_FROM` を設定すると Resend でメール送信。未設定の間は、入力した内容を本文に入れたメールと電話番号を案内する（送信したふりはしない）。
+`RESEND_API_KEY` を Vercel の環境変数（Production）に入れて再デプロイすると、Resend でメールを送る。未設定の間は、入力した内容を本文に入れたメールと電話番号を案内する（送信したふりはしない）。
+
+- Resend のドメインは `solarshift.jp` を確認済み（2026-10-09）。送信元は、このドメインのアドレスでなければ送れない
+- 送信先は `lib/site.ts` の連絡先メール。お客様がメールアドレスを書いたときは、返信先（Reply-To）にそのアドレスが入るので、届いたメールにそのまま返信できる
+- キーは Resend の「API keys」で作る。権限は「Sending access」、ドメインは `solarshift.jp` に絞る
+- 送信に失敗したときは、Vercel のログに `[contact] Resend での送信に失敗` と理由が出る
 
 ## 未確定で空欄にしている情報（lib/site.ts）
 
