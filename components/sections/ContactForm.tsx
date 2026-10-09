@@ -9,12 +9,13 @@ import Link from "next/link";
  * 任意項目：月の電気代・太陽光の有無・蓄電池の有無（折りたたみの中。書かなくても送れる）
  *
  * 送信先は /api/contact（Resend 設定時のみメール送信。未設定なら案内メッセージを返す）。
- * 未設定のときは、入力済みの内容を本文に入れたメール（mailto）と電話番号を案内する（入力し直させない）。
+ * 未設定のときと、サーバー側で送れなかったとき・通信できなかったときは、
+ * 入力済みの内容を本文に入れたメール（mailto）と電話番号を案内する（入力し直させない。問い合わせを取りこぼさない）。
  * バリデーションエラー時も入力値は state に残す。
  * 入力欄の文字は 16px（iOS で入力時に画面が拡大されない大きさ）。
  */
 
-type Status = "idle" | "sending" | "done" | "error" | "unconfigured";
+type Status = "idle" | "sending" | "done" | "error" | "unconfigured" | "failed";
 
 const TOPICS = ["補助金について", "太陽光発電について", "蓄電池について", "太陽光＋蓄電池について", "V2H・HEMSについて", "現地調査・見積もり", "その他"];
 const AREAS = ["葛飾区", "足立区", "江戸川区", "墨田区", "その他の東京都内", "千葉県", "埼玉県", "その他"];
@@ -54,6 +55,11 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
         setStatus("unconfigured");
         return;
       }
+      // サーバー側で送れなかったとき（メール送信の失敗など）は、入力した内容をメールで送れる案内に切り替える（問い合わせを取りこぼさない）
+      if (res.status >= 500) {
+        setStatus("failed");
+        return;
+      }
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
         setError(data.error ?? "送信に失敗しました。時間をおいて再度お試しください。");
@@ -62,8 +68,8 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
       }
       setStatus("done");
     } catch {
-      setError("送信に失敗しました。時間をおいて再度お試しください。");
-      setStatus("error");
+      // 通信できなかったときも同じ案内を出す
+      setStatus("failed");
     }
   }
 
@@ -104,11 +110,14 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
     );
   }
 
-  if (status === "unconfigured") {
+  if (status === "unconfigured" || status === "failed") {
+    const failed = status === "failed";
     return (
-      <div className="rounded-3xl border-2 border-orange-200 bg-orange-50 p-6">
-        <p className="text-[16px] font-bold text-navy-900">フォーム送信は現在準備中です</p>
-        <p className="mt-2 text-base leading-[1.8] text-ink-2">お手数ですが、下のボタンからメールでお送りください。ご入力いただいた内容は、メールの本文にそのまま入ります。</p>
+      <div className="rounded-3xl border-2 border-orange-200 bg-orange-50 p-6" role={failed ? "alert" : undefined}>
+        <p className="text-[16px] font-bold text-navy-900">{failed ? "送信できませんでした" : "フォーム送信は現在準備中です"}</p>
+        <p className="mt-2 text-base leading-[1.8] text-ink-2">
+          {failed ? "申し訳ありません。" : ""}お手数ですが、下のボタンからメールでお送りください。ご入力いただいた内容は、メールの本文にそのまま入ります。
+        </p>
         <p className="mt-4">
           <a
             href={`mailto:${fallbackEmail}?subject=${mailSubject}&body=${encodeURIComponent(mailBody)}`}
