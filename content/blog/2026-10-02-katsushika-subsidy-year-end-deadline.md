@@ -1,5 +1,5 @@
 ---
-title: "葛飾区の太陽光補助金は年度末でも間に合う？3月31日必着の意味と日付の逆算"
+title: "葛飾区の太陽光補助金は年度末でも間に合う？3月31日必着から逆算"
 slug: "katsushika-subsidy-year-end-deadline"
 description: "かつしかエコ助成金の申込期間は2027年3月31日必着です。年度末に申し込むときに知っておきたい、申込と完了報告の2つの期限、着工日からの逆算、書類の準備を整理します。"
 category: "katsushika-subsidy"

@@ -138,6 +138,7 @@ export function localBusinessSchema(): JsonLd {
     telephone: contactTelIntl(),
     parentOrganization: { "@id": ORG_ID },
     address: postalAddress(),
+    geo: { "@type": "GeoCoordinates", latitude: siteConfig.company.address.geo.latitude, longitude: siteConfig.company.address.geo.longitude },
     areaServed: areaServed(),
     openingHoursSpecification: openingHoursSpecification(),
     hasMap: companyMapUrl(),

@@ -13,6 +13,7 @@ npm run build          # 本番ビルド（型チェック込み）
 npm run typecheck      # tsc --noEmit
 npm run lint           # ESLint
 npm run links:check    # 内部リンクの存在チェック
+npm run links:external # 外部リンク（出典の公式ページ）が開けるかを確かめる。毎週月曜に GitHub Actions でも動く
 npm run seo:check      # ビルド結果の title / H1 / canonical / robots / sitemap を SEO マップと照合（-- --table で一覧）
 npm run seo:audit      # seo:check ＋ 全 URL の監査（description の重複・孤立ページ・主要ページへのリンク数・sitemap・見出しの順番・alt・構造化データ）
 npm run facts:audit    # 固定ページの数値が、事実シートの「出典つきの節」にあるかを点検

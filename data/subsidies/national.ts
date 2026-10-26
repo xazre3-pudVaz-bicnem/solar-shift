@@ -1,6 +1,6 @@
 import type { SubsidyProgram } from "./types";
 
-const LAST_VERIFIED = "2026-10-01";
+const LAST_VERIFIED = "2026-10-26";
 
 /**
  * 国の制度は年度途中で公募終了・再開・次回公募が変わりやすい。
@@ -121,11 +121,11 @@ export const nationalPrograms: SubsidyProgram[] = [
         target: "対象となる既存住宅に省エネリフォームを行う所有者等（必須工事との組み合わせ条件あり）",
         amount: "96,000円/戸",
         maxAmount: "96,000円/戸",
-        applicationPeriod: "公式サイトで要確認（予算到達時に終了）",
-        deadline: "公式サイトで要確認",
+        applicationPeriod: "受付中（予算の上限に達し次第、受付終了）",
+        deadline: "予算の上限に達し次第",
         preApplicationRequired: true,
         preApplicationNote: "登録事業者による申請。必須工事（断熱改修やエコ住宅設備など）との組み合わせ条件がある。",
-        status: "unknown",
+        status: "open",
         conditions: [
           "必須工事（開口部の断熱改修など）と同時に行うこと等の条件を満たすこと",
           "登録事業者が工事・申請を行うこと",

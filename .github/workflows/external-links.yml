@@ -1,0 +1,40 @@
+name: 外部リンクの点検（出典の公式ページ）
+
+# 出典に使っている公式ページ（区・都・国・業界団体など）が、いまも開けるかを毎週確かめる。
+# ページが無くなった（404・410）ときは失敗にする。GitHub からメールが届くので、出典を探し直して data/ と事実シートを直す。
+# 転送・一時的な不調・サイト全体のメンテナンスは「注意」として要約に出すだけ（失敗にはしない）。
+# 手元では：VERCEL_ENV=production npm run build && npm run links:external
+
+on:
+  schedule:
+    - cron: "40 0 * * 1" # 毎週月曜 9:40（日本時間）
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: external-links
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: 本番と同じ条件でビルド
+        run: npm run build
+        env:
+          VERCEL_ENV: production
+
+      - name: 外部リンクを確かめる
+        run: npm run links:external

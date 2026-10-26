@@ -67,7 +67,7 @@ export default function CompanyPage() {
         ]
       : []),
     { term: "SOLAR SHIFT の対応エリア", description: servedAreaNames().join("、") },
-    { term: "コーポレートサイト", description: <a href={c.corporateUrl} target="_blank" rel="noopener noreferrer" className="text-navy-600 underline underline-offset-4">{c.corporateUrl.replace(/^https?:\/\//, "")}</a> },
+    { term: "コーポレートサイト", description: <a href={c.corporateUrl} target="_blank" rel="noopener noreferrer" className="text-navy-600 underline underline-offset-4">{c.corporateUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}</a> },
     ...(c.corporateNumber ? [{ term: "法人番号", description: c.corporateNumber }] : []),
   ];
 

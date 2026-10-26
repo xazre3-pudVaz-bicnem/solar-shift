@@ -67,10 +67,15 @@ export const siteConfig = {
       get locality() {
         return `${this.prefecture}${this.city}${this.town}`;
       },
+      /**
+       * 所在地の座標（構造化データの geo）。国土地理院の住所検索（msearch.gsi.go.jp）で
+       * 「東京都葛飾区亀有三丁目１６番１４号」が号まで一致した値（2026-10-26）。所在地を変えたら、ここも引き直す
+       */
+      geo: { latitude: 35.763584, longitude: 139.848633 },
     },
     /** コーポレートサイトに掲載されている代表メールアドレス */
     email: "info@cypress-all.co.jp",
-    corporateUrl: "https://cypress-all.co.jp",
+    corporateUrl: "https://www.cypress-all.co.jp/",
     /** 法人番号・許認可など未確認のものは null（画面に出さない） */
     corporateNumber: null as string | null,
     businessDescription:

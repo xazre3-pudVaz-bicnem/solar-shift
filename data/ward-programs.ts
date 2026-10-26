@@ -73,7 +73,7 @@ export interface WardProgram {
   faq: { q: string; a: string }[];
 }
 
-const VERIFIED = "2026-10-02";
+const VERIFIED = "2026-10-26";
 
 export const wardPrograms: WardProgram[] = [
   {

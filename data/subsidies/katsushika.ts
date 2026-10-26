@@ -2,7 +2,7 @@ import type { SubsidyProgram } from "./types";
 
 const SOURCE_URL = "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html";
 const SOURCE_NAME = "葛飾区公式サイト「令和8年度《個人住宅用》かつしかエコ助成金のご案内」";
-const LAST_VERIFIED = "2026-10-02";
+const LAST_VERIFIED = "2026-10-26";
 const FISCAL_YEAR = "令和8年度（2026年度）";
 const PERIOD = "2026年4月1日〜2027年3月31日（必着）";
 const DEADLINE = "2027年3月31日";

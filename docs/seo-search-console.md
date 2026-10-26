@@ -9,7 +9,9 @@ Google Search Console（以下 GSC）で、公開後に確かめること・定�
 
 1. GSC にプロパティを追加する。おすすめは「ドメイン」プロパティ（`solarshift.jp`）。DNS の TXT レコードで確認する。
    - 「URL プレフィックス」で `https://www.solarshift.jp/` を追加する場合は、確認コードを Vercel の環境変数 `GOOGLE_SITE_VERIFICATION` に入れると、サイトの `<head>` に確認用のメタタグが出る。
-2. サイトマップを送信する：`https://www.solarshift.jp/sitemap.xml`
+   - このサイトの DNS は Vercel が管理している（Resend のドメイン確認でも、プロバイダーが Vercel と出た）。GSC が表示する `google-site-verification=…` の値を、
+     Vercel のダッシュボード → Domains → `solarshift.jp` → DNS Records → Add で、Type を `TXT`、Name を空欄（`@`）、Value にその値を入れて保存する。数分〜数時間で GSC の「確認」が通る
+2. サイトマップを送信する：`https://www.solarshift.jp/sitemap.xml`。あわせて、ブログの RSS `https://www.solarshift.jp/feed.xml` も「サイトマップ」の欄に追加する（Google は RSS もサイトマップとして読み、新しい記事を早く見つけやすくなる）
 3. Bing Webmaster Tools にも登録する（GSC から取り込める）。確認コードは環境変数 `BING_SITE_VERIFICATION`。
    - 変更したページの URL は、本番デプロイのたびに IndexNow で Bing へ送っている（`.github/workflows/indexnow.yml`）。
 
