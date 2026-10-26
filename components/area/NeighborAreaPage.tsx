@@ -7,6 +7,7 @@ import { KATSUSHIKA_PRE_CONSULTATION_WEEKS } from "@/data/subsidies/katsushika-d
 import { worksInCity } from "@/data/works";
 import { images } from "@/data/images";
 import { siteConfig } from "@/lib/site";
+import { wardPageUpdatedAt } from "@/lib/routes";
 import { formatDateJa } from "@/lib/seo";
 import { reveal } from "@/lib/reveal";
 import { Container } from "@/components/ui/Container";
@@ -136,6 +137,8 @@ export function NeighborAreaPage({ area, program: w }: { area: Area; program: Wa
   const path = `/area/${area.slug}`;
   const c = siteConfig.company;
   const verifiedAt = w.sources[0].verifiedAt;
+  /** 最終更新日は、内容を直した日（確認しただけでは進めない） */
+  const updatedAt = wardPageUpdatedAt(area.slug, w.updatedAt);
   const cityWorks = worksInCity(area.name);
   const tokyoSolarExisting = getSubsidy("tokyo-solar-existing")!;
   const tokyoSolarNew = getSubsidy("tokyo-solar-new")!;
@@ -172,7 +175,7 @@ export function NeighborAreaPage({ area, program: w }: { area: Area; program: Wa
         lead={`${area.name}の住宅で、太陽光発電・蓄電池を検討している方へ。区の補助金は、葛飾区とは金額も申請の時期も違います。${area.name}の公式ページで確かめた内容を、確認した日付とともにまとめました。`}
         image={images.peopleCoupleClipboard}
       >
-        <LastUpdated updatedAt={verifiedAt} verifiedAt={verifiedAt} className="mt-5" />
+        <LastUpdated updatedAt={updatedAt} verifiedAt={verifiedAt} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
@@ -432,7 +435,7 @@ export function NeighborAreaPage({ area, program: w }: { area: Area; program: Wa
             mainEntity: "service",
             name: w.title,
             description: w.description,
-            dateModified: verifiedAt,
+            dateModified: updatedAt,
             lastReviewed: verifiedAt,
             sources: w.sources.map((s) => ({ name: s.name, url: s.url })),
           }),

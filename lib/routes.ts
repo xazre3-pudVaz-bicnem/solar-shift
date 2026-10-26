@@ -21,11 +21,11 @@ export interface StaticRoute {
 
 export const STATIC_ROUTES: StaticRoute[] = [
   { path: "/", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光発電・蓄電池｜補助金の整理から設置・導入後まで", updatedAt: "2026-10-07" },
-  { path: "/subsidy", priority: 0.9, changeFrequency: "weekly", ogTitle: "太陽光・蓄電池の補助金｜区・都・国の3つの制度と申請の順番" },
+  { path: "/subsidy", priority: 0.9, changeFrequency: "weekly", ogTitle: "太陽光・蓄電池の補助金｜区・都・国の3つの制度と申請の順番", updatedAt: "2026-10-26" },
   { path: "/subsidy/katsushika", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光・蓄電池補助金｜かつしかエコ助成金の金額・条件・申請", updatedAt: "2026-10-07" },
   { path: "/subsidy/tokyo", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の太陽光・蓄電池補助金｜クール・ネット東京の家庭向け助成", updatedAt: "2026-10-07" },
-  { path: "/subsidy/national", priority: 0.7, changeFrequency: "weekly", ogTitle: "国の太陽光・蓄電池補助金｜DR補助金・CEV補助金・みらいエコ住宅の現状" },
-  { path: "/simulation", priority: 0.9, changeFrequency: "weekly", ogTitle: "補助金シミュレーション｜葛飾区・東京都の助成額を試算" },
+  { path: "/subsidy/national", priority: 0.7, changeFrequency: "weekly", ogTitle: "国の太陽光・蓄電池補助金｜DR補助金・CEV補助金・みらいエコ住宅の現状", updatedAt: "2026-10-26" },
+  { path: "/simulation", priority: 0.9, changeFrequency: "weekly", ogTitle: "補助金シミュレーション｜葛飾区・東京都の助成額を試算", updatedAt: "2026-10-26" },
   { path: "/solar", priority: 0.8, changeFrequency: "monthly", ogTitle: "住宅用太陽光発電｜仕組みと向いている家", updatedAt: "2026-10-05" },
   { path: "/battery", priority: 0.8, changeFrequency: "monthly", ogTitle: "家庭用蓄電池の選び方｜役割・容量の決め方・補助金", updatedAt: "2026-10-26" },
   { path: "/solar-battery", priority: 0.8, changeFrequency: "monthly", ogTitle: "太陽光発電＋蓄電池｜同時導入の利点と併設加算", updatedAt: "2026-10-05" },
@@ -60,6 +60,12 @@ export const EXTRA_UPDATED_AT: Record<string, string> = {
 };
 
 /** そのページの内容を最後に直した日。決めていなければ、サイト全体の基準日（siteConfig.contentUpdatedAt） */
+/** 周辺の区のページの更新日：区の制度の内容を書き直した日と、ページ自体を直した日（EXTRA_UPDATED_AT）の新しいほう。公式ページを確かめただけでは進めない */
+export function wardPageUpdatedAt(slug: string, contentUpdatedAt: string): string {
+  const page = EXTRA_UPDATED_AT[`/area/${slug}`];
+  return page && page > contentUpdatedAt ? page : contentUpdatedAt;
+}
+
 export function routeUpdatedAt(path: string): string {
   return STATIC_ROUTES.find((r) => r.path === path)?.updatedAt ?? EXTRA_UPDATED_AT[path] ?? siteConfig.contentUpdatedAt;
 }

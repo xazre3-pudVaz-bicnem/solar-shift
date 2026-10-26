@@ -7,7 +7,7 @@ import { areasWithPage } from "@/data/areas";
 import { getWardProgram } from "@/data/ward-programs";
 import { guides } from "@/data/guides";
 import { siteConfig } from "@/lib/site";
-import { STATIC_ROUTES, EXTRA_UPDATED_AT, routeUpdatedAt } from "@/lib/routes";
+import { STATIC_ROUTES, EXTRA_UPDATED_AT, routeUpdatedAt, wardPageUpdatedAt } from "@/lib/routes";
 import { HELD_BACK } from "@/lib/indexing";
 
 /**
@@ -52,12 +52,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  // 周辺の区のページは、区の公式ページを確かめた日を lastmod にする
+  // 周辺の区のページは、制度の内容かページを直した日を lastmod にする（公式ページを確かめただけでは進めない）
   const areaPages: MetadataRoute.Sitemap = areasWithPage.map((a) => {
     const ward = getWardProgram(a.slug);
     return {
       url: `${base}/area/${a.slug}`,
-      lastModified: later(ward ? new Date(ward.sources[0].verifiedAt) : infoDate, new Date(EXTRA_UPDATED_AT[`/area/${a.slug}`] ?? siteConfig.subsidyInfoDate)),
+      lastModified: ward ? new Date(wardPageUpdatedAt(a.slug, ward.updatedAt)) : later(infoDate, new Date(EXTRA_UPDATED_AT[`/area/${a.slug}`] ?? siteConfig.subsidyInfoDate)),
       changeFrequency: "monthly",
       priority: a.status === "primary" ? 0.9 : 0.7,
     };

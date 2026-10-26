@@ -54,8 +54,8 @@ export function HomeHero({ facts, infoDate }: { facts: HeroFact[]; infoDate: str
       <Container size="wide" className="relative grid items-center gap-12 pt-10 pb-10 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:pt-16 lg:pb-12">
         <div>
           {/*
-            h1 は「検索語のラベル」＋「ブランドの一言」。
-            ラベルを h1 の外に出すと、ページの主見出しに地域名もサービス名も入らなくなる。
+            h1 は「検索語のラベル」（地域名とサービス名）だけにする。ページの主題と、title の内容がそのまま対応する。
+            大きなキャッチコピーは、見た目を変えずに段落にする（h1 の基本の書体・色・折り返しを、ここに同じく指定）。
           */}
           <h1 className="text-navy-900">
             <span className="enter-rise flex">
@@ -63,12 +63,12 @@ export function HomeHero({ facts, infoDate }: { facts: HeroFact[]; infoDate: str
                 葛飾区の太陽光発電・蓄電池・補助金サポート
               </span>
             </span>
-            <span className="enter-rise mt-6 block text-[6.6vw] leading-[1.4] font-black tracking-[0.01em] [--enter-delay:90ms] sm:text-[42px] lg:text-[34px] xl:text-[44px]">
-              電気を買う暮らしから、
-              <br />
-              <span className="marker marker-draw">つくって、ためる</span>暮らしへ。
-            </span>
           </h1>
+          <p className="enter-rise mt-6 block font-heading text-[6.6vw] leading-[1.4] font-black tracking-[0.01em] text-balance text-navy-900 [word-break:auto-phrase] [--enter-delay:90ms] sm:text-[42px] lg:text-[34px] xl:text-[44px]">
+            電気を買う暮らしから、
+            <br />
+            <span className="marker marker-draw">つくって、ためる</span>暮らしへ。
+          </p>
           <p className="enter-rise mt-6 max-w-xl text-base leading-[2] text-ink-2 [--enter-delay:180ms] sm:text-[17px]">
             {siteConfig.primaryArea.name}の太陽光発電・蓄電池なら <strong className="font-en font-extrabold tracking-wide text-navy-900">SOLAR SHIFT</strong>。補助金の整理から現地調査、設置、導入後の相談まで、住まいに合わせてひとつずつ。
           </p>

@@ -69,11 +69,16 @@ export interface WardProgram {
   /** SOLAR SHIFT に頼む場合に知っておいてほしいこと（正直に書く） */
   notes: string[];
   contact: { name: string; tel?: string };
+  /** 内容を最後に書き直した日（確認だけなら進めない） */
+  updatedAt: string;
   sources: WardSource[];
   faq: { q: string; a: string }[];
 }
 
+/** 各区の公式ページを開いて確かめた日（画面の「確認日」と、構造化データの lastReviewed） */
 const VERIFIED = "2026-10-26";
+/** 制度の内容（このファイルの文章）を最後に書き直した日。確認だけなら進めない（最終更新日・sitemap の lastmod に使う） */
+const CONTENT_UPDATED = "2026-10-02";
 
 export const wardPrograms: WardProgram[] = [
   {
@@ -138,6 +143,7 @@ export const wardPrograms: WardProgram[] = [
       "区は「あだち・そらとつながるプロジェクト」で、足立区内の事業者を紹介しています。区内事業者の金額を優先したい方は、そちらもあわせてご確認ください。",
     ],
     contact: { name: "足立区 環境部 環境政策課 管理係", tel: "03-3880-5935" },
+    updatedAt: CONTENT_UPDATED,
     sources: [
       {
         name: "足立区「太陽光発電システム及び蓄電池設置費補助金（設置後申請）」",
@@ -235,6 +241,7 @@ export const wardPrograms: WardProgram[] = [
       "区は、助成金の額を計算するときに、国や都の補助額を差し引きます。東京都の助成を使う場合、墨田区の助成額は見積もりの金額によって変わります。",
     ],
     contact: { name: "墨田区 環境保全課", tel: "03-5608-6207" },
+    updatedAt: CONTENT_UPDATED,
     sources: [
       {
         name: "墨田区「地球温暖化防止設備導入助成制度」",
@@ -305,6 +312,7 @@ export const wardPrograms: WardProgram[] = [
       "江戸川区の住宅で太陽光発電・蓄電池を検討する場合、区の補助は「再エネ100％電力への切り替え」の上乗せだけになります。金額の大きい東京都の助成の条件を、先に確かめます。",
     ],
     contact: { name: "江戸川区 環境部 気候変動適応計画課" },
+    updatedAt: CONTENT_UPDATED,
     sources: [
       {
         name: "江戸川区「江戸川区脱炭素補助金」",

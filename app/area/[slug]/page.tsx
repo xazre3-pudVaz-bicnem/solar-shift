@@ -35,7 +35,7 @@ import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { graph, webPageSchema, serviceSchema } from "@/lib/schema";
-import { routeUpdatedAt } from "@/lib/routes";
+import { routeUpdatedAt, wardPageUpdatedAt } from "@/lib/routes";
 
 /**
  * エリアページ。
@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: ward.description,
       path: `/area/${area.slug}`,
       keywords: [`${area.name} 太陽光 補助金`, `${area.name} 蓄電池 補助金`, `${area.name} 太陽光発電 補助金`, `${area.name} 太陽光 業者`],
-      modifiedTime: ward.sources[0].verifiedAt,
+      modifiedTime: wardPageUpdatedAt(area.slug, ward.updatedAt),
     });
   }
   if (!area?.page) return {};
@@ -158,9 +158,9 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
 
   const toc = [
     { id: "about", label: "SOLAR SHIFT について" },
-    { id: "towns", label: `${area.name}内の対応エリア` },
-    ...(cityWorks.length > 0 ? [{ id: "works", label: `${area.name}の施工事例` }] : []),
     { id: "checkpoints", label: "業者を選ぶときに確かめること" },
+    ...(cityWorks.length > 0 ? [{ id: "works", label: `${area.name}の施工事例` }] : []),
+    { id: "towns", label: `${area.name}内の対応エリア` },
     { id: "flow", label: "ご相談から設置まで" },
     { id: "subsidy", label: `${area.name}で使える補助金（要点）` },
     { id: "housing", label: `${area.name}の住まいで気をつけること` },
@@ -251,6 +251,65 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
             {embedUrl && <MapEmbed src={embedUrl} address={addressWithPostal()} title={`${c.name}の所在地`} mapUrl={companyMapUrl()} className="mt-8" />}
           </section>
 
+          {/* ───────── 業者選び */}
+          <section id="checkpoints" aria-labelledby="checkpoints-h" className="cv-block scroll-mt-24">
+            <h2 id="checkpoints-h" className={H2} {...reveal()}>
+              業者を選ぶときに、確かめてほしい{checkpoints.length}つのこと
+            </h2>
+            <p className={LEAD}>
+              SOLAR SHIFT に限らず、どの業者に頼むときにも役に立つ確認点です。{area.name}の案内と手引きにある内容をもとにしています。
+            </p>
+            <ol className="mt-6 max-w-3xl divide-y divide-dashed divide-line overflow-hidden rounded-3xl bg-white shadow-card">
+              {checkpoints.map((cp, i) => (
+                <li key={cp.title} className="flex gap-3 px-4 py-4 sm:gap-4 sm:px-5">
+                  <span className="mt-[3px] w-7 shrink-0 font-en text-[15px] font-extrabold text-accent-text" aria-hidden="true">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span>
+                    <span className="block text-[17px] leading-[1.6] font-bold text-navy-900">{cp.title}</span>
+                    <span className="mt-1 block text-base leading-[1.85] text-ink-2">{cp.body}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-4 max-w-3xl text-base leading-[1.8] text-ink-2">
+              見積書の読み方は
+              <Link href="/blog/solar-quote-how-to-read" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                太陽光の見積書の見方
+              </Link>
+              、確認点の詳しい説明は
+              <Link href="/blog/katsushika-solar-contractor-checkpoints" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
+                太陽光業者の比べ方（4つの確認点）
+              </Link>
+              にまとめています。
+            </p>
+          </section>
+
+          {/* ───────── この地域の施工事例 */}
+          {cityWorks.length > 0 && (
+            <section id="works" aria-labelledby="works-h" className="cv-block scroll-mt-24">
+              <h2 id="works-h" className={H2} {...reveal()}>
+                {area.name}の施工事例
+              </h2>
+              <p className="mt-4 max-w-3xl text-base leading-[1.9] text-ink">
+                {area.name}で太陽光発電・蓄電池を導入されたお客様の事例です。掲載の許可をいただいた範囲で、ご家族の構成、導入した設備、導入前後の電気代を紹介しています。
+              </p>
+              <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {cityWorks.map((w) => (
+                  <li key={w.slug}>
+                    <WorksCard work={w} />
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-[13px] leading-[1.8] text-ink-2">※ {WORK_BILL_NOTE}</p>
+              <p className="mt-2">
+                <Link href="/works" className={`inline-flex min-h-11 items-center ${TEXT_LINK}`}>
+                  すべての施工事例を見る
+                </Link>
+              </p>
+            </section>
+          )}
+
           {/* ───────── 区内の対応エリア */}
           {page.towns && page.towns.length > 0 && (
             <section id="towns" aria-labelledby="towns-h" className="cv-block scroll-mt-24">
@@ -285,65 +344,6 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
               </div>
             </section>
           )}
-
-          {/* ───────── この地域の施工事例 */}
-          {cityWorks.length > 0 && (
-            <section id="works" aria-labelledby="works-h" className="cv-block scroll-mt-24">
-              <h2 id="works-h" className={H2} {...reveal()}>
-                {area.name}の施工事例
-              </h2>
-              <p className="mt-4 max-w-3xl text-base leading-[1.9] text-ink">
-                {area.name}で太陽光発電・蓄電池を導入されたお客様の事例です。掲載の許可をいただいた範囲で、ご家族の構成、導入した設備、導入前後の電気代を紹介しています。
-              </p>
-              <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {cityWorks.map((w) => (
-                  <li key={w.slug}>
-                    <WorksCard work={w} />
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-4 text-[13px] leading-[1.8] text-ink-2">※ {WORK_BILL_NOTE}</p>
-              <p className="mt-2">
-                <Link href="/works" className={`inline-flex min-h-11 items-center ${TEXT_LINK}`}>
-                  すべての施工事例を見る
-                </Link>
-              </p>
-            </section>
-          )}
-
-          {/* ───────── 業者選び */}
-          <section id="checkpoints" aria-labelledby="checkpoints-h" className="cv-block scroll-mt-24">
-            <h2 id="checkpoints-h" className={H2} {...reveal()}>
-              業者を選ぶときに、確かめてほしい{checkpoints.length}つのこと
-            </h2>
-            <p className={LEAD}>
-              SOLAR SHIFT に限らず、どの業者に頼むときにも役に立つ確認点です。{area.name}の案内と手引きにある内容をもとにしています。
-            </p>
-            <ol className="mt-6 max-w-3xl divide-y divide-dashed divide-line overflow-hidden rounded-3xl bg-white shadow-card">
-              {checkpoints.map((cp, i) => (
-                <li key={cp.title} className="flex gap-3 px-4 py-4 sm:gap-4 sm:px-5">
-                  <span className="mt-[3px] w-7 shrink-0 font-en text-[15px] font-extrabold text-accent-text" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span>
-                    <span className="block text-[17px] leading-[1.6] font-bold text-navy-900">{cp.title}</span>
-                    <span className="mt-1 block text-base leading-[1.85] text-ink-2">{cp.body}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-4 max-w-3xl text-base leading-[1.8] text-ink-2">
-              見積書の読み方は
-              <Link href="/blog/solar-quote-how-to-read" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
-                太陽光の見積書の見方
-              </Link>
-              、確認点の詳しい説明は
-              <Link href="/blog/katsushika-solar-contractor-checkpoints" className={`mx-1 inline-block py-1 ${TEXT_LINK}`}>
-                太陽光業者の比べ方（4つの確認点）
-              </Link>
-              にまとめています。
-            </p>
-          </section>
 
           {/* ───────── 進め方 */}
           <section id="flow" aria-labelledby="flow-h" className="cv-block scroll-mt-24">

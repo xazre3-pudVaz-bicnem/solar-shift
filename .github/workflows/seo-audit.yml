@@ -51,3 +51,6 @@ jobs:
 
       - name: お問い合わせフォームの送信（メールは送らない）
         run: npm run contact:selftest
+
+      - name: 外部リンクの点検の自己診断（外のサイトには接続しない）
+        run: npm run links:external:selftest

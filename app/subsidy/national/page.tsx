@@ -27,11 +27,13 @@ import { StaffTip } from "@/components/ui/StaffTip";
 import { routeUpdatedAt } from "@/lib/routes";
 
 const PATH = "/subsidy/national";
+/** 国の制度を公式ページで確かめた日（data/subsidies/national.ts） */
+const VERIFIED = nationalPrograms[0].lastVerified;
 
 export const metadata: Metadata = buildMetadata({
   title: "国の太陽光・蓄電池補助金2026｜DR補助金・CEV補助金の現状",
   description:
-    "国の家庭用蓄電池補助金（DR家庭用蓄電池事業）は2026年5月29日に、V2HのCEV補助金は8月27日に受付終了。みらいエコ住宅2026は蓄電池96,000円/戸で太陽光は対象外。2026年10月1日時点の公募状況と次回の見通しを整理。",
+    "国の家庭用蓄電池補助金（DR家庭用蓄電池事業）は2026年5月29日に、V2HのCEV補助金は8月27日に受付終了。みらいエコ住宅2026は蓄電池96,000円/戸、予約は11月16日・交付申請は12月31日まで。2026年10月26日時点の状況を整理。",
   path: PATH,
   keywords: ["太陽光 補助金 国 2026", "蓄電池 補助金 国", "DR補助金 2026", "CEV補助金 V2H", "みらいエコ住宅2026 蓄電池"],
   type: "article",
@@ -45,7 +47,7 @@ export default function NationalSubsidyPage() {
     { name: "国の太陽光・蓄電池関連補助制度", href: PATH },
   ];
   const faqItems = faqsByIds(["subsidy-national", "subsidy-combination", "subsidy-guarantee"]);
-  const date = formatDateJa(siteConfig.subsidyInfoDate);
+  const date = formatDateJa(VERIFIED);
   const posts = getPostsForPillar(["v2h", "battery"], 3, { path: PATH, prefer: ["v2h-subsidy-katsushika-2026"] });
   const dr = getSubsidy("national-dr-battery")!;
   const tokyoBattery = getSubsidy("tokyo-battery")!;
@@ -59,7 +61,7 @@ export default function NationalSubsidyPage() {
         lead="国の補助金は、年度の途中で受付が終わることがあります。2026年度は、家庭用蓄電池向けの「DR補助金」（正式な名前は、DR家庭用蓄電池事業）が、5月29日に予算に達して公募を終了しました。このページでは、家庭の太陽光・蓄電池・V2Hに関係する国の制度の「今の状況」を整理します。"
         image={images.peopleStaffWoman}
       >
-        <LastUpdated updatedAt={routeUpdatedAt(PATH)} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
+        <LastUpdated updatedAt={routeUpdatedAt(PATH)} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={VERIFIED} className="mt-5" />
       </PageHeader>
 
       <Container className="py-10 sm:py-14">
@@ -68,7 +70,7 @@ export default function NationalSubsidyPage() {
           points={[
             "DR家庭用蓄電池事業：設備費＋工事費の3/10以内、上限60万円。2026年5月29日に受付終了",
             "CEV補助金（V2H充放電設備）：2026年8月27日に受付終了。次回の公募時期・内容は未確定",
-            "みらいエコ住宅2026：リフォームで蓄電池96,000円/戸。太陽光は対象外。登録事業者経由、必須工事との組み合わせ条件あり",
+            "みらいエコ住宅2026：リフォームで蓄電池96,000円/戸。交付申請の予約は遅くとも2026年11月16日、交付申請は遅くとも2026年12月31日まで（予算の上限に達したら、その時点で終了）。太陽光は対象外。登録事業者経由、必須工事との組み合わせ条件あり",
             "国の制度が使えない期間でも、葛飾区・東京都の助成は申請できる（受付状況は各公式サイトで要確認）",
           ]}
         />
