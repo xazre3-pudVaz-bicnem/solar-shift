@@ -41,8 +41,11 @@ const post = async (payload: unknown) => {
 
 (async () => {
   const savedLog = console.error;
+  const savedInfo = console.info;
   const errors: string[] = [];
+  const infos: string[] = [];
   console.error = (...a: unknown[]) => errors.push(a.map(String).join(" "));
+  console.info = (...a: unknown[]) => infos.push(a.map(String).join(" "));
 
   // ── 1. キーが無い間
   delete process.env.RESEND_API_KEY;
@@ -64,6 +67,8 @@ const post = async (payload: unknown) => {
   ok(m?.auth === "Bearer re_selftest", "キーは Authorization ヘッダーで渡す");
   ok(Boolean(m?.body.subject.includes(valid.topic) && m.body.subject.includes(valid.name)), "件名に、相談の種類とお名前", m?.body.subject);
   ok(Boolean(m?.body.text.includes(valid.message) && m.body.text.includes("亀有")), "本文に、相談内容と町名");
+  ok(infos.some((l) => l.includes("[contact]") && l.includes("test")), "Resend が受け付けたメールの番号をログに出す", infos.join(" / "));
+  ok(!infos.some((l) => l.includes(valid.name) || l.includes(valid.email) || l.includes("re_selftest")), "その記録に、お客様の入力やキーを出さない");
 
   // ── 3. 電話番号だけのとき（返信先は付けない）
   sent.length = 0;
@@ -104,6 +109,7 @@ const post = async (payload: unknown) => {
   ok(!errors.some((e) => e.includes(valid.name) || e.includes(valid.email) || e.includes("re_selftest")), "ログに、お客様の入力やキーを出さない");
 
   console.error = savedLog;
+  console.info = savedInfo;
   console.log(failed === 0 ? "\nALL PASSED" : `\nFAILED: ${failed}`);
   process.exit(failed === 0 ? 0 : 1);
 })();

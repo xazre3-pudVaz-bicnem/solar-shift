@@ -346,6 +346,11 @@ Search Console の「検索パフォーマンス」で、**表示回数があり
 - 送信先は `lib/site.ts` の連絡先メール。お客様がメールアドレスを書いたときは、返信先（Reply-To）にそのアドレスが入るので、届いたメールにそのまま返信できる
 - キーは Resend の「API keys」で作る。権限は「Sending access」、ドメインは `solarshift.jp` に絞る
 - 送信に失敗したときは、Vercel のログに `[contact] Resend での送信に失敗` と理由が出る
+- 送れたときは、Vercel のログに `[contact] Resend が受け付けた <番号>` が出る。**受け付けた＝届いた、ではない**。届かないときは次の順に見る
+  1. Resend の画面の「Emails」で、その番号のメールの状態（Delivered／Bounced と理由）を見る
+  2. Delivered なのに見当たらないときは、送信先（Xserver）のウェブメールの迷惑メールフォルダを見る。メールソフトが POP の受信だと、迷惑メールに分けられたものは手元に届かない。Xserver の迷惑メールフィルタの許可リストに `solarshift.jp` を入れる
+  3. 送信元 solarshift.jp の DNS（Vercel）に DMARC の TXT レコード（名前 `_dmarc`、値 `v=DMARC1; p=none;`）があるかを見る。Resend が届きやすさのために勧めている
+- お客様への自動返信（受付確認メール）は送っていない。入力されたアドレスに当サイトからメールが飛ぶ仕組みは、他人のアドレスを入れたいたずらに使われるおそれがあるため
 
 ## 未確定で空欄にしている情報（lib/site.ts）
 

@@ -116,5 +116,9 @@ export async function POST(req: Request) {
     console.error("[contact] Resend での送信に失敗", res.status, detail?.name ?? "", detail?.message ?? "");
     return NextResponse.json({ error: "送信に失敗しました。時間をおいて再度お試しください。" }, { status: 502 });
   }
+  // Resend が受け付けたメールの番号を残す。届かないときは、Resend の画面（Emails）でこの番号の配送状況を見る
+  // （受け付けた＝届いた、ではない。送り先のサーバーが断ったり、迷惑メールに分けたりすることがある）
+  const sent = (await res.json().catch(() => null)) as { id?: string } | null;
+  console.info("[contact] Resend が受け付けた", sent?.id ?? "(番号なし)");
   return NextResponse.json({ ok: true });
 }
