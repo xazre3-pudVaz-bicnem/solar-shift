@@ -60,7 +60,8 @@ const post = async (payload: unknown) => {
   const m = sent[0];
   ok(r.status === 200 && r.json.ok === true && sent.length === 1, "キーがあると送信して 200", `status=${r.status} sent=${sent.length}`);
   const domain = new URL(siteConfig.productionUrl).hostname.replace(/^www\./, "");
-  ok(m?.body.from === `${siteConfig.name} <noreply@${domain}>`, "送信元は、確認済みドメインのアドレス", m?.body.from);
+  ok(m?.body.from === `${siteConfig.name} <form@${domain}>`, "送信元は、確認済みドメインのアドレス", m?.body.from);
+  ok(!/noreply|no-reply/i.test(m?.body.from ?? ""), "送信元に noreply を使わない（届きやすさの点検で指摘される）", m?.body.from);
   ok(domain === "solarshift.jp", "送信元のドメインは solarshift.jp（Resend で確認したドメイン）", domain);
   ok(m?.body.to.length === 1 && m.body.to[0] === contactEmail(), "送信先は、連絡先メール", String(m?.body.to));
   ok(m?.body.reply_to === valid.email, "返信先は、お客様のメール", String(m?.body.reply_to));

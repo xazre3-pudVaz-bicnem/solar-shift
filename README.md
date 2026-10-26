@@ -44,7 +44,7 @@ npm run indexnow -- --all --dry-run  # IndexNow で送る URL を表示するだ
 | `CRON_SECRET` | △ | Vercel Cron の認証 |
 | `GITHUB_TOKEN` / `GITHUB_REPO` / `GITHUB_BRANCH` | △ | Cron で生成した記事をコミットする |
 | `RESEND_API_KEY` | △ | お問い合わせフォームのメール送信（Resend）。これだけ入れれば送れる |
-| `CONTACT_EMAIL_TO` / `CONTACT_EMAIL_FROM` | | 送信先と送信元を変えたいときだけ。既定は、送信先が `lib/site.ts` の連絡先メール、送信元が `SOLAR SHIFT <noreply@solarshift.jp>` |
+| `CONTACT_EMAIL_TO` / `CONTACT_EMAIL_FROM` | | 送信先と送信元を変えたいときだけ。既定は、送信先が `lib/site.ts` の連絡先メール、送信元が `SOLAR SHIFT <form@solarshift.jp>`（noreply は Resend の点検で信頼を下げると指摘されるので使わない） |
 | `GOOGLE_SITE_VERIFICATION` | | Search Console の所有権確認（meta タグの content 値） |
 | `BING_SITE_VERIFICATION` | | Bing Webmaster Tools の所有権確認 |
 
