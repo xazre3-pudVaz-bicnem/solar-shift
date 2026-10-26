@@ -58,6 +58,9 @@ export const sources = {
   tokyoInitialCostZero: src("tokyo-initial-cost-zero", "tokyo", "クール・ネット東京「住宅用太陽光発電初期費用ゼロ促進の増強事業」", "https://www.tokyo-co2down.jp/subsidy/initial-cost0-zokyo/", "2026-10-05"),
   tokyoBatteryGrantRules: src("tokyo-battery-grant-rules", "tokyo", "クール・ネット東京（東京都環境公社）「家庭における蓄電池導入促進事業助成金交付要綱」", "https://tokyo-co2down.g.kuroco-img.app/files/user/files/subsidy/family_tikudenchi/r8/r8battery_kofuyoko_20260605.pdf", "2026-10-02"),
 
+  // ───────── 東京消防庁
+  tfdBatteryFireCode: src("tfd-battery-fire-code", "tokyo", "東京消防庁「火災予防条例の一部を改正する条例（令和5年10月13日・東京都条例第87号）の概要」", "https://www.tfd.metro.tokyo.lg.jp/content/000026239.pdf", "2026-10-26"),
+
   // ───────── SII（環境共創イニシアチブ）
   siiBatteryRegistration: src("sii-battery-registration", "sii", "SII（環境共創イニシアチブ）「令和8年度 蓄電システム製品登録 公募要領」", "https://zehweb.jp/assets/doc/R08ZEH_moe_lib_kouboyouryou.pdf", "2026-10-02"),
 

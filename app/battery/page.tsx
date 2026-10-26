@@ -8,6 +8,8 @@ import { faqsByIds } from "@/data/faq";
 import { ServiceLayout } from "@/components/sections/ServiceLayout";
 import { worksWithEquipment } from "@/data/works";
 import { images } from "@/data/images";
+import { sources as verified } from "@/data/sources";
+import { SourceNote } from "@/components/ui/SourceNote";
 
 const PATH = "/battery";
 const DESC =
@@ -111,7 +113,11 @@ export default function BatteryPage() {
                 <li>水害リスクのある地域では、浸水想定深に対して設置高さを確保できるか</li>
                 <li>分電盤からの配線距離</li>
               </ul>
-              <p>葛飾区の住宅地では敷地に余裕がないことも多く、現地調査で設置場所の候補を一緒に確認します。</p>
+              <p>
+                東京都の火災予防条例では、10kWh以下の蓄電池設備は規制の対象外です。10kWhを超え20kWh以下でも国の基準（告示）に適合するものは対象外で、消防への届出が必要になるのは20kWhを超えるものです。容量の大きい機種や増設を考えるときは、施工業者と所轄の消防署に確かめます。
+              </p>
+              <SourceNote sources={[verified.tfdBatteryFireCode]} className="mt-2" />
+              <p>敷地の広さや隣の建物との距離は家ごとに違うため、現地調査で設置場所の候補を一緒に確認します。</p>
             </>
           ),
         },
