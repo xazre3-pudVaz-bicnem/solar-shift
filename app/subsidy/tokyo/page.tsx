@@ -14,6 +14,8 @@ import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { LastUpdated } from "@/components/ui/LastUpdated";
 import { SourceList } from "@/components/ui/SourceList";
 import { SourceNote } from "@/components/ui/SourceNote";
+import { ChangeLog } from "@/components/subsidy/ChangeLog";
+import { changeLogFor } from "@/data/subsidies/changelog";
 import { Callout } from "@/components/ui/Callout";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
@@ -32,14 +34,14 @@ import { siteConfig } from "@/lib/site";
 
 const PATH = "/subsidy/tokyo";
 const S = tokyoSolarProgram;
-/** 最終更新日：このページを直した日（lib/routes.ts）と、公式情報を確かめた日の、新しいほう */
-const UPDATED = routeUpdatedAt(PATH) > S.lastVerified ? routeUpdatedAt(PATH) : S.lastVerified;
+/** 最終更新日：このページの内容を直した日（lib/routes.ts）。公式情報を確かめた日（S.lastVerified）は「確認日」として別に出す */
+const UPDATED = routeUpdatedAt(PATH);
 const B = tokyoBatteryProgram;
 
 export const metadata: Metadata = buildMetadata({
   title: "東京都の太陽光・蓄電池補助金2026｜15万円/kW・10万円/kWhの条件",
   description:
-    "東京都（クール・ネット東京）の令和8年度 家庭向け太陽光・蓄電池助成。既存3.75kW以下15万円/kW上限45万円、新築3.6kW以下12万円/kW、蓄電池10万円/kWh、2026年10月からのSII登録要件。2026年10月1日時点。",
+    `東京都（クール・ネット東京）の令和8年度 家庭向け太陽光・蓄電池助成。既存3.75kW以下15万円/kW上限45万円、新築3.6kW以下12万円/kW、蓄電池10万円/kWh、2026年10月からのSII登録要件。${formatDateJa(S.lastVerified)}時点。`,
   path: PATH,
   keywords: ["東京都 太陽光 補助金", "東京 太陽光 補助金", "東京都 蓄電池 補助金", "クール・ネット東京 太陽光", "東京都 太陽光 助成 2026"],
   type: "article",
@@ -209,7 +211,8 @@ export default function TokyoSubsidyPage() {
           <FaqSection items={faqItems} withSchema className="mt-6" />
         </section>
 
-        <SubsidyDisclaimer className="mt-12" dateOverride={S.lastVerified} />
+        <ChangeLog entries={changeLogFor(["tokyo"])} className="mt-12" />
+        <SubsidyDisclaimer className="mt-8" dateOverride={S.lastVerified} />
         <SourceList
           sources={[
             { name: S.sourceName, url: S.sourceUrl, verifiedAt: S.lastVerified },

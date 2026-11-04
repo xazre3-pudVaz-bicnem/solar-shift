@@ -16,12 +16,19 @@
  *   6. 「こちら」「詳しくはこちら」だけのリンク
  *   7. alt の無い画像、事例の写真と誤解させる alt
  *   8. 構造化データ：JSON-LD が壊れていないか、ページの種類に合う型があるか
+ *   9. 薄いページ（本文の文字数の目安）
+ *  10. TOP からのクリック数（data/seo/keyword-map.ts で P0 のページは2クリック以内）
+ *  11. パンくずの表示と BreadcrumbList の一致
+ *  12. 同じ FAQ（質問）を、たくさんのページに表示していないか
+ *  13. 根拠の無い誇大表現（「必ず元が取れる」「地域No.1」など。「」の中で言葉として挙げているものは除く）
+ *  14. 情報の鮮度（lib/freshness.ts：一次情報を確かめてからの日数、補助金の有効期限）と、title の古い年度
  *
  * NG が1件でもあれば、終了コード 1。注意は、人が見て判断するもの（終了コードには数えない）。
  */
 import fs from "node:fs";
 import path from "node:path";
 import { SEO_MAP } from "../lib/seo-map";
+import { freshnessIssues, describeFreshness, todayJst } from "../lib/freshness";
 
 const ROOT = process.cwd();
 const APP = path.join(ROOT, ".next", "server", "app");
@@ -69,6 +76,14 @@ interface Page {
   suspiciousAlts: string[];
   /** main の中の文字数（薄いページの目安） */
   mainChars: number;
+  /** main の中の文字（「」の中を除いた点検に使う） */
+  mainText: string;
+  /** 画面に出しているパンくずの名前 */
+  crumbsVisible: string[];
+  /** BreadcrumbList の名前 */
+  crumbsSchema: string[];
+  /** 画面に出している FAQ の質問（details の summary） */
+  faqQuestions: string[];
 }
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -128,12 +143,14 @@ function parse(file: string): Page {
   const schemaTypes: string[] = [];
   let schemaErrors = 0;
   let parent = "";
+  let crumbsSchema: string[] = [];
   for (const m of html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
     try {
       const data = JSON.parse(m[1]);
       collectTypes(data, schemaTypes);
       const nodes: Record<string, unknown>[] = Array.isArray(data?.["@graph"]) ? data["@graph"] : [data];
       for (const n of nodes) {
+        if (n?.["@type"] === "BreadcrumbList" && Array.isArray(n.itemListElement)) crumbsSchema = (n.itemListElement as { name?: string }[]).map((i) => String(i.name ?? ""));
         if (n?.["@type"] === "BreadcrumbList" && Array.isArray(n.itemListElement) && n.itemListElement.length >= 2) {
           const up = n.itemListElement[n.itemListElement.length - 2] as { item?: string };
           if (typeof up?.item === "string") {
@@ -180,6 +197,10 @@ function parse(file: string): Page {
     imagesWithoutAlt,
     suspiciousAlts,
     mainChars: text(main.replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<style[\s\S]*?<\/style>/g, " ")).replace(/\s/g, "").length,
+    mainText: text(main.replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<style[\s\S]*?<\/style>/g, " ")),
+    crumbsVisible: [...((main.match(/<nav aria-label="パンくずリスト"[\s\S]*?<\/nav>/) ?? [""])[0].matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g))].map((m) => text(m[1])),
+    crumbsSchema,
+    faqQuestions: [...main.matchAll(/<summary\b[^>]*>([\s\S]*?)<\/summary>/g)].map((m) => text(m[1]).replace(/^Q\s*/, "")).filter(Boolean),
   };
 }
 
@@ -354,6 +375,85 @@ for (const p of pages) {
 
 for (const p of indexPages) if (!isPaged(p) && p.mainChars < 400) warnings.push(`${p.route}: 本文が短い（${p.mainChars}字）。中身が無いなら noindex を検討`);
 
+// ─────────────────────────────────────────────────────────────── 10. TOP からのクリック数
+// ヘッダー・フッター・本文のリンクをすべてたどる（人が TOP から何回のクリックで着くか）
+const depth = new Map<string, number>([["/", 0]]);
+{
+  const queue = ["/"];
+  while (queue.length > 0) {
+    const cur = queue.shift()!;
+    const p = byRoute.get(cur);
+    if (!p) continue;
+    for (const l of p.links) {
+      if (!byRoute.has(l.href) || depth.has(l.href)) continue;
+      depth.set(l.href, depth.get(cur)! + 1);
+      queue.push(l.href);
+    }
+  }
+}
+for (const e of SEO_MAP) {
+  if (!e.index || !byRoute.has(e.path)) continue;
+  const d = depth.get(e.path);
+  if (d === undefined) errors.push(`${e.path}: TOP からたどり着けません`);
+  else if (e.priority === "P0" && d > 2) errors.push(`${e.path}: P0 のページなのに、TOP から ${d} クリックかかります（2以内にする）`);
+}
+for (const p of indexPages) if (!depth.has(p.route) && !isPaged(p)) warnings.push(`${p.route}: TOP からリンクをたどって着けません`);
+{
+  const hist = new Map<number, number>();
+  for (const p of indexPages) {
+    const d = depth.get(p.route);
+    if (d !== undefined) hist.set(d, (hist.get(d) ?? 0) + 1);
+  }
+  console.log(`TOP からのクリック数: ${[...hist].sort((a, b) => a[0] - b[0]).map(([d, n]) => `${d}クリック ${n}ページ`).join("、")}`);
+}
+
+// ─────────────────────────────────────────────────────────────── 11. パンくず
+for (const p of pages) {
+  if (p.crumbsVisible.length === 0 || p.crumbsSchema.length === 0) continue;
+  if (p.crumbsVisible.join(" > ") !== p.crumbsSchema.join(" > ")) warnings.push(`${p.route}: パンくずの表示（${p.crumbsVisible.join(" > ")}）と BreadcrumbList（${p.crumbsSchema.join(" > ")}）が違います`);
+}
+
+// ─────────────────────────────────────────────────────────────── 12. FAQ の使い回し
+// 同じ質問を表示しているページの数（/faq は一覧なので数えない）。多すぎると、ページごとの違いが薄くなる
+const FAQ_PAGE_LIMIT = 6;
+{
+  const where = new Map<string, Set<string>>();
+  for (const p of indexPages) {
+    if (p.route === "/faq") continue;
+    for (const q of new Set(p.faqQuestions)) {
+      if (!where.has(q)) where.set(q, new Set());
+      where.get(q)!.add(p.route);
+    }
+  }
+  for (const [q, set] of where) if (set.size > FAQ_PAGE_LIMIT) warnings.push(`同じ FAQ「${q.slice(0, 30)}」を ${set.size} ページに表示しています（${FAQ_PAGE_LIMIT} 以下にする。いちばん関係の深いページに絞る）`);
+}
+
+// ─────────────────────────────────────────────────────────────── 13. 根拠の無い誇大表現
+// 「」の中は、言葉そのものを挙げている（編集方針の「書かない言葉」など）ので除く
+const OVERCLAIM = /絶対(に)?(お得|得する|損しない)|必ず元が取れ|確実に元が取れ|電気代(が)?(0|ゼロ)円|電気代(が)?ゼロに|必ず(補助金が)?もらえ|地域No\.?1|地域ナンバーワン|業界最安|最安値|施工実績\d+件/;
+// 文ごとに見る。疑問文（「〜もらえますか？」）と、打ち消しの文（「〜とは言いません」「保証するものではありません」）は除く
+const NEGATION = /ない|ません|いいえ|限ら|保証するものでは/;
+for (const p of indexPages) {
+  const plain = p.mainText.replace(/「[^」]*」/g, "「」");
+  for (const sentence of plain.split(/[。！？!?]/)) {
+    const m = sentence.match(OVERCLAIM);
+    if (!m || NEGATION.test(sentence) || /か\s*$/.test(sentence)) continue;
+    errors.push(`${p.route}: 根拠の無い誇大表現「${m[0]}」があります → 「${sentence.trim().slice(0, 50)}」`);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────── 14. 情報の鮮度・title の古い年度
+for (const i of freshnessIssues()) warnings.push(`鮮度：${describeFreshness(i)}`);
+{
+  const today = todayJst();
+  const fy = Number(today.slice(5, 7)) >= 4 ? Number(today.slice(0, 4)) : Number(today.slice(0, 4)) - 1;
+  const subsidyPaths = new Set(SEO_MAP.filter((e) => e.cluster.includes("補助金")).map((e) => e.path));
+  for (const p of indexPages) {
+    if (!subsidyPaths.has(p.route)) continue;
+    for (const m of p.title.matchAll(/(20\d\d)年?度?/g)) if (Number(m[1]) < fy) warnings.push(`${p.route}: title の年度（${m[1]}）が、今の年度（${fy}年度）より前です。新しい年度の情報を確かめて直す`);
+  }
+}
+
 // ─────────────────────────────────────────────────────────────── 一覧
 
 const mapByPath = new Map(SEO_MAP.map((e) => [e.path, e]));
@@ -370,6 +470,9 @@ function row(p: Page): string[] {
     m?.primary ?? "",
     (m?.secondary ?? []).join("、"),
     m?.intent ?? "",
+    m?.priority ?? "",
+    m?.cluster ?? "",
+    depth.has(p.route) ? String(depth.get(p.route)) : "-",
     p.parent || "-",
     `${inb.total.size}/${inb.contextual.size}`,
     sitemap.has(p.route) ? "○" : "-",
@@ -377,7 +480,7 @@ function row(p: Page): string[] {
     p.schemaTypes.filter((t) => !["ListItem", "Question", "Answer", "PostalAddress", "ImageObject", "ContactPoint", "AdministrativeArea", "Offer", "Person", "OpeningHoursSpecification", "CreativeWork", "EntryPoint", "SearchAction", "HowToStep", "DefinedTerm"].includes(t)).join(","),
   ];
 }
-const HEAD = ["URL", "index", "title", "description字数", "H1", "canonical", "主キーワード", "関連キーワード", "検索意図", "親ページ", "被リンク(全体/本文)", "sitemap", "更新日", "schema"];
+const HEAD = ["URL", "index", "title", "description字数", "H1", "canonical", "主キーワード", "関連キーワード", "検索意図", "優先度", "まとまり", "TOPからのクリック数", "親ページ", "被リンク(全体/本文)", "sitemap", "更新日", "schema"];
 if (showTable) {
   console.log("\n" + HEAD.join(" | "));
   for (const p of pages) console.log(row(p).join(" | "));

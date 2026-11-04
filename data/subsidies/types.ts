@@ -69,6 +69,19 @@ export interface Subsidy {
   /** 事前手続きの説明（着工4週間前までの事前協議 など） */
   preApplicationNote?: string;
   status: SubsidyStatus;
+  /** 申込の受付を始めた日（YYYY-MM-DD）。公式に書かれていなければ null */
+  applicationStart: string | null;
+  /** 申込の最終の期限（YYYY-MM-DD）。受付が終わった制度は、終わった日。公式に書かれていなければ null */
+  applicationEnd: string | null;
+  /** 事前の手続きの期限が「着工の◯日前」と決まっているときの日数。決まっていなければ null */
+  preApplicationDays: number | null;
+  /** 公式の手引き・案内の PDF。無ければ null */
+  officialPdfUrl: string | null;
+  /**
+   * この情報を「今の年度の情報」として扱える最後の日（年度の終わり、または申込の最終の期限）。
+   * 過ぎたら、新しい年度の情報を確かめる（npm run seo:audit が注意を出す）
+   */
+  validUntil: string;
   /** 主な要件 */
   conditions: string[];
   /** 注意事項 */

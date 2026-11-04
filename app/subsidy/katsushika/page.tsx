@@ -44,6 +44,8 @@ import { graph, articleSchema, financialIncentiveSchema } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar, getPostsByCategory } from "@/lib/blog";
 import { DeadlineChecker } from "@/components/subsidy/DeadlineChecker";
+import { ChangeLog } from "@/components/subsidy/ChangeLog";
+import { changeLogFor } from "@/data/subsidies/changelog";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
 import { reveal } from "@/lib/reveal";
@@ -189,6 +191,39 @@ export default function KatsushikaSubsidyPage() {
       label: "区と都の助成額を試算する",
     },
   ];
+  /** 申請の途中で迷いやすいこと。答えは区・都の案内にある範囲だけ。詳しくは、1つずつ答えている記事へ */
+  const stuck = [
+    {
+      q: "都の助成と併用できる？",
+      a: "できます（区の案内）。ただし、ほかの補助金との合計が助成対象経費を上回ると、上回る分が減ります。",
+      href: "#combination",
+      label: "区と都の併用の決まりを見る",
+    },
+    {
+      q: "区と都は、どちらが先？",
+      a: "東京都は、国や区市町村の補助金を受けたあとで、交付申請兼実績報告を出す決まりです。",
+      href: "/blog/katsushika-tokyo-subsidy-combination-order",
+      label: "区と都の申請の順番を読む",
+    },
+    {
+      q: "助成金はいつ入る？",
+      a: `区の案内（${formatDateJa(katsushikaNoticeEstimate.asOf)}時点）では、完了報告から交付額確定通知書の発送まで${katsushikaNoticeEstimate.period}、そのあと4週間程度で支払われます。`,
+      href: "/blog/katsushika-subsidy-payment-timing",
+      label: "振り込みまでの目安を読む",
+    },
+    {
+      q: "書類が足りないと？",
+      a: "完了報告の書類に不足があると、通知書までの目安の期間は、すべての書類がそろった日から数えます。",
+      href: "/blog/katsushika-subsidy-completion-report",
+      label: "完了報告の書類と期限を読む",
+    },
+    {
+      q: "事前協議のあとで機種を変えられる？",
+      a: "やむを得ない事情を除き、事前協議書を出したあとの申請内容の変更は、原則認められません。",
+      href: "/blog/katsushika-subsidy-change-after-consultation",
+      label: "機種を変えたくなったときを読む",
+    },
+  ];
   // このページを親にしている記事（細かい疑問に1本ずつ答えている）
   const clusterPosts = getPostsByCategory("katsushika-subsidy");
 
@@ -264,6 +299,24 @@ export default function KatsushikaSubsidyPage() {
               <li key={item.q} className="flex flex-col rounded-2xl border-2 border-line bg-white p-4 shadow-card">
                 <p className="flex items-center gap-2 font-heading text-[15px] font-black text-navy-900">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-500 font-en text-[12px] font-extrabold text-navy-900" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  {item.q}
+                </p>
+                <p className="mt-2 flex-1 text-[14px] leading-[1.75] text-ink">{item.a}</p>
+                <Link href={item.href} className={`mt-2 inline-flex min-h-11 items-center text-[13px] ${TEXT_LINK}`}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ol>
+
+          <p className="mt-8 font-heading text-[16px] font-black text-navy-900">申請の途中で、迷いやすい5つのこと</p>
+          <ol className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5" aria-label="申請の途中で、迷いやすい5つのこと">
+            {stuck.map((item, i) => (
+              <li key={item.q} className="flex flex-col rounded-2xl border-2 border-line bg-cream/60 p-4">
+                <p className="flex items-center gap-2 font-heading text-[15px] font-black text-navy-900">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-600 font-en text-[12px] font-extrabold text-white" aria-hidden="true">
                     {i + 1}
                   </span>
                   {item.q}
@@ -625,7 +678,8 @@ export default function KatsushikaSubsidyPage() {
         </div>
 
         <div className="mx-auto mt-14 max-w-5xl">
-          <SubsidyDisclaimer dateOverride={P.lastVerified} />
+          <ChangeLog entries={changeLogFor(["katsushika", "tokyo"])} />
+          <SubsidyDisclaimer dateOverride={P.lastVerified} className="mt-8" />
           <SourceList sources={pageSources} className="mt-8" />
           <div className="mt-8">
             <AuthorBox />

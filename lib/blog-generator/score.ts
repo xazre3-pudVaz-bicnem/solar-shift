@@ -1,17 +1,19 @@
 /**
- * 自動生成記事の品質スコア（6項目・各1〜5点）。
+ * 自動生成記事の品質スコア（7項目・各1〜5点）と、100点満点の合計。
  *
  * 文章の出来を「印象」で決めないために、数えられるものだけで点を付ける（同じ原稿なら、いつ測っても同じ点になる）。
  * 点の材料（signals）は validate.ts が集める。ここは、材料から点を出すだけの純関数。
  *
- *   originality          … 既存の記事と、本文・題名がどれだけ離れているか
- *   searchIntentMatch    … 検索意図の語が、題名・導入・見出しに入っているか
- *   sourceQuality        … 公的な一次情報（自治体・東京都・国・SII）を出典にしているか
- *   localRelevance       … 葛飾区・東京都の制度や地域の事情に結び付いているか
- *   internalLinkCoverage … 親の固定ページ・関連ページへ案内しているか
- *   cannibalizationRisk  … 固定ページ・既存記事と、検索意図を取り合わないか（5 が「取り合わない」）
+ *   searchIntentMatch    … 検索意図の語が、題名・導入・見出しに入っているか            （重み 20）
+ *   originality          … 既存の記事と、本文・題名がどれだけ離れているか              （重み 20）
+ *   sourceQuality        … 公的な一次情報（自治体・東京都・国・SII）を出典にしているか  （重み 20）
+ *   localRelevance       … 葛飾区・東京都の制度や地域の事情に結び付いているか          （重み 15）
+ *   informationGain      … 先に公開した記事に無い、確認済みの数値・日付・金額をいくつ足したか（重み 15）
+ *   internalLinkCoverage … 親の固定ページ・関連ページへ案内しているか                （重み 10）
+ *   cannibalizationRisk  … 固定ページ・既存記事と、検索意図を取り合わないか（5 が「取り合わない」）。合計には入れず、必須の項目にする
  *
- * 公開の基準（QUALITY_THRESHOLD）：どの項目も 3 点以上（localRelevance だけは 2 点以上）、合計 22 点以上。
+ * 合計（total）＝ 各項目の点 ÷ 5 × 重み を足して四捨五入（100点満点。全部1点なら20点）。
+ * 公開の基準（QUALITY_THRESHOLD）：どの項目も 3 点以上（地域・情報の上乗せは 2 点以上）、取り合いの少なさ 3 点以上、合計 70 点以上。
  * 基準に届かない原稿は、機械の検査の「不合格」として書き直しに回す（generate.ts）。
  */
 export interface QualitySignals {
@@ -43,6 +45,10 @@ export interface QualitySignals {
   maxIntentSimilarity: number;
   /** 固定ページのキーワードと取り合いになっているか（lib/seo-map.ts の findCannibalPage） */
   cannibalHit: boolean;
+  /** 先に公開した記事のどれにも無い、確認済みの数値・日付・金額の数（同じ事実の言い直しは数えない） */
+  newFactCount: number;
+  /** 表・3段以上の手順・3項目以上のチェックリストなど、読み手が見て使える形に整理した箇所の数 */
+  structuredBlocks: number;
 }
 
 export interface QualityScores {
@@ -51,11 +57,16 @@ export interface QualityScores {
   sourceQuality: number;
   localRelevance: number;
   internalLinkCoverage: number;
+  informationGain: number;
   cannibalizationRisk: number;
+  /** 100点満点（cannibalizationRisk は入れない） */
   total: number;
 }
 
-export const QUALITY_THRESHOLD = { each: 3, localRelevance: 2, total: 22 } as const;
+export const QUALITY_THRESHOLD = { each: 3, localRelevance: 2, informationGain: 2, cannibalizationRisk: 3, total: 70 } as const;
+
+/** 100点満点の重み（足すと100） */
+export const QUALITY_WEIGHTS = { searchIntentMatch: 20, originality: 20, sourceQuality: 20, localRelevance: 15, informationGain: 15, internalLinkCoverage: 10 } as const;
 
 const clamp = (n: number) => Math.max(1, Math.min(5, Math.round(n)));
 
@@ -76,8 +87,12 @@ export function scoreQuality(s: QualitySignals): QualityScores {
 
   const cannibalizationRisk = s.cannibalHit ? 1 : s.maxIntentSimilarity < 0.4 ? 5 : s.maxIntentSimilarity < 0.5 ? 4 : s.maxIntentSimilarity < 0.6 ? 3 : s.maxIntentSimilarity < 0.75 ? 2 : 1;
 
-  const total = originality + searchIntentMatch + sourceQuality + localRelevance + internalLinkCoverage + cannibalizationRisk;
-  return { originality, searchIntentMatch, sourceQuality, localRelevance, internalLinkCoverage, cannibalizationRisk, total };
+  // 新しい事実が無くても、表や手順に整理し直していれば 2 点（言い直しだけの記事は 1 点）
+  const informationGain = s.newFactCount >= 3 ? 5 : s.newFactCount === 2 ? 4 : s.newFactCount === 1 ? 3 : s.structuredBlocks >= 1 ? 2 : 1;
+
+  const parts = { searchIntentMatch, originality, sourceQuality, localRelevance, informationGain, internalLinkCoverage };
+  const total = Math.round((Object.keys(QUALITY_WEIGHTS) as (keyof typeof QUALITY_WEIGHTS)[]).reduce((sum, k) => sum + (parts[k] / 5) * QUALITY_WEIGHTS[k], 0));
+  return { ...parts, cannibalizationRisk, total };
 }
 
 const LABEL: Record<Exclude<keyof QualityScores, "total">, string> = {
@@ -86,6 +101,7 @@ const LABEL: Record<Exclude<keyof QualityScores, "total">, string> = {
   sourceQuality: "出典の質",
   localRelevance: "地域との結び付き",
   internalLinkCoverage: "内部リンク",
+  informationGain: "情報の上乗せ",
   cannibalizationRisk: "取り合いの少なさ",
 };
 
@@ -96,6 +112,7 @@ const HINT: Record<keyof typeof LABEL, string> = {
   sourceQuality: "葛飾区・東京都・国・SII の公式資料を出典にしてください",
   localRelevance: "葛飾区・東京都の制度や、地域の事情と結び付けて書いてください",
   internalLinkCoverage: "親の固定ページと、関連する固定ページへのリンクを本文に入れてください",
+  informationGain: "先に公開した記事に無い、公式資料で確かめた数値・日付・条件を足すか、手順や表に整理してください（同じ事実の言い直しは上乗せになりません）",
   cannibalizationRisk: "固定ページ・既存の記事と検索意図が近すぎます。より細かい疑問に絞ってください",
 };
 
@@ -103,14 +120,14 @@ const HINT: Record<keyof typeof LABEL, string> = {
 export function qualityErrors(q: QualityScores): string[] {
   const out: string[] = [];
   for (const k of Object.keys(LABEL) as (keyof typeof LABEL)[]) {
-    const min = k === "localRelevance" ? QUALITY_THRESHOLD.localRelevance : QUALITY_THRESHOLD.each;
+    const min = k === "localRelevance" ? QUALITY_THRESHOLD.localRelevance : k === "informationGain" ? QUALITY_THRESHOLD.informationGain : k === "cannibalizationRisk" ? QUALITY_THRESHOLD.cannibalizationRisk : QUALITY_THRESHOLD.each;
     if (q[k] < min) out.push(`品質スコアが基準に届きません：${LABEL[k]} ${q[k]}点（${min}点以上）。${HINT[k]}`);
   }
-  if (out.length === 0 && q.total < QUALITY_THRESHOLD.total) out.push(`品質スコアの合計が基準に届きません：${q.total}点（${QUALITY_THRESHOLD.total}点以上）`);
+  if (out.length === 0 && q.total < QUALITY_THRESHOLD.total) out.push(`品質スコアの合計が基準に届きません：${q.total}点（100点満点で${QUALITY_THRESHOLD.total}点以上）`);
   return out;
 }
 
-/** ログ・frontmatter 用の1行（例：独自性5 意図4 出典5 地域5 リンク4 取り合い5＝28） */
+/** ログ・frontmatter 用の1行（例：意図4 独自性5 出典5 地域5 上乗せ3 リンク4＝86点／取り合い5） */
 export function formatQuality(q: QualityScores): string {
-  return `独自性${q.originality} 意図${q.searchIntentMatch} 出典${q.sourceQuality} 地域${q.localRelevance} リンク${q.internalLinkCoverage} 取り合い${q.cannibalizationRisk}＝${q.total}`;
+  return `意図${q.searchIntentMatch} 独自性${q.originality} 出典${q.sourceQuality} 地域${q.localRelevance} 上乗せ${q.informationGain} リンク${q.internalLinkCoverage}＝${q.total}点／取り合い${q.cannibalizationRisk}`;
 }

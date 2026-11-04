@@ -1,8 +1,17 @@
 import type { SubsidyProgram } from "./types";
+import { sources } from "../sources";
 
 const SOURCE_URL = "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html";
 const SOURCE_NAME = "葛飾区公式サイト「令和8年度《個人住宅用》かつしかエコ助成金のご案内」";
-const LAST_VERIFIED = "2026-10-26";
+const LAST_VERIFIED = "2026-11-04";
+/** 申込期間・事前協議・公式の案内（PDF）・有効期限。どのメニューも同じ */
+const SCHEDULE = {
+  applicationStart: "2026-04-01",
+  applicationEnd: "2027-03-31",
+  preApplicationDays: 28,
+  officialPdfUrl: sources.katsushikaGuide.url,
+  validUntil: "2027-03-31",
+} as const;
 const FISCAL_YEAR = "令和8年度（2026年度）";
 const PERIOD = "2026年4月1日〜2027年3月31日（必着）";
 const DEADLINE = "2027年3月31日";
@@ -59,6 +68,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
+      ...SCHEDULE,
       conditions: COMMON_CONDITIONS,
       notes: [
         "太陽電池の公称最大出力の合計が1kW以上であること。出力は、合計を出す段階で小数点以下第3位を四捨五入する",
@@ -89,6 +99,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
+      ...SCHEDULE,
       conditions: COMMON_CONDITIONS,
       notes: [
         "助成対象経費は、対象となる機器の本体価格＋工事代",
@@ -117,6 +128,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
+      ...SCHEDULE,
       conditions: [ADDON_CONDITION],
       notes: [],
       sourceName: SOURCE_NAME,
@@ -142,6 +154,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
+      ...SCHEDULE,
       conditions: COMMON_CONDITIONS,
       notes: [],
       sourceName: SOURCE_NAME,
@@ -167,6 +180,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
+      ...SCHEDULE,
       conditions: [ADDON_CONDITION],
       notes: [],
       sourceName: SOURCE_NAME,
@@ -192,6 +206,7 @@ export const katsushikaProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: PRE_NOTE,
       status: "open",
+      ...SCHEDULE,
       conditions: COMMON_CONDITIONS,
       notes: ["助成額の算定基礎は「本体価格」。設置工事費や、電力切替盤などの付属品の価格は含まれない"],
       sourceName: SOURCE_NAME,

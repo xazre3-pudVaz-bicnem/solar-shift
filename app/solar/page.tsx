@@ -1,7 +1,8 @@
 import { sources as verified } from "@/data/sources";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, formatDateJa } from "@/lib/seo";
+import { fit } from "@/data/fit";
 import { subsidiesByEquipment } from "@/data/subsidies";
 import { faqsByIds } from "@/data/faq";
 import { ServiceLayout } from "@/components/sections/ServiceLayout";
@@ -63,7 +64,7 @@ export default function SolarPage() {
           figure: <FitStepChart />,
           body: (
             <>
-              <p>FIT（固定価格買取制度）では、住宅用（10kW未満）の余剰電力を10年間、決められた単価で買い取ってもらえます。2026年度の単価は<strong>最初の4年間が24円/kWh、5〜10年目が8.3円/kWh</strong>です（経済産業省の公表資料、2026年10月1日時点）。</p>
+              <p>FIT（固定価格買取制度）では、住宅用（10kW未満）の余剰電力を10年間、決められた単価で買い取ってもらえます。2026年度の単価は<strong>最初の4年間が24円/kWh、5〜10年目が8.3円/kWh</strong>です（経済産業省の公表資料、{formatDateJa(fit.lastVerified)}時点）。</p>
               <p>前半を高く・後半を低くする「初期投資支援スキーム」により、導入初期に回収を前倒しできる一方、5年目以降は売るより使うほうが有利になります。つまり、長期的には<strong>自家消費を増やす設計</strong>が重要です。</p>
               <p>仕組みと価格の詳細は<Link href="/guide/selling-electricity">売電とFIT価格のガイド</Link>、10年後の選択肢は<Link href="/guide/post-fit">卒FIT後の選択肢</Link>で解説しています。</p>
             </>

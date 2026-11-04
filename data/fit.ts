@@ -14,7 +14,7 @@ export const fit = {
   },
   sourceName: "経済産業省「再生可能エネルギーのFIT制度・FIP制度における2026年度以降の買取価格等と2026年度の賦課金単価を設定します」",
   sourceUrl: "https://www.meti.go.jp/press/2025/03/20260319004/20260319004.html",
-  lastVerified: "2026-10-01",
+  lastVerified: "2026-11-04",
 } as const;
 
 /** 年ごとの単価（1年目〜termYears年目） */

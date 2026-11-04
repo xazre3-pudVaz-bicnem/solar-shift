@@ -1,12 +1,24 @@
 import type { SubsidyProgram } from "./types";
+import { sources } from "../sources";
 
-const LAST_VERIFIED = "2026-10-01";
+const LAST_VERIFIED = "2026-11-04";
 const FISCAL_YEAR = "令和8年度（2026年度）";
 
 const SOLAR_SOURCE_URL = "https://www.tokyo-co2down.jp/subsidy/fam_solar/r8/";
 const SOLAR_SOURCE_NAME = "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業」";
 const BATTERY_SOURCE_URL = "https://www.tokyo-co2down.jp/subsidy/family_tikudenchi/r8/";
 const BATTERY_SOURCE_NAME = "クール・ネット東京「令和8年度 家庭における蓄電池導入促進事業」";
+
+/** 蓄電池の問い合わせ先（公式ページで 2026-11-04 に確認。2026-09-01 に電話番号が変わった） */
+const BATTERY_CONTACT = {
+  name: "クール・ネット東京 創エネ支援チーム（蓄電池ヘルプデスク）",
+  tel: "03-6737-5100",
+  hours: "平日9:00〜17:00（祝祭日・年末年始を除く）",
+};
+
+/** 実績報告で必須になった書類（令和8年度に事前申込を受け付けた申請）。太陽光・蓄電池で共通 */
+const PAYMENT_PROOF_NOTE =
+  "令和8年度に事前申込を受け付けた申請は、交付申請兼実績報告のときに「金融機関発行の証明書等」（振込の控え、ネットバンキングの振込履歴、クレジットカードの利用明細など、支払いを確かめられる書類）の提出が必須です。現金の受け渡しによる取引は、助成の対象外です。";
 
 const SOLAR_CONTACT = {
   name: "クール・ネット東京 温暖化対策推進課 創エネ支援チーム（太陽光担当）",
@@ -32,6 +44,7 @@ export const tokyoSolarProgram: SubsidyProgram = {
     "国または区市町村の補助金等を受給した場合は、その受給金額を助成対象経費から除きます。区市町村の補助金等を受給した後で、交付申請兼実績報告を行います（手引きによる）。",
     "「優れた機能性を有する太陽光発電システム」の認定による上乗せ、リフォーム瑕疵保険加入時の加算（1契約7,000円）があります。",
     "キャッシュバック等を受ける場合はその分が助成対象経費から除外されます。未使用品・JET/IEC認証モジュールが対象。",
+    PAYMENT_PROOF_NOTE,
   ],
   menus: [
     {
@@ -59,6 +72,11 @@ export const tokyoSolarProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: "事前申込（Web）が必要。",
       status: "open",
+      applicationStart: "2026-05-29",
+      applicationEnd: "2029-03-30",
+      preApplicationDays: null,
+      officialPdfUrl: sources.tokyoSolarHandbook.url,
+      validUntil: "2027-03-31",
       conditions: [
         "都内の住宅に新規設置する未使用品であること",
         "太陽電池モジュールがJETまたはIEC認証を取得していること",
@@ -99,6 +117,11 @@ export const tokyoSolarProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: "事前申込（Web）が必要。",
       status: "open",
+      applicationStart: "2026-05-29",
+      applicationEnd: "2029-03-30",
+      preApplicationDays: null,
+      officialPdfUrl: sources.tokyoSolarHandbook.url,
+      validUntil: "2027-03-31",
       conditions: [
         "都内の新築住宅に設置する未使用品であること",
         "太陽電池モジュールがJETまたはIEC認証を取得していること",
@@ -133,7 +156,8 @@ export const tokyoBatteryProgram: SubsidyProgram = {
   lastVerified: LAST_VERIFIED,
   notes: [
     "事前申込は2026年5月29日開始、交付申請兼実績報告は2026年6月30日開始。",
-    "【重要】2026年10月1日以降に事前申込をする場合、助成対象機器はSII（環境共創イニシアチブ）が登録している機器に限られます。検討中の機種が登録済みかを必ず確認してください。",
+    "【重要】2026年10月1日以降に事前申込をする場合、助成対象機器はSII（環境共創イニシアチブ）が登録している機器に限られます（2026年4月1日〜6月30日に契約を結んだ、または契約・工事を終えた事業は除く）。検討中の機種が登録済みかを必ず確認してください。",
+    PAYMENT_PROOF_NOTE,
     "DR実証に参加する場合、エネルギーマネジメント機器の設置有無に応じた加算があります。加算額や上限の扱いは公式案内でご確認ください。",
     "都および公社の他の同種の助成金との重複受給はできません。国または区市町村の補助金を受ける場合は、合計が助成対象経費を超えない範囲で交付されます（実施要綱による）。",
   ],
@@ -156,6 +180,11 @@ export const tokyoBatteryProgram: SubsidyProgram = {
       preApplicationRequired: true,
       preApplicationNote: "事前申込（Web）が必要。2026年10月1日以降の事前申込はSII登録機器に限る。",
       status: "open",
+      applicationStart: "2026-05-29",
+      applicationEnd: null,
+      preApplicationDays: null,
+      officialPdfUrl: sources.tokyoBatteryOutline.url,
+      validUntil: "2027-03-31",
       conditions: [
         "都内の住宅に新規設置する未使用品であること",
         "SIIに登録されている助成対象機器であること（2026年10月1日以降の事前申込）",
@@ -168,6 +197,7 @@ export const tokyoBatteryProgram: SubsidyProgram = {
       sourceName: BATTERY_SOURCE_NAME,
       sourceUrl: BATTERY_SOURCE_URL,
       lastVerified: LAST_VERIFIED,
+      contact: BATTERY_CONTACT,
     },
   ],
 };

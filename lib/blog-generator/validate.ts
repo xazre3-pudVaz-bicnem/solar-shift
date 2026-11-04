@@ -1,5 +1,5 @@
 import { allowedYenAmounts } from "./facts";
-import { checkNumericClaims, normalizeDigits, sourceTypeOf, type Claim, type FactIndex } from "./claims";
+import { checkNumericClaims, extractNumTokens, isNeutralQuantity, normalizeDigits, sourceTypeOf, type Claim, type FactIndex } from "./claims";
 import { findCannibalPage } from "../seo-map";
 import { scoreQuality, qualityErrors, type QualityScores } from "./score";
 
@@ -20,7 +20,7 @@ import { scoreQuality, qualityErrors, type QualityScores } from "./score";
  *  10. 根拠なしの No.1・最上級
  *  11. 薄い記事（本文 1,800 字未満・見出しごとの中身が無い）
  *  12. 同じ構成の焼き直し（見出しの並びが既存記事とほぼ同じ・本文の言い換え）
- *  13. 品質スコア（独自性・検索意図との一致・出典の質・地域との結び付き・内部リンク・取り合いの少なさ）が基準に届かない（score.ts）
+ *  13. 品質スコア（検索意図との一致・独自性・出典の質・地域との結び付き・情報の上乗せ・内部リンク、と取り合いの少なさ）が基準に届かない（score.ts）
  */
 
 export interface GeneratedArticle {
@@ -54,19 +54,58 @@ export interface ValidateContext {
   pillarLinks?: string[];
   /** 既存記事の点検（scripts/blog-audit.ts）のとき true。既存記事どうしの重複検査を緩める */
   audit?: boolean;
+  /**
+   * 「情報の上乗せ」を比べる相手（この記事より先に公開した記事）。渡さなければ existing と同じ。
+   * 既存記事の点検では、あとから出た記事と比べると、先に事実を出した記事のほうが「上乗せ無し」に見えてしまうため
+   */
+  earlier?: ExistingPost[];
 }
 
 export interface ValidateResult {
   errors: string[];
   /** 数値ごとの「主張・出典・種類・確認済み」（frontmatter に残す） */
   claims: Claim[];
-  /** 品質スコア（6項目・各1〜5点）。基準に届かないと、errors に理由が入る（既存記事の点検のときは、点を出すだけ） */
+  /** 品質スコア（7項目・各1〜5点と、100点満点の合計）。基準に届かないと、errors に理由が入る（既存記事の点検のときは、点を出すだけ） */
   scores: QualityScores;
 }
 
 /** 本文の最低文字数（Markdown 記法を除く）。これより短い記事は薄いとみなして公開しない */
 export const MIN_BODY_CHARS = 1800;
 export const MAX_BODY_CHARS = 3600;
+
+/**
+ * 文章に出てくる事実の「鍵」（数値・日付・期間・金額）。情報の上乗せ（先に公開した記事に無い事実）を数えるのに使う。
+ * 数値の表記は claims.ts の extractNumTokens と同じ正規化（「4週間」「D:2027-03-31」など）。金額は「Y:10万円/kW」のように持つ
+ */
+export function factKeysOf(text: string): Set<string> {
+  const keys = new Set<string>();
+  for (const t of extractNumTokens(text)) keys.add(t.key);
+  for (const m of normalizeDigits(text).matchAll(/(\d+(?:\.\d+)?)\s*(億|万)?円(?:\s*\/\s*(kWh|kW|戸|台))?/g)) keys.add(`Y:${m[1]}${m[2] ?? ""}円${m[3] ? `/${m[3]}` : ""}`);
+  return keys;
+}
+
+/** 表・3段以上の番号付きの手順・3項目以上のチェックリストの数（読み手が見て使える形に整理した箇所） */
+export function structuredBlocksOf(md: string): number {
+  let blocks = 0;
+  let steps = 0;
+  let checks = 0;
+  const flush = () => {
+    if (steps >= 3) blocks += 1;
+    if (checks >= 3) blocks += 1;
+    steps = 0;
+    checks = 0;
+  };
+  for (const raw of md.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (/^\|\s*:?-{2,}/.test(line)) blocks += 1;
+    // チェックリスト（- [ ] …）と、番号付きの手順（1. …）。空行をはさんでも同じ並びとして数える
+    if (/^[-*]\s+\[[ xX]\]\s+\S/.test(line)) checks += 1;
+    else if (/^\d+\.\s+\S/.test(line)) steps += 1;
+    else if (line !== "") flush();
+  }
+  flush();
+  return blocks;
+}
 
 /** バイグラムの Dice 係数 */
 export function similarity(a: string, b: string): number {
@@ -512,6 +551,16 @@ export function validate(article: GeneratedArticle, ctx: ValidateContext): Valid
   const localPage = /^\/(subsidy\/(katsushika|tokyo)|area(\/|$)|simulation)/;
   const sourceTypes = sourceUrls.map((u) => sourceTypeOf(u));
   const fixedLinks = [...new Set(links.filter((l) => !l.startsWith("/blog/")))];
+  // 情報の上乗せ：この記事の確認済みの事実のうち、先に公開した記事のどれにも出てこないもの
+  const earlierKeys = new Set<string>();
+  for (const p of ctx.earlier ?? ctx.existing) for (const k of factKeysOf(p.body ?? "")) earlierKeys.add(k);
+  const ownKeys = [...factKeysOf(haystack)].filter((k) => {
+    if (k.startsWith("Y:") && k.includes("円")) return true; // 金額は、上の金額ゲートで確認済み
+    if (/^(D|YM|Y|MD):/.test(k)) return !(ctx.factIndex?.neutral.has(k) ?? false) && (ctx.factIndex ? ctx.factIndex.tokens.has(k) : true);
+    if (isNeutralQuantity(k)) return false;
+    return ctx.factIndex ? ctx.factIndex.tokens.has(k) : true;
+  });
+  const newFactCount = ownKeys.filter((k) => !earlierKeys.has(k)).length;
   const scores = scoreQuality({
     maxBodyOverlap: Math.max(0, ...ctx.existing.map((p) => (p.body ? shingleOverlap(body, p.body) : 0))),
     maxTitleSimilarity: Math.max(0, ...ctx.existing.map((p) => (p.title ? similarity(article.title ?? "", p.title) : 0))),
@@ -529,6 +578,8 @@ export function validate(article: GeneratedArticle, ctx: ValidateContext): Valid
     hasPillarLink: pillars.length === 0 || pillars.some((l) => links.includes(l)),
     maxIntentSimilarity: Math.max(0, ...ctx.existing.map((p) => (p.intent ? similarity(ctx.intent, p.intent) : 0)), ...ctx.reservedIntents.map((r) => similarity(ctx.intent, r))),
     cannibalHit: Boolean(findCannibalPage(ctx.intent)),
+    newFactCount,
+    structuredBlocks: structuredBlocksOf(body),
   });
   // 既存記事の点検（audit）では、点を出すだけ（書いた時点の基準で公開した記事を、あとから止めない）
   if (!ctx.audit) errors.push(...qualityErrors(scores));

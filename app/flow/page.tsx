@@ -168,7 +168,7 @@ export default function FlowPage() {
 
         <section className="cv-block mt-16" aria-labelledby="faq-h">
           <h2 id="faq-h" className="border-l-[8px] border-orange-500 pl-3 text-[24px] leading-[1.35] font-black text-navy-900">流れについてよくある質問</h2>
-          <FaqSection items={faqsByIds(["install-period", "install-survey", "subsidy-pre-consultation", "subsidy-combination"])} withSchema className="mt-6" />
+          <FaqSection items={faqsByIds(["install-period", "install-survey", "subsidy-pre-consultation"])} withSchema className="mt-6" />
         </section>
 
         <SubsidyDisclaimer className="mt-12" />

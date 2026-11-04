@@ -5,6 +5,8 @@ import { validate, similarity, countChars, MIN_BODY_CHARS, type GeneratedArticle
 import { buildFactIndex, compactClaims, sourceTypeOf, type Claim, type FactIndex } from "./claims";
 import { formatQuality } from "./score";
 import { findCannibalPage } from "../seo-map";
+import { siteConfig } from "../site";
+import { formatDateJa } from "../seo";
 import { findPageLabel } from "../page-labels";
 import { blogCategories } from "../../data/blog-categories";
 import { guides } from "../../data/guides";
@@ -45,7 +47,7 @@ export const DEFAULT_MODEL = "claude-sonnet-5-5";
  */
 export const DEFAULT_REVIEW_MODEL = "claude-opus-5-5";
 /** 品質ゲートの版。検査の内容を変えたら上げる（記事の frontmatter に残る） */
-export const QUALITY_GATE_VERSION = 5;
+export const QUALITY_GATE_VERSION = 6;
 const HISTORY_SIZE = 40;
 /**
  * 書き直しの回数の上限。実際のモデルで試したところ、1回目は機械の検査、2〜3回目は読み直しで落ち、
@@ -167,7 +169,7 @@ ${facts}
 - 記事の書き方そのものについての断り（「この記事では推測しません」「事実シートによると」「書かれていることだけをお伝えします」など）を本文に書かない。「事実シート」という言葉は、読者には見えない内部の資料の名前なので、使わない。
 - 書き終えたら、誤字・脱字が無いかを読み返す。
 - 数値を扱う箇所では Markdown の表を1つ以上使う。
-- 補助金・制度の数値には「2026年10月1日時点の葛飾区の公式情報」のように、時点と出典元を添える。
+- 補助金・制度の数値には「${formatDateJa(siteConfig.subsidyInfoDate)}時点の葛飾区の公式情報」のように、時点と出典元を添える。
 - 制度に触れる記事では「最新情報は公式サイトでご確認ください」と必ず書く。
 - 区と都の助成額は別々に示し、合計額は書かない。併用に触れるときは「葛飾区の案内では、国や都の補助制度との併用も可能。ただし、補助金の合計が助成対象経費を上回る場合は、上回る額が減額される」と書く。
 - 大げさな広告表現（究極・最安・No.1・トップクラス・必ず・絶対）は禁止。
@@ -298,7 +300,7 @@ function buildReviewPrompt(article: GeneratedArticle): string {
 - 事実シートに無い理由づけ・推測を、事実のように書いている文 … supported を false にする
   （例：「区がこう呼びかけているのは〜だからです」「〜という営業手法が存在することを示しています」「〜する業者は、〜している可能性が高いです」。
    区や協会が何を言っているかは事実シートで確かめられるが、その理由や、業者の意図は、事実シートに書かれていない）
-- 「2026年10月1日時点の公式情報」のように、情報の時点と出どころを示すだけの言い回しは、主張として取り出さない
+- 「${formatDateJa(siteConfig.subsidyInfoDate)}時点の公式情報」のように、情報の時点と出どころを示すだけの言い回しは、主張として取り出さない
 - 判定しなくてよいもの：読者への呼びかけ、「見積もりで確認しましょう」のような助言、
   「機種によって異なる」という書き方、屋根や電気の使い方によって変わるという一般的な注意
 
@@ -433,7 +435,7 @@ export interface QualityMeta {
   gate: number;
   checkedAt: string;
   chars: number;
-  /** 品質スコア（6項目・各1〜5点）を1行にしたもの（score.ts の formatQuality） */
+  /** 品質スコア（7項目・各1〜5点と100点満点の合計）を1行にしたもの（score.ts の formatQuality） */
   scores?: string;
   /** 読み直しに使ったモデル。読み直しを行っていなければ "none" */
   reviewer: string;

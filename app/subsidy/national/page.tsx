@@ -14,6 +14,8 @@ import { KeyPoints } from "@/components/ui/KeyPoints";
 import { SubsidyProgramSection } from "@/components/subsidy/SubsidyProgramSection";
 import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { LastUpdated } from "@/components/ui/LastUpdated";
+import { ChangeLog } from "@/components/subsidy/ChangeLog";
+import { changeLogFor } from "@/data/subsidies/changelog";
 import { SourceList } from "@/components/ui/SourceList";
 import { Callout } from "@/components/ui/Callout";
 import { FaqSection } from "@/components/sections/FaqSection";
@@ -46,7 +48,7 @@ export default function NationalSubsidyPage() {
     { name: "補助金", href: "/subsidy" },
     { name: "国の太陽光・蓄電池関連補助制度", href: PATH },
   ];
-  const faqItems = faqsByIds(["subsidy-national", "subsidy-combination", "subsidy-guarantee"]);
+  const faqItems = faqsByIds(["subsidy-national", "subsidy-guarantee"]);
   const date = formatDateJa(VERIFIED);
   const posts = getPostsForPillar(["v2h", "battery"], 3, { path: PATH, prefer: ["v2h-subsidy-katsushika-2026"] });
   const dr = getSubsidy("national-dr-battery")!;
@@ -168,7 +170,8 @@ export default function NationalSubsidyPage() {
           <FaqSection items={faqItems} withSchema className="mt-6" />
         </section>
 
-        <SubsidyDisclaimer className="mt-12" />
+        <ChangeLog entries={changeLogFor(["national"])} className="mt-12" />
+        <SubsidyDisclaimer className="mt-8" />
         <SourceList sources={nationalPrograms.map((p) => ({ name: p.sourceName, url: p.sourceUrl, verifiedAt: p.lastVerified }))} className="mt-10" />
         <div className="mt-10">
           <AuthorBox />

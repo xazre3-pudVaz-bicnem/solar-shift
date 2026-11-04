@@ -21,6 +21,7 @@ function compact<T extends JsonLd>(obj: T): T {
 export const ORG_ID = SITE_URL ? `${SITE_URL}/#organization` : "#organization";
 export const WEBSITE_ID = SITE_URL ? `${SITE_URL}/#website` : "#website";
 export const LOCALBUSINESS_ID = SITE_URL ? `${SITE_URL}/#localbusiness` : "#localbusiness";
+export const BRAND_ID = SITE_URL ? `${SITE_URL}/#brand` : "#brand";
 
 const KNOWS_ABOUT = ["住宅用太陽光発電", "家庭用蓄電池", "V2H", "HEMS", "太陽光発電の補助金", "葛飾区の補助金", "かつしかエコ助成金", "東京都の太陽光・蓄電池助成"];
 
@@ -151,6 +152,26 @@ export function localBusinessSchema(): JsonLd {
     }),
     sameAs: [siteConfig.company.corporateUrl, siteConfig.gbp.mapsUrl].filter(Boolean),
   });
+}
+
+/**
+ * サービス名 SOLAR SHIFT（ブランド）と、運営会社（Organization）・地域の事業所（LocalBusiness）の結び付き。TOP の @graph だけに出す。
+ * 会社と事業所の実体は layout の @graph にある（同じ @id）。ここでは brand の参照だけを足す（ほかのページの構造化データは変えない）
+ */
+export function brandSchemas(): JsonLd[] {
+  return [
+    compact({
+      "@type": "Brand",
+      "@id": BRAND_ID,
+      name: siteConfig.name,
+      alternateName: siteConfig.nameJa,
+      url: absoluteUrl("/"),
+      logo: logoImage(),
+      description: siteConfig.description,
+    }),
+    { "@type": "Organization", "@id": ORG_ID, brand: { "@id": BRAND_ID } },
+    { "@type": ["LocalBusiness", "HomeAndConstructionBusiness"], "@id": LOCALBUSINESS_ID, brand: { "@id": BRAND_ID } },
+  ];
 }
 
 export function websiteSchema(): JsonLd {

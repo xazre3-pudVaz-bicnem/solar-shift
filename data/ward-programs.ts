@@ -76,7 +76,7 @@ export interface WardProgram {
 }
 
 /** 各区の公式ページを開いて確かめた日（画面の「確認日」と、構造化データの lastReviewed） */
-const VERIFIED = "2026-10-26";
+const VERIFIED = "2026-11-04";
 /** 制度の内容（このファイルの文章）を最後に書き直した日。確認だけなら進めない（最終更新日・sitemap の lastmod に使う） */
 const CONTENT_UPDATED = "2026-10-02";
 

@@ -19,19 +19,20 @@ import { HELD_BACK } from "@/lib/indexing";
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!IS_PUBLIC || !SITE_URL) return [];
   const base = SITE_URL;
-  // 固定ページの lastmod：補助金情報の基準日と、文章を最後に見直した日の、新しいほう
-  const infoDate = new Date(siteConfig.contentUpdatedAt > siteConfig.subsidyInfoDate ? siteConfig.contentUpdatedAt : siteConfig.subsidyInfoDate);
+  // lastmod は「内容を直した日」だけで決める。公式情報を確かめた日（siteConfig.subsidyInfoDate・各制度の lastVerified）は使わない
+  // （確かめただけでは内容は変わらない。偽の更新の合図を Google に送らない）
+  const infoDate = new Date(siteConfig.contentUpdatedAt);
   const posts = getAllPosts();
   const latestPost = latestUpdate(posts);
-  const latestGuide = guides.reduce<string>((max, g) => (g.updatedAt > max ? g.updatedAt : max), siteConfig.subsidyInfoDate);
+  const latestGuide = guides.reduce<string>((max, g) => (g.updatedAt > max ? g.updatedAt : max), siteConfig.contentUpdatedAt);
 
   const hidden = HELD_BACK;
 
-  // 固定ページ：そのページの内容を最後に直した日（lib/routes.ts の updatedAt）と、補助金情報の基準日の、新しいほう。
+  // 固定ページ：そのページの内容を最後に直した日（lib/routes.ts の updatedAt）。
   // 一覧のページ（/blog・/guide）と TOP は、載っている記事・ガイドの更新日も見る。ビルドした日は使わない
   const later = (a: Date, b: Date) => (a > b ? a : b);
   const lastModifiedFor = (path: string): Date => {
-    const own = later(new Date(routeUpdatedAt(path)), new Date(siteConfig.subsidyInfoDate));
+    const own = new Date(routeUpdatedAt(path));
     if (path === "/blog" && latestPost) return later(own, new Date(latestPost));
     if (path === "/guide") return later(own, new Date(latestGuide));
     if (path === "/" && latestPost) return later(own, new Date(latestPost));
@@ -57,7 +58,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const ward = getWardProgram(a.slug);
     return {
       url: `${base}/area/${a.slug}`,
-      lastModified: ward ? new Date(wardPageUpdatedAt(a.slug, ward.updatedAt)) : later(infoDate, new Date(EXTRA_UPDATED_AT[`/area/${a.slug}`] ?? siteConfig.subsidyInfoDate)),
+      lastModified: ward ? new Date(wardPageUpdatedAt(a.slug, ward.updatedAt)) : later(infoDate, new Date(EXTRA_UPDATED_AT[`/area/${a.slug}`] ?? siteConfig.contentUpdatedAt)),
       changeFrequency: "monthly",
       priority: a.status === "primary" ? 0.9 : 0.7,
     };
@@ -88,7 +89,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .filter((c) => isCategoryIndexable(c.slug))
     .map((c) => ({
       url: `${base}/blog/category/${c.slug}`,
-      lastModified: new Date(latestUpdate(getPostsByCategory(c.slug)) ?? siteConfig.subsidyInfoDate),
+      lastModified: new Date(latestUpdate(getPostsByCategory(c.slug)) ?? siteConfig.contentUpdatedAt),
       changeFrequency: "weekly",
       priority: 0.4,
     }));

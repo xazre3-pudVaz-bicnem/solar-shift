@@ -58,7 +58,8 @@ export const siteConfig = {
       city: "葛飾区",
       /** 町名。「拠点は葛飾区◯◯」のような文章に使う */
       town: "亀有",
-      street: "亀有3丁目16-14",
+      /** 運営会社の公式サイトと同じ表記（部屋番号 201 まで。2026-11-04 に会社サイトで確認） */
+      street: "亀有3丁目16-14-201",
       /** 表示用のフル住所 */
       get full() {
         return `${this.prefecture}${this.city}${this.street}`;
@@ -171,7 +172,7 @@ export const siteConfig = {
   publishedAt: "2026-10-01",
 
   /** 補助金情報の基準日。制度を更新したら data/subsidies 側の lastVerified と合わせて更新する */
-  subsidyInfoDate: "2026-10-01",
+  subsidyInfoDate: "2026-11-04",
 
   /** 記事・補助金情報の「編集・運営」の表記（「監修」とは書かない。資格のある第三者の監修ではないため） */
   editorial: {
@@ -192,7 +193,7 @@ export function companyMapUrl(): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(siteConfig.company.address.full)}`;
 }
 
-/** 郵便番号つきの所在地（例：〒125-0061 東京都葛飾区亀有3丁目16-14）。郵便番号が空なら住所だけ */
+/** 郵便番号つきの所在地（例：〒125-0061 東京都葛飾区亀有3丁目16-14-201）。郵便番号が空なら住所だけ */
 export function addressWithPostal(): string {
   const a = siteConfig.company.address;
   return a.postalCode ? `〒${a.postalCode} ${a.full}` : a.full;

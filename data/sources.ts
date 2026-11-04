@@ -25,7 +25,7 @@ const src = (id: string, sourceType: SourceType, name: string, url: string, veri
 
 export const sources = {
   // ───────── 葛飾区
-  katsushikaPage: src("katsushika-page", "municipality", "葛飾区公式サイト「令和8年度《個人住宅用》かつしかエコ助成金のご案内」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html", "2026-10-02"),
+  katsushikaPage: src("katsushika-page", "municipality", "葛飾区公式サイト「令和8年度《個人住宅用》かつしかエコ助成金のご案内」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1030818.html", "2026-11-04"),
   katsushikaConsumerCenter: src("katsushika-consumer-center", "municipality", "葛飾区公式サイト「消費生活相談はこちら」", "https://www.city.katsushika.lg.jp/kurashi/1000061/1003797/1003863.html", "2026-10-02"),
   katsushikaGuide: src("katsushika-guide", "municipality", "葛飾区「令和8年度 個人住宅用 かつしかエコ助成金のご案内（事前協議分）」", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/030/818/r8goannaishugo.pdf", "2026-10-02"),
   katsushikaSolarHandbook: src("katsushika-solar-handbook", "municipality", "葛飾区「太陽光発電システム手引き（個人住宅）」", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/036/259/r8taiyokokojin.pdf", "2026-10-02"),
@@ -50,10 +50,11 @@ export const sources = {
   tokyoKohoMandate: src("tokyo-koho-mandate", "tokyo", "広報東京都2025年3月号「太陽光パネルの設置を義務付ける制度が2025年4月から始まります」", "https://www.koho.metro.tokyo.lg.jp/2025/03/02.html", "2026-10-05"),
 
   // ───────── 東京都（クール・ネット東京）
-  tokyoSolarPage: src("tokyo-solar-page", "tokyo", "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業」", "https://www.tokyo-co2down.jp/subsidy/fam_solar/r8/", "2026-10-02"),
+  tokyoSolarPage: src("tokyo-solar-page", "tokyo", "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業」", "https://www.tokyo-co2down.jp/subsidy/fam_solar/r8/", "2026-11-04"),
   tokyoSolarHandbook: src("tokyo-solar-handbook", "tokyo", "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業 助成金の手引き」", "https://tokyo-co2down.g.kuroco-img.app/files/user/files/subsidy/fam_solar/r8/r8taiyouko_tebiki_20260630.pdf", "2026-10-02"),
-  tokyoBatteryPage: src("tokyo-battery-page", "tokyo", "クール・ネット東京「令和8年度 家庭における蓄電池導入促進事業」", "https://www.tokyo-co2down.jp/subsidy/family_tikudenchi/r8/", "2026-10-02"),
+  tokyoBatteryPage: src("tokyo-battery-page", "tokyo", "クール・ネット東京「令和8年度 家庭における蓄電池導入促進事業」", "https://www.tokyo-co2down.jp/subsidy/family_tikudenchi/r8/", "2026-11-04"),
   tokyoBatteryOutline: src("tokyo-battery-outline", "tokyo", "東京都「家庭における蓄電池導入促進事業 実施要綱」", "https://tokyo-co2down.g.kuroco-img.app/files/user/files/subsidy/family_tikudenchi/r8/r8battery_jisshiyoko_20260417.pdf", "2026-10-02"),
+  tokyoDocsChange: src("tokyo-docs-change-20260203", "tokyo", "クール・ネット東京「提出書類変更のお知らせ」", "https://www.tokyo-co2down.jp/news/20260203/", "2026-11-04"),
 
   tokyoInitialCostZero: src("tokyo-initial-cost-zero", "tokyo", "クール・ネット東京「住宅用太陽光発電初期費用ゼロ促進の増強事業」", "https://www.tokyo-co2down.jp/subsidy/initial-cost0-zokyo/", "2026-10-05"),
   tokyoBatteryGrantRules: src("tokyo-battery-grant-rules", "tokyo", "クール・ネット東京（東京都環境公社）「家庭における蓄電池導入促進事業助成金交付要綱」", "https://tokyo-co2down.g.kuroco-img.app/files/user/files/subsidy/family_tikudenchi/r8/r8battery_kofuyoko_20260605.pdf", "2026-10-02"),
@@ -65,7 +66,7 @@ export const sources = {
   siiBatteryRegistration: src("sii-battery-registration", "sii", "SII（環境共創イニシアチブ）「令和8年度 蓄電システム製品登録 公募要領」", "https://zehweb.jp/assets/doc/R08ZEH_moe_lib_kouboyouryou.pdf", "2026-10-02"),
 
   // ───────── 国
-  metiSurcharge2026: src("meti-surcharge-2026", "national", "経済産業省「再生可能エネルギーのFIT制度・FIP制度における2026年度以降の買取価格等と2026年度の賦課金単価を設定します」（2026年3月19日）", "https://www.meti.go.jp/press/2025/03/20260319004/20260319004.html", "2026-10-05"),
+  metiSurcharge2026: src("meti-surcharge-2026", "national", "経済産業省「再生可能エネルギーのFIT制度・FIP制度における2026年度以降の買取価格等と2026年度の賦課金単価を設定します」（2026年3月19日）", "https://www.meti.go.jp/press/2025/03/20260319004/20260319004.html", "2026-11-04"),
   enechoSurcharge: src("enecho-surcharge", "national", "資源エネルギー庁「なっとく！再生可能エネルギー 制度の概要（再生可能エネルギー発電促進賦課金とは）」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/surcharge.html", "2026-10-05"),
   enechoBillBreakdown: src("enecho-bill-breakdown", "national", "資源エネルギー庁「月々の電気料金の内訳」", "https://www.enecho.meti.go.jp/category/electricity_and_gas/electric/fee/stracture/spec.html", "2026-10-05"),
   ntaSellingIncome: src("nta-selling-income", "national", "国税庁 質疑応答事例（所得税）「自宅に設置した太陽光発電設備による余剰電力の売却収入」", "https://www.nta.go.jp/law/shitsugi/shotoku/02/44.htm", "2026-10-05"),

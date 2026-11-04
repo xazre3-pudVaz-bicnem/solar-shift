@@ -20,7 +20,7 @@ import { buildFactIndex } from "../lib/blog-generator/claims";
 import { loadFacts, allowedSourceUrls } from "../lib/blog-generator/facts";
 import { allowedInternalPaths, reviewArticle, toMarkdown, sourceNameFor, OPERATOR_SOURCE, QUALITY_GATE_VERSION } from "../lib/blog-generator/generate";
 import { readExistingPosts } from "../lib/blog-generator/existing";
-import { scoreQuality, qualityErrors, formatQuality, QUALITY_THRESHOLD } from "../lib/blog-generator/score";
+import { scoreQuality, qualityErrors, formatQuality, QUALITY_THRESHOLD, QUALITY_WEIGHTS } from "../lib/blog-generator/score";
 import { guides } from "../data/guides";
 import matter from "gray-matter";
 
@@ -81,10 +81,17 @@ async function main() {
       hasPillarLink: false,
       maxIntentSimilarity: 0.65,
       cannibalHit: false,
+      newFactCount: 0,
+      structuredBlocks: 0,
     });
     check("品質スコア：弱い原稿は、基準に届かない", qualityErrors(weak).length > 0, formatQuality(weak));
-    const cannibal = scoreQuality({ ...{ maxBodyOverlap: 0.05, maxTitleSimilarity: 0.2, intentInTitle: 1, intentInIntro: 1, intentInHeadings: 1, sourceCount: 3, officialSourceCount: 3, katsushikaMentions: 5, tokyoMentions: 2, hasLocalSource: true, linksToLocalPage: true, fixedLinkCount: 4, hasRequiredLinks: true, hasPillarLink: true, maxIntentSimilarity: 0.3 }, cannibalHit: true });
+    const cannibal = scoreQuality({ ...{ maxBodyOverlap: 0.05, maxTitleSimilarity: 0.2, intentInTitle: 1, intentInIntro: 1, intentInHeadings: 1, sourceCount: 3, officialSourceCount: 3, katsushikaMentions: 5, tokyoMentions: 2, hasLocalSource: true, linksToLocalPage: true, fixedLinkCount: 4, hasRequiredLinks: true, hasPillarLink: true, maxIntentSimilarity: 0.3, newFactCount: 4, structuredBlocks: 2 }, cannibalHit: true });
     check("品質スコア：固定ページと取り合う原稿は、ほかが満点でも落ちる", qualityErrors(cannibal).some((e) => /取り合い/.test(e)), formatQuality(cannibal));
+    // 先に公開した記事と同じ事実を言い直しただけ（新しい事実も、表・手順も無い）原稿は、ほかが満点でも落ちる
+    const rehash = scoreQuality({ maxBodyOverlap: 0.05, maxTitleSimilarity: 0.2, intentInTitle: 1, intentInIntro: 1, intentInHeadings: 1, sourceCount: 3, officialSourceCount: 3, katsushikaMentions: 5, tokyoMentions: 2, hasLocalSource: true, linksToLocalPage: true, fixedLinkCount: 4, hasRequiredLinks: true, hasPillarLink: true, maxIntentSimilarity: 0.3, cannibalHit: false, newFactCount: 0, structuredBlocks: 0 });
+    check("品質スコア：言い直しだけの原稿は、ほかが満点でも落ちる（情報の上乗せ）", qualityErrors(rehash).some((e) => /情報の上乗せ/.test(e)), formatQuality(rehash));
+    const full = scoreQuality({ maxBodyOverlap: 0.05, maxTitleSimilarity: 0.2, intentInTitle: 1, intentInIntro: 1, intentInHeadings: 1, sourceCount: 3, officialSourceCount: 3, katsushikaMentions: 5, tokyoMentions: 2, hasLocalSource: true, linksToLocalPage: true, fixedLinkCount: 4, hasRequiredLinks: true, hasPillarLink: true, maxIntentSimilarity: 0.3, cannibalHit: false, newFactCount: 4, structuredBlocks: 2 });
+    check("品質スコア：合計は100点満点（重みの合計が100）", full.total === 100 && Object.values(QUALITY_WEIGHTS).reduce((a, b) => a + b, 0) === 100, formatQuality(full));
   }
 
   // ── 落とすべき記事（種類ごとに、対応するエラーが出ること）

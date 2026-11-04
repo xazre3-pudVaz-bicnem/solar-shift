@@ -66,7 +66,7 @@ Google Search Console（以下 GSC）で、公開後に確かめること・定�
 
 そのクエリを受け持つページを決めて、**新しい記事を作る前に、そのページを直す**。
 
-1. `lib/seo-map.ts` で、そのクエリに近いキーワードを持つページを探す（`npm run seo:check -- --table` で一覧が出る）
+1. `data/seo/keyword-map.ts`（キーワードの受け持ち表）で、そのクエリに近いキーワードを持つページを探す（`npm run seo:check -- --table` で一覧が出る）。CSV を `data/seo/search-console/` に置けば、`npm run seo:opportunities` が受け持ちのページまで出す
 2. 受け持ちのページが決まっていなければ、いちばん内容が近い既存のページの `secondary` に足す（同じ語を2ページに入れると、`seo:check` が落とす）
 3. そのページを直す
    - title：クエリの語が入っているか。前のほうにあるか
@@ -100,7 +100,7 @@ Google Search Console（以下 GSC）で、公開後に確かめること・定�
 | 葛飾区 V2H／葛飾区 V2H 補助金 | `/v2h` |
 | 東京都 太陽光 補助金／東京都 蓄電池 補助金 | `/subsidy/tokyo` |
 
-正本は `lib/seo-map.ts`。この表と食い違ったら、`lib/seo-map.ts` を正とする。
+正本は `data/seo/keyword-map.ts`。この表と食い違ったら、`data/seo/keyword-map.ts` を正とする。
 
 ## 5. コードの側で確かめられること
 

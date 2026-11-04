@@ -1,6 +1,6 @@
 import type { SubsidyProgram } from "./types";
 
-const LAST_VERIFIED = "2026-10-26";
+const LAST_VERIFIED = "2026-11-04";
 
 /**
  * 国の制度は年度途中で公募終了・再開・次回公募が変わりやすい。
@@ -40,6 +40,11 @@ export const nationalPrograms: SubsidyProgram[] = [
         preApplicationRequired: true,
         preApplicationNote: "SII登録の販売事業者・アグリゲーターを通じた申請が必要。",
         status: "closed",
+        applicationStart: "2026-03-24",
+        applicationEnd: "2026-05-29",
+        preApplicationDays: null,
+        officialPdfUrl: null,
+        validUntil: "2027-03-31",
         conditions: [
           "SIIに登録された機器であること",
           "蓄電池の販売目標価格（1kWhあたり12.5万円以下）の要件を満たすこと",
@@ -84,6 +89,11 @@ export const nationalPrograms: SubsidyProgram[] = [
         deadline: "受付終了",
         preApplicationRequired: true,
         status: "closed",
+        applicationStart: "2026-07-17",
+        applicationEnd: "2026-08-27",
+        preApplicationDays: null,
+        officialPdfUrl: null,
+        validUntil: "2027-03-31",
         conditions: ["補助対象として登録された機器であること", "公募要領の要件を満たすこと"],
         notes: ["受付終了のため、現在は申請できません。"],
         sourceName: "一般社団法人 次世代自動車振興センター（NeV）",
@@ -126,6 +136,11 @@ export const nationalPrograms: SubsidyProgram[] = [
         preApplicationRequired: true,
         preApplicationNote: "登録事業者による申請。必須工事（断熱改修やエコ住宅設備など）との組み合わせ条件がある。",
         status: "open",
+        applicationStart: null,
+        applicationEnd: "2026-12-31",
+        preApplicationDays: null,
+        officialPdfUrl: null,
+        validUntil: "2026-12-31",
         conditions: [
           "必須工事（開口部の断熱改修など）と同時に行うこと等の条件を満たすこと",
           "登録事業者が工事・申請を行うこと",

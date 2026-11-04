@@ -17,6 +17,8 @@ import { SubsidyMatrix } from "@/components/subsidy/SubsidyMatrix";
 import { ApplicationTimeline } from "@/components/subsidy/ApplicationTimeline";
 import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { LastUpdated } from "@/components/ui/LastUpdated";
+import { ChangeLog } from "@/components/subsidy/ChangeLog";
+import { changeLogFor } from "@/data/subsidies/changelog";
 import { SourceList } from "@/components/ui/SourceList";
 import { Steps } from "@/components/ui/Steps";
 import { Callout } from "@/components/ui/Callout";
@@ -278,6 +280,7 @@ export default function SubsidyIndexPage() {
             <FaqSection items={faqItems} withSchema className="mt-6" />
           </section>
 
+          <ChangeLog entries={changeLogFor(["katsushika", "tokyo", "national"])} />
           <SourceList sources={allSources} />
         </div>
       </Container>
