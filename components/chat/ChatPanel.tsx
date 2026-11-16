@@ -142,6 +142,7 @@ export default function ChatPanel({ onClose, infoDate }: { onClose: () => void; 
       {/* スマホは背景を暗くして、外側を押したら閉じる */}
       <button type="button" aria-label="チャットを閉じる" tabIndex={-1} onClick={onClose} className="absolute inset-0 bg-navy-950/45 md:hidden" />
       <section
+        data-ga-location="chat"
         role="dialog"
         aria-modal="false"
         aria-labelledby="chat-title"

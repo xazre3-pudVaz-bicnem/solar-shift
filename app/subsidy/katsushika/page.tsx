@@ -40,11 +40,12 @@ import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, articleSchema, financialIncentiveSchema } from "@/lib/schema";
+import { graph, articleSchema, financialIncentiveSchema, supervisorReviewSchemas } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar, getPostsByCategory } from "@/lib/blog";
 import { DeadlineChecker } from "@/components/subsidy/DeadlineChecker";
 import { ChangeLog } from "@/components/subsidy/ChangeLog";
+import { ZehSection } from "@/components/subsidy/ZehSection";
 import { changeLogFor } from "@/data/subsidies/changelog";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
@@ -236,6 +237,7 @@ export default function KatsushikaSubsidyPage() {
     { id: "documents", label: "必要書類のチェックリスト" },
     { id: "eligibility", label: "対象になる方の要件" },
     { id: "combination", label: "国・東京都の補助金との併用" },
+    { id: "zeh", label: "ZEHの補助金（家を新築する場合）" },
     { id: "detail", label: "メニュー別の詳細" },
     { id: "official-qa", label: "事前協議書の書き方・提出のQ&A" },
     { id: "faq", label: "よくある質問" },
@@ -638,6 +640,9 @@ export default function KatsushikaSubsidyPage() {
             </div>
           </section>
 
+          {/* ───────── ZEH（家を新築する場合）。中身は data/subsidies/zeh.ts */}
+          <ZehSection />
+
           {/* ───────── メニュー別の詳細 */}
           <section id="detail" aria-labelledby="detail-h" className="cv-block scroll-mt-24">
             <h2 id="detail-h" className={H2} {...reveal()}>
@@ -743,6 +748,7 @@ export default function KatsushikaSubsidyPage() {
 
       <JsonLd
         data={graph(
+          ...supervisorReviewSchemas({ path: PATH, lastReviewed: P.lastVerified }),
           articleSchema({
             path: PATH,
             title: "葛飾区の太陽光・蓄電池補助金（かつしかエコ助成金）2026年度の金額・条件・申請の流れ",

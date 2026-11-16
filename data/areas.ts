@@ -8,7 +8,7 @@
  */
 
 import { siteConfig } from "../lib/site";
-import { wardPrograms } from "./ward-programs";
+import { wardPrograms, contractorFor } from "./ward-programs";
 
 export type AreaStatus = "primary" | "secondary" | "planned";
 
@@ -182,12 +182,15 @@ export const areasWithPage = areas.filter((a) => a.page || wardPrograms.some((w)
 
 /** エリアページのタイトル（「｜SOLAR SHIFT」を付ける前）。ページ・OG画像・一覧で同じものを使う */
 export function areaPageTitle(a: Area): string {
+  const cx = contractorFor(a.slug);
+  if (cx) return cx.title;
   const ward = wardPrograms.find((w) => w.slug === a.slug);
   return ward ? ward.title : `${a.name}の太陽光発電・蓄電池業者｜現地調査・補助金申請・施工の相談`;
 }
 
 /** リンクに出す短い名前 */
 export function areaPageLabel(a: Area): string {
+  if (contractorFor(a.slug)) return `${a.name}の太陽光・蓄電池業者`;
   return wardPrograms.some((w) => w.slug === a.slug) ? `${a.name}の太陽光・蓄電池の補助金` : `${a.name}の太陽光・蓄電池業者`;
 }
 

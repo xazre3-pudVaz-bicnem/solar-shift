@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { track } from "@/lib/analytics";
 
 /**
  * お問い合わせフォーム。
@@ -67,6 +68,9 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
         return;
       }
       setStatus("done");
+      // GA4：送信が成功したときだけ、1回送る。送るのは相談の種類（選択肢の値）だけ。入力された内容は送らない。
+      // ハニーポット（website）に値があるのは自動送信なので、数えない
+      if (!values.website) track("generate_lead", { form_type: "contact", topic: values.topic });
     } catch {
       // 通信できなかったときも同じ案内を出す
       setStatus("failed");
@@ -90,7 +94,7 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
 
   if (status === "done") {
     return (
-      <div className="rounded-3xl border-2 border-green-500 bg-white p-6 shadow-card" role="status">
+      <div className="rounded-3xl border-2 border-green-500 bg-white p-6 shadow-card" role="status" data-ga-location="contact_form">
         <p className="text-[18px] font-bold text-navy-900">お問い合わせを受け付けました</p>
         <p className="mt-2 text-base leading-[1.8] text-ink-2">
           内容を確認のうえ、担当者よりご連絡します。
@@ -113,7 +117,7 @@ export function ContactForm({ fallbackEmail, tel = "", telDisplay = "" }: { fall
   if (status === "unconfigured" || status === "failed") {
     const failed = status === "failed";
     return (
-      <div className="rounded-3xl border-2 border-orange-200 bg-orange-50 p-6" role={failed ? "alert" : undefined}>
+      <div className="rounded-3xl border-2 border-orange-200 bg-orange-50 p-6" role={failed ? "alert" : undefined} data-ga-location="contact_form">
         <p className="text-[16px] font-bold text-navy-900">{failed ? "送信できませんでした" : "フォーム送信は現在準備中です"}</p>
         <p className="mt-2 text-base leading-[1.8] text-ink-2">
           {failed ? "申し訳ありません。" : ""}お手数ですが、下のボタンからメールでお送りください。ご入力いただいた内容は、メールの本文にそのまま入ります。

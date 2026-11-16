@@ -32,7 +32,7 @@ import { WorksCard } from "@/components/works/WorksCard";
 import { MakerShowcase } from "@/components/product/MakerShowcase";
 import { ArticleCard } from "@/components/blog/ArticleCard";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, webPageSchema, brandSchemas } from "@/lib/schema";
+import { graph, webPageSchema } from "@/lib/schema";
 import { routeUpdatedAt } from "@/lib/routes";
 
 /**
@@ -792,7 +792,6 @@ export default function HomePage() {
             description: siteConfig.description,
             dateModified: routeUpdatedAt("/"),
           }),
-          ...brandSchemas(),
         )}
       />
     </>

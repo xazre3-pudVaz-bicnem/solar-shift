@@ -24,6 +24,13 @@ export interface ChangeLogEntry {
 
 export const subsidyChangeLog: ChangeLogEntry[] = [
   {
+    date: "2026-11-16",
+    area: "katsushika",
+    kind: "掲載の更新",
+    text: "家を新築して ZEH・高断熱にするときの補助金（葛飾区の「高断熱住宅」、東京ゼロエミ住宅、国の戸建ZEH支援事業、みらいエコ住宅2026事業の新築）を、公式ページで確かめて掲載",
+    source: { name: sources.katsushikaHighInsulation.name, url: sources.katsushikaHighInsulation.url },
+  },
+  {
     date: "2026-11-04",
     area: "tokyo",
     kind: "掲載の更新",

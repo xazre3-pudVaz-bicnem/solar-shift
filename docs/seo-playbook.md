@@ -71,10 +71,12 @@ URL は作り直さない。`/subsidy/katsushika`・`/subsidy/tokyo`・`/subsidy
 | 指名ではない検索からのクリック | Search Console（クエリから SOLAR SHIFT・サイプレスを除く） | 見られる |
 | 表示回数 | Search Console | 見られる |
 | 10位以内・3位以内のキーワードの数 | Search Console の CSV（`seo:opportunities` の元データ） | 見られる |
-| 問い合わせの件数 | Resend の送信記録、Vercel のログ（`[contact] Resend が受け付けた`） | 見られる |
-| シミュレーターの利用・検索からの問い合わせ | アクセス解析 | **見られない**（サイトにアクセス解析を入れていない） |
+| 問い合わせの件数 | GA4 のキーイベント `generate_lead`（フォームの送信が成功したときだけ）、Resend の送信記録、Vercel のログ（`[contact] Resend が受け付けた`） | 見られる |
+| 電話のタップ | GA4 のキーイベント `contact_tel`（`link_location` で押した場所が分かる：header・mobile_menu・footer・floating_dock・cta・contact_page など） | 見られる（2026-11-16 から） |
+| 検索からの問い合わせ | GA4（集客の「Organic Search」× キーイベント） | 見られる（2026-11-16 から） |
+| シミュレーターの利用 | GA4 | **見られない**（イベントを送っていない。足すなら `simulation_run` などを、施主と決めてから） |
 
-アクセス解析（GA4 など）を入れるかは、運営者が決める。入れる場合は、プライバシーポリシーを直してから、運営者が発行した測定 ID を環境変数で渡す（架空の ID をコードに書かない）。
+GA4 は 2026-11-16 に入れた。測定 ID は環境変数 `NEXT_PUBLIC_GA_ID`（Vercel の Production だけ）。本番の URL が決まっているビルドだけタグを出す（`lib/seo.ts` の `gaMeasurementId`）。送るのはイベントの名前と、押した場所・相談の種類（選択肢）だけで、入力された内容は送らない（`lib/analytics.ts`）。
 
 ## 7. 使わない手法
 

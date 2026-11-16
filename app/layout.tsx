@@ -1,14 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import { preload } from "react-dom";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingDock } from "@/components/layout/FloatingDock";
 import { RevealObserver } from "@/components/layout/RevealObserver";
+import { ContactEvents } from "@/components/analytics/ContactEvents";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, organizationSchema, localBusinessSchema, websiteSchema } from "@/lib/schema";
+import { graph, organizationSchema, localBusinessSchema, websiteSchema, brandSchema } from "@/lib/schema";
 import { siteConfig } from "@/lib/site";
-import { SITE_URL, IS_PUBLIC, formatDateJa } from "@/lib/seo";
+import { SITE_URL, IS_PUBLIC, formatDateJa, gaMeasurementId } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: SITE_URL ? new URL(SITE_URL) : undefined,
@@ -59,6 +61,8 @@ const FONT_LOADER = `(function(){if(!window.matchMedia||!matchMedia("(min-width:
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // 欧文フォントは最初の描画に使うので先読みする（ロゴの「SOLAR SHIFT」と大きな数字）
   preload("/fonts/montserrat-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  // GA4：本番だけ（lib/seo.ts の gaMeasurementId）。電話のタップとフォームの送信完了を、キーイベントとして送る（lib/analytics.ts）
+  const gaId = gaMeasurementId();
   return (
     <html lang="ja" data-scroll-behavior="smooth">
       <body className="min-h-dvh">
@@ -85,8 +89,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
         <FloatingDock infoDate={formatDateJa(siteConfig.subsidyInfoDate)} />
         <RevealObserver />
-        <JsonLd data={graph(organizationSchema(), localBusinessSchema(), websiteSchema())} />
+        {gaId && <ContactEvents />}
+        <JsonLd data={graph(organizationSchema(), localBusinessSchema(), brandSchema(), websiteSchema())} />
       </body>
+      {gaId && <GoogleAnalytics gaId={gaId} />}
     </html>
   );
 }

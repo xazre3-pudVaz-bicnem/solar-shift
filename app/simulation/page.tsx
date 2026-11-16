@@ -22,14 +22,15 @@ import { routeUpdatedAt } from "@/lib/routes";
 const PATH = "/simulation";
 
 export const metadata: Metadata = buildMetadata({
-  title: "太陽光・蓄電池の補助金シミュレーション｜葛飾区・東京都の助成額を試算",
-  description:
-    "住宅区分・太陽光の容量・蓄電池の容量・V2H・HEMSの有無を選ぶと、葛飾区（かつしかエコ助成金）と東京都（クール・ネット東京）それぞれの制度名・計算式・想定額・上限・注意点を表示。区と都は別々に表示します（合計は助成対象経費が上限のため）。",
+  title: "東京都の蓄電池・太陽光 補助金シミュレーション｜葛飾区の助成額も試算",
+  // 説明文も、検索されている語を前半に置く（全角80〜110字）。金額は data/subsidies の値と同じ
+  description: `東京都の蓄電池・太陽光の補助金シミュレーション。蓄電池は1kWhあたり10万円、太陽光は既存住宅で1kWあたり最大15万円。容量を選ぶと、東京都と葛飾区の助成額を制度ごとに分けて試算します。`,
   path: PATH,
-  keywords: ["太陽光 補助金 シミュレーション", "蓄電池 補助金 計算", "葛飾区 太陽光 補助金 いくら", "東京都 太陽光 補助金 計算"],
+  keywords: ["東京都 蓄電池 補助金 シミュレーション", "東京都 太陽光 補助金 シミュレーション", "太陽光 補助金 シミュレーション", "蓄電池 補助金 計算", "葛飾区 太陽光 補助金 いくら"],
 });
 
 export default function SimulationPage() {
+  const tb = tokyoBatteryProgram.menus[0];
   const crumbs = [
     { name: "ホーム", href: "/" },
     { name: "補助金シミュレーター", href: PATH },
@@ -45,11 +46,11 @@ export default function SimulationPage() {
         eyebrow="いくら補助される？"
         title={
           <>
-            太陽光・蓄電池の補助金シミュレーション
-            <span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">葛飾区・東京都の助成額を、条件を選んで試算</span>
+            東京都の蓄電池・太陽光 補助金シミュレーション
+            <span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">葛飾区の助成額も、条件を選んで試算</span>
           </>
         }
-        lead="補助金のシミュレーションができるページです。条件を選ぶと、葛飾区と東京都それぞれの制度について「制度名・計算式・想定額・上限・注意事項」を分けて表示します。国の制度は受付状況とともに参考表示します。"
+        lead={`東京都の蓄電池・太陽光の補助金を、容量と住宅の区分を選ぶだけで試算できます。東京都の蓄電池は1kWhあたり${tb.amount.split("（")[0].replace("/kWh", "")}、太陽光は既存住宅で1kWあたり最大15万円です。葛飾区にお住まいなら、区の助成額も「制度名・計算式・想定額・上限・注意事項」に分けて表示します。区と都は合算しません。`}
         image={images.peopleWomanThink}
       >
         <LastUpdated updatedAt={routeUpdatedAt(PATH)} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />

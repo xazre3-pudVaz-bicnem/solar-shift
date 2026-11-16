@@ -2,6 +2,7 @@ import { siteConfig, contactEmail, companyMapUrl, contactTelIntl } from "@/lib/s
 import { absoluteUrl, ogImagePath, SITE_URL } from "@/lib/seo";
 import { servedAreas } from "@/data/areas";
 import type { Subsidy } from "@/data/subsidies/types";
+import { supervisor, supervisorPublished, SUPERVISOR_PATH } from "@/data/supervisor";
 
 /**
  * JSON-LD 生成。ページ本文と一致する内容だけを出す。
@@ -121,6 +122,7 @@ export function organizationSchema(): JsonLd {
     }),
     // 記事と補助金情報をどう作り、どう確かめているか（編集方針のページ）
     publishingPrinciples: absoluteUrl(siteConfig.editorial.policyPath),
+    brand: { "@id": BRAND_ID },
     sameAs: [siteConfig.company.corporateUrl, siteConfig.social.instagram, siteConfig.social.x, siteConfig.social.youtube].filter(Boolean),
   });
 }
@@ -138,6 +140,7 @@ export function localBusinessSchema(): JsonLd {
     email: contactEmail(),
     telephone: contactTelIntl(),
     parentOrganization: { "@id": ORG_ID },
+    brand: { "@id": BRAND_ID },
     address: postalAddress(),
     geo: { "@type": "GeoCoordinates", latitude: siteConfig.company.address.geo.latitude, longitude: siteConfig.company.address.geo.longitude },
     areaServed: areaServed(),
@@ -155,23 +158,20 @@ export function localBusinessSchema(): JsonLd {
 }
 
 /**
- * サービス名 SOLAR SHIFT（ブランド）と、運営会社（Organization）・地域の事業所（LocalBusiness）の結び付き。TOP の @graph だけに出す。
- * 会社と事業所の実体は layout の @graph にある（同じ @id）。ここでは brand の参照だけを足す（ほかのページの構造化データは変えない）
+ * サービス名 SOLAR SHIFT（ブランド）。全ページ共通の @graph（app/layout.tsx）に1つだけ出し、
+ * 運営会社（Organization）と地域の事業所（LocalBusiness）の brand から @id で参照する。
+ * 会社・事業所・ブランドの実体は、どのページでも1つずつ（同じ @id のノードを2か所に書かない）
  */
-export function brandSchemas(): JsonLd[] {
-  return [
-    compact({
-      "@type": "Brand",
-      "@id": BRAND_ID,
-      name: siteConfig.name,
-      alternateName: siteConfig.nameJa,
-      url: absoluteUrl("/"),
-      logo: logoImage(),
-      description: siteConfig.description,
-    }),
-    { "@type": "Organization", "@id": ORG_ID, brand: { "@id": BRAND_ID } },
-    { "@type": ["LocalBusiness", "HomeAndConstructionBusiness"], "@id": LOCALBUSINESS_ID, brand: { "@id": BRAND_ID } },
-  ];
+export function brandSchema(): JsonLd {
+  return compact({
+    "@type": "Brand",
+    "@id": BRAND_ID,
+    name: siteConfig.name,
+    alternateName: siteConfig.nameJa,
+    url: absoluteUrl("/"),
+    logo: logoImage(),
+    description: siteConfig.description,
+  });
 }
 
 export function websiteSchema(): JsonLd {
@@ -541,4 +541,43 @@ export function productSchema(input: {
 /** 複数スキーマを1つの @graph にまとめる */
 export function graph(...items: JsonLd[]): JsonLd {
   return { "@context": "https://schema.org", "@graph": items };
+}
+
+export const SUPERVISOR_ID = SITE_URL ? `${SITE_URL}${SUPERVISOR_PATH}#person` : "#supervisor";
+
+/** 監修者（data/supervisor.ts）。ご本人の確認が済むまでは出さない */
+export function supervisorPersonSchema(): JsonLd | null {
+  if (!supervisorPublished()) return null;
+  return compact({
+    "@type": "Person",
+    "@id": SUPERVISOR_ID,
+    name: supervisor.name,
+    jobTitle: supervisor.jobTitle,
+    url: absoluteUrl(SUPERVISOR_PATH),
+    worksFor: { "@id": ORG_ID },
+    hasCredential: supervisor.qualifications.map((q) => ({ "@type": "EducationalOccupationalCredential", name: q })),
+  });
+}
+
+/**
+ * 監修者が確かめているページ（補助金・ガイド）の WebPage に、reviewedBy を付ける。
+ * reviewedBy は WebPage の項目なので、Article とは別に WebPage のノードを出し、mainEntity で記事を指す。
+ * 監修者が非公開のあいだは、何も出さない（空の配列）。
+ */
+export function supervisorReviewSchemas(input: { path: string; lastReviewed?: string }): JsonLd[] {
+  const person = supervisorPersonSchema();
+  const url = absoluteUrl(input.path);
+  if (!person || !url) return [];
+  return [
+    compact({
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      url,
+      mainEntity: { "@id": `${url}#article` },
+      reviewedBy: { "@id": SUPERVISOR_ID },
+      lastReviewed: input.lastReviewed,
+      isPartOf: { "@id": WEBSITE_ID },
+    }),
+    person,
+  ];
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { getGuide } from "@/data/guides";
 import { getSubsidy } from "@/data/subsidies";
+import { sources as verified } from "@/data/sources";
 import { GuideArticle } from "@/components/sections/GuideArticle";
 
 const entry = getGuide("all-electric")!;
@@ -14,11 +15,11 @@ const FIT_SOURCE = {
 };
 
 export const metadata: Metadata = buildMetadata({
-  title: "オール電化と太陽光・蓄電池の相性｜電気代を抑える組み合わせ",
+  title: "オール電化に蓄電池は必要？太陽光との組み合わせと電気代",
   description:
-    "オール電化住宅は電気の使用量が多く、太陽光発電の自家消費と相性が良い一方、夜間の使用が多ければ蓄電池の効果も出やすくなります。エコキュートの昼間沸き上げ、HEMSでの見える化も含めた組み合わせの考え方を整理します。",
+    "オール電化に蓄電池は必要か。必ず要るわけではなく、夜の電気の使用が多い家や、停電時にIHも使いたい家で効果が出やすい設備です。太陽光・エコキュートとの組み合わせ方と、電気代の考え方を整理します。",
   path: entry.path,
-  keywords: ["オール電化 太陽光 相性", "オール電化 蓄電池", "エコキュート 太陽光 昼間沸き上げ", "オール電化 電気代 太陽光"],
+  keywords: ["オール電化 蓄電池", "オール電化 蓄電池 必要", "オール電化 太陽光 相性", "エコキュート 太陽光 昼間沸き上げ", "オール電化 電気代 太陽光"],
   type: "article",
   modifiedTime: entry.updatedAt,
 });
@@ -26,12 +27,15 @@ export const metadata: Metadata = buildMetadata({
 export default function Page() {
   const kHems = getSubsidy("katsushika-hems")!;
   const kHemsAddon = getSubsidy("katsushika-solar-hems-addon")!;
+  const kBattery = getSubsidy("katsushika-battery")!;
+  const tBattery = getSubsidy("tokyo-battery")!;
 
   return (
     <GuideArticle
       entry={entry}
-      conclusion="オール電化住宅はガスを使わない分、電気の使用量が多く、太陽光発電で作った電気を家の中で使い切りやすい（自家消費率を上げやすい）のが相性の良さの理由です。エコキュートの沸き上げを昼間に移せば余剰をお湯として貯められ、夜間の使用が多いご家庭では蓄電池の効果も出やすくなります。組み合わせは「太陽光 → エコキュートの設定 → 蓄電池 → HEMS」の順に検討します。"
+      conclusion="オール電化の家に、蓄電池は必ず必要というわけではありません。エコキュートの沸き上げを昼間に移せば、太陽光の余りをお湯として貯められ、蓄電池が無くても自家消費を増やせます。夜の電気の使用が多い家や、停電のときにIHやエコキュートも使いたい家（200V対応の全負荷型が候補）では、蓄電池の効果が出やすくなります。組み合わせは「太陽光 → エコキュートの設定 → 蓄電池 → HEMS」の順に検討します。"
       points={[
+        "蓄電池は必須ではない。昼に太陽光の余りを使い切れるかどうかで、要るかどうかが変わる",
         "オール電化は電気の使用量が多いため、太陽光の電気を使い切りやすく、自家消費率を上げやすい",
         "エコキュートは昼間沸き上げに設定を変えると、太陽光の余剰を「お湯」として貯められる",
         "夜間の使用が多ければ蓄電池、停電時にIH・エコキュートも使うなら200V対応の全負荷型",
@@ -80,6 +84,25 @@ export default function Page() {
                 <li>FITの1〜4年目で、売電単価が比較的高い期間にある</li>
               </ul>
               <p>蓄電池は、後から追加する構成も選べます。導入時にハイブリッド型のパワーコンディショナを選んでおくと、後からの追加がしやすくなります。種類の選び方は<Link href="/guide/battery-how-to-choose">蓄電池の選び方ガイド</Link>をご覧ください。</p>
+            </>
+          ),
+        },
+        {
+          id: "battery-change",
+          heading: "蓄電池を足すと変わること",
+          body: (
+            <>
+              <p>オール電化の家に太陽光があり、そこへ蓄電池を足すと、電気の流れが次のように変わります。どれも、昼に余る電気の量と、夜に使う電気の量によって、変わる大きさが違います。</p>
+              <h3>夜に買う電気が減る</h3>
+              <p>昼に余った太陽光の電気をためて、夕方から夜に使えるようになります。そのぶん、電力会社から買う電気が減ります。再エネ賦課金は買った電気の量に比例してかかるため、買う電気が減れば、その負担も減ります。</p>
+              <h3>売る電気が減る</h3>
+              <p>ためた電気は売電に回らないため、売電収入は減ります。2026年度のFITでは、5〜10年目の売電単価は8.3円/kWhです。国の委員会の資料では、家庭用の電気料金単価の平均を27.86円/kWh（直近10年の平均に消費税を加味した値）としています。5年目以降は、売る単価が買う単価を大きく下回るため、ためて夜に使う電気は、その分だけ買う電気を減らします。</p>
+              <h3>停電のときに使える範囲が広がる</h3>
+              <p>太陽光だけの自立運転は、専用のコンセントから限られた電力を取り出す機能で、夜は使えません。蓄電池があれば、ためた電気を夜にも使えます。特定負荷型は決めた回路だけ、全負荷型は家全体に電気を送ります。IHやエコキュートなど200Vの機器も使いたい場合は、200V対応の全負荷型を選びます。</p>
+              <h3>エコキュートとの役割分担を決める</h3>
+              <p>エコキュートの昼間沸き上げ（お湯で貯める）と蓄電池（電気で貯める）は、どちらも昼の余りを使う方法です。両方を使う場合は、昼の余りをどちらに先に回すかで、使い切れる量が変わります。機種によっては、太陽光や蓄電池と連携して自動で切り替える機能があります。</p>
+              <h3>補助金は、区と都で別々に</h3>
+              <p>葛飾区の{kBattery.programName}では蓄電池が{kBattery.amount}（{kBattery.maxAmount}）、東京都の家庭向けの助成では{tBattery.amount}です。区と都は併用できますが、合計は助成対象経費が上限です。金額は合算せず、<Link href="/simulation">補助金シミュレーション</Link>で制度ごとに確かめてください。</p>
             </>
           ),
         },
@@ -140,6 +163,9 @@ export default function Page() {
       sources={[
         FIT_SOURCE,
         { name: kHems.sourceName, url: kHems.sourceUrl, verifiedAt: kHems.lastVerified },
+        { name: tBattery.sourceName, url: tBattery.sourceUrl, verifiedAt: tBattery.lastVerified },
+        verified.metiProcurementOpinion,
+        verified.enechoSurcharge,
       ]}
       relatedCategories={["energy-saving", "electricity-bill"]}
       withSubsidyDisclaimer

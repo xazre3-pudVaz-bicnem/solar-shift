@@ -90,9 +90,10 @@ for (const f of files) {
   for (const m of text.matchAll(/href=\{?"(\/[^"#?]*)/g)) found.add(m[1]);
   for (const m of text.matchAll(/href:\s*"(\/[^"#?]*)"/g)) found.add(m[1]);
   for (const m of text.matchAll(/\]\((\/[^)\s#?]*)/g)) found.add(m[1]);
-  for (const m of text.matchAll(/pillarLinks:\s*\[([^\]]*)\]/g)) for (const x of m[1].matchAll(/"(\/[^"]*)"/g)) found.add(x[1]);
-  for (const m of text.matchAll(/links:\s*\[([^\]]*)\]/g)) for (const x of m[1].matchAll(/"(\/[^"]*)"/g)) found.add(x[1]);
-  for (const m of text.matchAll(/related:\s*\[([^\]]*)\]/g)) for (const x of m[1].matchAll(/"(\/[^"]*)"/g)) found.add(x[1]);
+  // ページ内の位置（#…）と ? 以降は、行き先のページの有無に関係しないので外して照合する
+  for (const m of text.matchAll(/pillarLinks:\s*\[([^\]]*)\]/g)) for (const x of m[1].matchAll(/"(\/[^"#?]*)[^"]*"/g)) found.add(x[1]);
+  for (const m of text.matchAll(/links:\s*\[([^\]]*)\]/g)) for (const x of m[1].matchAll(/"(\/[^"#?]*)[^"]*"/g)) found.add(x[1]);
+  for (const m of text.matchAll(/related:\s*\[([^\]]*)\]/g)) for (const x of m[1].matchAll(/"(\/[^"#?]*)[^"]*"/g)) found.add(x[1]);
   for (let href of found) {
     if (href.length > 1) href = href.replace(/\/$/, "");
     // 動的に組み立てるもの（テンプレート文字列）や、プロンプト内の説明用パス（/パス など非ASCII）は対象外

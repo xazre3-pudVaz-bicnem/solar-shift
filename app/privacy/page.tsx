@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { buildMetadata } from "@/lib/seo";
+import { buildMetadata, gaMeasurementId } from "@/lib/seo";
+import { routeUpdatedAt } from "@/lib/routes";
 import { siteConfig, contactEmail, addressWithPostal, companyMapEmbedUrl } from "@/lib/site";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -9,12 +10,13 @@ const PATH = "/privacy";
 
 export const metadata: Metadata = buildMetadata({
   title: "プライバシーポリシー",
-  description: `${siteConfig.name}（運営：${siteConfig.company.name}）における個人情報の取り扱いについて。取得する情報、利用目的、第三者提供、チャット（自動応答）での入力内容の扱い、安全管理、開示請求、お問い合わせ窓口。`,
+  description: `${siteConfig.name}（運営：${siteConfig.company.name}）における個人情報の取り扱いについて。取得する情報、利用目的、第三者提供、アクセス解析（Google アナリティクス）、チャット（自動応答）での入力内容の扱い、安全管理、開示請求、お問い合わせ窓口。`,
   path: PATH,
 });
 
 export default function PrivacyPage() {
   const email = contactEmail();
+  const ga = Boolean(gaMeasurementId());
   return (
     <>
       <PageHeader
@@ -25,7 +27,7 @@ export default function PrivacyPage() {
         title="プライバシーポリシー"
         lead={`${siteConfig.company.name}（以下「当社」）は、当社が運営する「${siteConfig.name}」のWebサイト（以下「当サイト」）において取得する個人情報を、以下の方針に基づいて取り扱います。`}
       >
-        <LastUpdated updatedAt="2026-10-02" showSupervisor={false} className="mt-5" />
+        <LastUpdated updatedAt={routeUpdatedAt(PATH)} showSupervisor={false} className="mt-5" />
       </PageHeader>
       <Container size="prose" className="prose-ss py-10 sm:py-14">
         <h2>1. 事業者の名称・所在地</h2>
@@ -57,8 +59,32 @@ export default function PrivacyPage() {
         <h2>6. 安全管理</h2>
         <p>当社は、個人情報の漏えい、滅失またはき損の防止のため、必要かつ適切な安全管理措置を講じます。</p>
 
-        <h2>7. Cookie・アクセス解析</h2>
-        <p>当サイトでは、利用状況の把握のためにアクセス解析ツールを使用する場合があります。これらのツールはCookieを利用して情報を収集しますが、個人を特定する情報は含まれません。ブラウザの設定によりCookieを無効にすることができます。</p>
+        <h2 id="analytics">7. Cookie・アクセス解析（Google アナリティクス）</h2>
+        {ga ? (
+          <>
+            <p>当サイトでは、利用状況を把握して改善するため、Google LLC が提供するアクセス解析ツール「Google アナリティクス」を利用しています。Google アナリティクスは Cookie を利用して、次の情報を Google LLC へ送信します。</p>
+            <ul>
+              <li>閲覧したページの URL、閲覧の日時、どのページ・サイトから来たか</li>
+              <li>お使いの端末・ブラウザの種類、おおよその地域</li>
+              <li>Cookie に記録される識別子</li>
+              <li>お電話のリンクを押したこと（押した場所）、お問い合わせフォームの送信が完了したこと（ご相談の種類の選択肢）</li>
+            </ul>
+            <p>お問い合わせフォームに入力された内容（お名前・電話番号・メールアドレス・ご住所・ご相談内容）は、Google アナリティクスには送信しません。取得した情報は、アクセス状況の分析と当サイトの改善に使います。Google アナリティクスのデータの保持期間は14か月に設定しています。</p>
+            <p>
+              送信された情報は、
+              <a href="https://policies.google.com/privacy?hl=ja" target="_blank" rel="noopener noreferrer">
+                Google のプライバシーポリシー
+              </a>
+              に基づいて取り扱われます。収集を止めたい場合は、ブラウザの設定で Cookie を無効にするか、Google が提供する
+              <a href="https://tools.google.com/dlpage/gaoptout?hl=ja" target="_blank" rel="noopener noreferrer">
+                Google アナリティクス オプトアウト アドオン
+              </a>
+              をご利用ください。
+            </p>
+          </>
+        ) : (
+          <p>当サイトでは、利用状況の把握のためにアクセス解析ツールを使用する場合があります。これらのツールはCookieを利用して情報を収集しますが、個人を特定する情報は含まれません。ブラウザの設定によりCookieを無効にすることができます。</p>
+        )}
         {companyMapEmbedUrl() && (
           <p>運営会社のページでは、所在地を示すために Google マップ（Google LLC が提供する地図サービス）を利用しています。地図を表示すると、Google が Cookie などを利用して閲覧に関する情報を取得する場合があります。取得された情報は、Google のプライバシーポリシーに基づいて取り扱われます。</p>
         )}

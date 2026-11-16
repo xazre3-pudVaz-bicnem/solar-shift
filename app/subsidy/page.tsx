@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { secondaryAreas, areaPageLabel } from "@/data/areas";
 import { buildMetadata, formatDateJa } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 import { katsushikaProgram, tokyoSolarProgram, tokyoBatteryProgram, nationalPrograms, allSubsidies, getSubsidy, statusLabel } from "@/data/subsidies";
@@ -27,7 +28,7 @@ import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { SubsidyBanner } from "@/components/sections/SubsidyBanner";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, articleSchema } from "@/lib/schema";
+import { graph, articleSchema, supervisorReviewSchemas } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { ApplyOrderFigure } from "@/components/area/ApplyOrderFigure";
@@ -35,14 +36,15 @@ import { WardCompareTable } from "@/components/area/NeighborAreaPage";
 import { routeUpdatedAt } from "@/lib/routes";
 
 /**
- * 補助金の総合ページ。役割は「区・都・国の3つの制度の全体像と、申請の順番」。
+ * 補助金の総合ページ。役割は「葛飾区・東京都・国のどれが使えるか」の振り分けと、申請の順番。
+ * 全国向けの語（「太陽光 補助金 2026」など）は追わない。住まいと工事の条件から、下の各制度のページへ送る。
  * 各制度の金額・条件の詳細は、それぞれのページが正本（ここには書き写さない）。
  *   葛飾区 … /subsidy/katsushika（「葛飾区 太陽光 補助金」はそちらで受ける）
  *   東京都 … /subsidy/tokyo
  *   国     … /subsidy/national
  */
 const PATH = "/subsidy";
-const TITLE = "太陽光・蓄電池の補助金2026｜区・都・国の3つの制度と申請の順番";
+const TITLE = "太陽光・蓄電池の補助金はどれが使える？葛飾区・東京都・国の選び方";
 const UPDATED = routeUpdatedAt(PATH);
 
 const s = (id: string) => getSubsidy(id)!;
@@ -52,14 +54,15 @@ const ka = s("katsushika-solar-battery-addon");
 const tse = s("tokyo-solar-existing");
 const tsn = s("tokyo-solar-new");
 const tb = s("tokyo-battery");
+const kv = s("katsushika-v2h");
 
-const DESCRIPTION = `2026年度（令和8年度）の太陽光発電・蓄電池の補助金を、葛飾区・東京都・国の3つに分けて整理。それぞれの金額の決まり方、受付状況、併用の考え方、申請の順番を、公式資料で確認してまとめました。${formatDateJa(siteConfig.subsidyInfoDate)}時点。`;
+const DESCRIPTION = `太陽光・蓄電池の補助金は、葛飾区・東京都・国のどれが使えるか。葛飾区の住宅なら中心は区と都の2つです。住まいの条件ごとの振り分け、申請の順番、併用の決まりを、公式資料で整理しました（${formatDateJa(siteConfig.subsidyInfoDate)}時点）。`;
 
 export const metadata: Metadata = buildMetadata({
   title: TITLE,
   description: DESCRIPTION,
   path: PATH,
-  keywords: ["太陽光 補助金 2026", "太陽光 蓄電池 補助金", "太陽光 蓄電池 補助金 併用"],
+  keywords: ["太陽光 蓄電池 補助金 どれが使える", "太陽光 蓄電池 補助金 区 都 国", "太陽光 蓄電池 補助金 併用", "葛飾区 東京都 補助金 違い"],
   type: "article",
   modifiedTime: UPDATED,
 });
@@ -107,7 +110,44 @@ export default function SubsidyIndexPage() {
   const allSources = [...sources, ...combination.sources.map((c) => ({ name: c.name, url: c.url, verifiedAt: combination.verifiedAt }))];
   const posts = getPostsForPillar(["katsushika-subsidy", "tokyo-subsidy"], 3);
 
+  /** どれが使える？ 住まいと工事の条件ごとに、進むページを示す（金額の細目は各ページが正本） */
+  const which: { q: string; a: string; links: { href: string; label: string }[] }[] = [
+    {
+      q: "葛飾区の家に、これから太陽光・蓄電池を付ける",
+      a: `区の「かつしかエコ助成金」と、東京都の助成の両方を検討します。区は着工の${KATSUSHIKA_PRE_CONSULTATION_WEEKS}週間前までに事前協議、都はWebでの事前申込が必要です。`,
+      links: [
+        { href: "/subsidy/katsushika", label: "葛飾区の補助金" },
+        { href: "/subsidy/tokyo", label: "東京都の補助金" },
+        { href: "/simulation", label: "助成額を試算する" },
+      ],
+    },
+    {
+      q: `${secondaryAreas.map((a) => a.name).join("・")}の家に付ける`,
+      a: "区の制度は、区ごとに金額も申請の時期も違います。東京都の助成は、都内の住宅が対象です。",
+      links: [...secondaryAreas.map((a) => ({ href: `/area/${a.slug}`, label: areaPageLabel(a) })), { href: "/subsidy/tokyo", label: "東京都の補助金" }],
+    },
+    {
+      q: "家を新築して、ZEH・高断熱の家にする",
+      a: "葛飾区の「高断熱住宅」は引き渡しのあとに申請します。東京都の東京ゼロエミ住宅と国のZEH補助金は、設計の段階から建築会社と進めます。",
+      links: [{ href: "/subsidy/katsushika#zeh", label: "ZEHの補助金（家を新築する場合）" }],
+    },
+    {
+      q: "太陽光・蓄電池が付いた建売住宅を買う",
+      a: "葛飾区の助成は、建物の引き渡しの4週間前までに事前協議の申し込みが必要です。",
+      links: [{ href: "/blog/katsushika-subsidy-new-build-with-solar", label: "太陽光付きの建売住宅と、区の助成" }],
+    },
+    {
+      q: "電気自動車があり、V2Hを付ける",
+      a: `葛飾区のV2Hは${kv.amount}（${kv.maxAmount}）です。国のCEV補助金（V2H）は、受付を終了しています。`,
+      links: [
+        { href: "/v2h", label: "V2Hのしくみと補助金" },
+        { href: "/subsidy/national", label: "国の補助金の状況" },
+      ],
+    },
+  ];
+
   const toc = [
+    { id: "which", label: "どれが使える？（条件ごとの振り分け）" },
     { id: "layers", label: "3つの制度（区・都・国）" },
     { id: "capacity", label: "容量別の助成額の早見表" },
     { id: "order", label: "申請の順番" },
@@ -124,11 +164,11 @@ export default function SubsidyIndexPage() {
         eyebrow="補助金の全体像"
         title={
           <>
-            太陽光・蓄電池の補助金
-            <span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">2026年度（令和8年度）区・都・国の3つの制度と申請の順番</span>
+            太陽光・蓄電池の補助金は、どれが使える？
+            <span className="mt-1 block text-[0.62em] leading-[1.5] text-ink-2">葛飾区・東京都・国の3つの制度の選び方と、申請の順番（2026年度）</span>
           </>
         }
-        lead="太陽光発電や蓄電池の補助金は、区・都・国の3つに分かれています。金額の決まり方も、申し込む時期も、それぞれ違います。このページで全体像をつかみ、詳しい条件は各制度のページでご確認ください。"
+        lead={`葛飾区の家なら、太陽光・蓄電池で使える補助金の中心は、葛飾区の「${katsushikaProgram.programName.replace("（個人住宅用）", "")}」と、東京都（クール・ネット東京）の助成の2つです。国の家庭用蓄電池とV2Hの補助金は、${formatDateJa(siteConfig.subsidyInfoDate)}時点で受付を終えています。下の「どれが使える？」から、わが家に当てはまる制度のページへ進んでください。`}
         image={images.peopleStaffOk}
       >
         <LastUpdated updatedAt={UPDATED} publishedAt={siteConfig.publishedAt} showPublished verifiedAt={siteConfig.subsidyInfoDate} className="mt-5" />
@@ -148,6 +188,34 @@ export default function SubsidyIndexPage() {
         </div>
 
         <div className="mx-auto mt-14 max-w-5xl space-y-16 sm:mt-16 sm:space-y-20">
+          {/* ───────── どれが使える？ */}
+          <section id="which" aria-labelledby="which-h" className="scroll-mt-24">
+            <h2 id="which-h" className={H2}>
+              どれが使える？ 住まいと工事の条件から選ぶ
+            </h2>
+            <p className={LEAD}>当てはまるものを選び、その制度のページで金額と条件を確かめてください。区と都の金額は合算しません。</p>
+            <ul className="mt-6 space-y-3">
+              {which.map((w, i) => (
+                <li key={w.q} className="rounded-3xl border-2 border-line bg-white p-5 shadow-card sm:p-6" {...reveal(i * 60)}>
+                  <p className="flex items-start gap-3 text-[17px] leading-[1.55] font-black text-navy-900 sm:text-[18px]">
+                    <span className="mt-[2px] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-orange-500 font-en text-[13px] font-extrabold text-navy-900" aria-hidden="true">
+                      {i + 1}
+                    </span>
+                    {w.q}
+                  </p>
+                  <p className="mt-2 text-base leading-[1.85] text-ink sm:pl-10">{w.a}</p>
+                  <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1 sm:pl-10">
+                    {w.links.map((l) => (
+                      <Link key={l.href} href={l.href} className="inline-flex min-h-11 items-center text-[15px] font-bold text-navy-600 underline underline-offset-4 hover:text-accent-text">
+                        {l.label} →
+                      </Link>
+                    ))}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           {/* ───────── 3つの制度 */}
           <section id="layers" aria-labelledby="layers-h" className="scroll-mt-24">
             <h2 id="layers-h" className={H2}>
@@ -298,6 +366,7 @@ export default function SubsidyIndexPage() {
 
       <JsonLd
         data={graph(
+          ...supervisorReviewSchemas({ path: PATH, lastReviewed: siteConfig.subsidyInfoDate }),
           articleSchema({
             path: PATH,
             title: TITLE,

@@ -15,6 +15,14 @@ const RAW_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL ||
 export const SITE_URL: string | undefined = RAW_SITE_URL ? RAW_SITE_URL.replace(/\/+$/, "") : undefined;
 export const IS_PUBLIC = Boolean(SITE_URL);
 
+/**
+ * GA4 の測定 ID。環境変数 NEXT_PUBLIC_GA_ID（Vercel の Production にだけ設定）があり、
+ * かつ本番の URL が決まっているビルドのときだけ返す。プレビュー・手元のビルドではタグを出さない。
+ */
+export function gaMeasurementId(): string | undefined {
+  return IS_PUBLIC ? process.env.NEXT_PUBLIC_GA_ID || undefined : undefined;
+}
+
 if (!IS_PUBLIC && process.env.NODE_ENV === "production" && typeof window === "undefined") {
   console.warn(
     "[SOLAR SHIFT] 本番 URL が決まっていないビルドです（Vercel の本番デプロイではなく、NEXT_PUBLIC_SITE_URL も未設定）。canonical/OG/sitemap は出力されず、全ページ noindex になります。",

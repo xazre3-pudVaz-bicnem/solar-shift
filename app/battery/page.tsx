@@ -76,7 +76,7 @@ export default function BatteryPage() {
                 <li><strong>太陽光の容量</strong>：昼にためられる量は太陽光の発電量で決まる</li>
                 <li><strong>EV・オール電化の有無</strong>：使用量が多い家は大きめ、V2Hがある家はEVのバッテリーも使える</li>
               </ol>
-              <p>容量の選択肢は製品によって異なります。東京都の助成（10万円/kWh）は助成対象経費が上限になるため、容量と費用のバランスを見て決めます。考え方は<Link href="/guide/battery-how-to-choose">蓄電池の選び方</Link>で詳しく解説しています。</p>
+              <p>容量の選択肢は製品によって異なります。東京都の助成（10万円/kWh）は助成対象経費が上限になるため、容量と費用のバランスを見て決めます。考え方は<Link href="/guide/battery-how-to-choose">蓄電池の選び方</Link>で詳しく解説しています。オール電化の家については<Link href="/guide/all-electric">オール電化に蓄電池は必要？</Link>で整理しています。</p>
             </>
           ),
         },

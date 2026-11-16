@@ -16,7 +16,7 @@ import { SubsidyDisclaimer } from "@/components/ui/Disclaimer";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { ArrowIcon } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { articleSchema, graph } from "@/lib/schema";
+import { articleSchema, graph, supervisorReviewSchemas } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { findPageLabel } from "@/lib/page-labels";
 import { getPostsForPillar } from "@/lib/blog";
@@ -183,6 +183,7 @@ export function GuideArticle({
 
       <JsonLd
         data={graph(
+          ...supervisorReviewSchemas({ path: entry.path }),
           articleSchema({
             path: entry.path,
             title: entry.title,

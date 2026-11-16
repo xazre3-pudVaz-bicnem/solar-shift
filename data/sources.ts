@@ -40,6 +40,9 @@ export const sources = {
   katsushikaResidentTaxFaq: src("katsushika-resident-tax-faq", "municipality", "葛飾区 よくある質問「住民税の申告の対象者を知りたいのですが。」", "https://www.city.katsushika.lg.jp/faq/1030270/1007655/1007969/1008032.html", "2026-10-05"),
   katsushikaPublicSolar: src("katsushika-public-solar", "municipality", "葛飾区公式サイト「助成金を活用した太陽光発電システムの導入」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1032675.html", "2026-10-02"),
 
+  katsushikaHighInsulation: src("katsushika-high-insulation", "municipality", "葛飾区公式サイト「（個人住宅用）高断熱住宅」", "https://www.city.katsushika.lg.jp/kurashi/1000062/1023018/1035385/1036257/1036377.html", "2026-11-16"),
+  katsushikaJigoGuide: src("katsushika-jigo-guide", "municipality", "葛飾区「かつしかエコ助成金（事後申請分）のご案内」（令和8年度）", "https://www.city.katsushika.lg.jp/_res/projects/default_project/_page_/001/036/377/r8goannaijigo.pdf", "2026-11-16"),
+
   // ───────── 東京都（環境局）
   tokyoSolarPortal: src("tokyo-solar-portal", "tokyo", "東京都環境局「太陽光ポータル」", "https://www.kankyo.metro.tokyo.lg.jp/climate/solar_portal", "2026-10-02"),
 
@@ -48,6 +51,8 @@ export const sources = {
   tokyoTaxDepreciable: src("tokyo-tax-depreciable", "tokyo", "東京都主税局「固定資産税（償却資産）」", "https://www.tax.metro.tokyo.lg.jp/kazei/work/shokyak_sis", "2026-10-05"),
   tokyoTaxAssetTable: src("tokyo-tax-asset-table", "tokyo", "東京都主税局「償却資産と家屋の区分表（東京都（23区）の取扱い）」（令和6年4月1日時点）", "https://www.tax.metro.tokyo.lg.jp/documents/d/tax/kubunhyou", "2026-10-05"),
   tokyoKohoMandate: src("tokyo-koho-mandate", "tokyo", "広報東京都2025年3月号「太陽光パネルの設置を義務付ける制度が2025年4月から始まります」", "https://www.koho.metro.tokyo.lg.jp/2025/03/02.html", "2026-10-05"),
+
+  tokyoZeroEmiPress: src("tokyo-zero-emi-press-2026", "tokyo", "東京都「令和8年度 東京ゼロエミ住宅の新築に対する助成事業 申請受付開始のお知らせ」（2026年3月30日）", "https://www.metro.tokyo.lg.jp/information/press/2026/03/2026033010", "2026-11-16"),
 
   // ───────── 東京都（クール・ネット東京）
   tokyoSolarPage: src("tokyo-solar-page", "tokyo", "クール・ネット東京「令和8年度 家庭における太陽光発電導入促進事業」", "https://www.tokyo-co2down.jp/subsidy/fam_solar/r8/", "2026-11-04"),
@@ -65,7 +70,12 @@ export const sources = {
   // ───────── SII（環境共創イニシアチブ）
   siiBatteryRegistration: src("sii-battery-registration", "sii", "SII（環境共創イニシアチブ）「令和8年度 蓄電システム製品登録 公募要領」", "https://zehweb.jp/assets/doc/R08ZEH_moe_lib_kouboyouryou.pdf", "2026-10-02"),
 
+  siiZehPamphlet: src("sii-zeh-pamphlet-2026", "sii", "SII（環境共創イニシアチブ）「2026年の経済産業省と環境省のZEH補助金について」", "https://zehweb.jp/assets/doc/R08ZEH_pamphlet.pdf", "2026-11-16"),
+  siiZehHouse: src("sii-zeh-house", "sii", "SII「戸建ZEH支援事業について」", "https://zehweb.jp/house/", "2026-11-16"),
+
   // ───────── 国
+  miraiEcoNewHouse: src("mirai-eco-new-house", "national", "みらいエコ住宅2026事業【公式】対象要件の詳細【注文住宅の新築】", "https://mirai-eco2026.mlit.go.jp/new-house/", "2026-11-16"),
+  miraiEcoNewHouseApplication: src("mirai-eco-new-house-application", "national", "みらいエコ住宅2026事業【公式】申請手続きの詳細【注文住宅の新築】", "https://mirai-eco2026.mlit.go.jp/new-house/application.html", "2026-11-16"),
   metiSurcharge2026: src("meti-surcharge-2026", "national", "経済産業省「再生可能エネルギーのFIT制度・FIP制度における2026年度以降の買取価格等と2026年度の賦課金単価を設定します」（2026年3月19日）", "https://www.meti.go.jp/press/2025/03/20260319004/20260319004.html", "2026-11-04"),
   enechoSurcharge: src("enecho-surcharge", "national", "資源エネルギー庁「なっとく！再生可能エネルギー 制度の概要（再生可能エネルギー発電促進賦課金とは）」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/surcharge.html", "2026-10-05"),
   enechoBillBreakdown: src("enecho-bill-breakdown", "national", "資源エネルギー庁「月々の電気料金の内訳」", "https://www.enecho.meti.go.jp/category/electricity_and_gas/electric/fee/stracture/spec.html", "2026-10-05"),

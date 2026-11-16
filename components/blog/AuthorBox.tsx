@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { siteConfig } from "@/lib/site";
+import { supervisor, supervisorPublished, SUPERVISOR_PATH } from "@/data/supervisor";
 
 /** 記事・ページ末尾の「編集・運営」の表記（だれが書いて、だれが責任を持つのか）。 */
 export function AuthorBox() {
@@ -9,6 +10,15 @@ export function AuthorBox() {
       <Image src="/logo.png" alt="" width={56} height={56} className="h-14 w-14 shrink-0 bg-white object-contain p-1" />
       <div className="text-[14px] leading-[1.8] text-ink-2">
         <p className="text-[15px] font-bold text-navy-900">編集・運営：{siteConfig.editorial.supervisor}</p>
+        {supervisorPublished() && (
+          <p className="mt-1 text-[15px] font-bold text-navy-900">
+            監修：
+            <Link href={SUPERVISOR_PATH} className="text-navy-600 underline underline-offset-4">
+              {supervisor.name}
+            </Link>
+            （{supervisor.jobTitle}）
+          </p>
+        )}
         <p className="mt-1">
           {siteConfig.company.address.full}の{siteConfig.company.name}が運営する、{siteConfig.primaryArea.name}の太陽光発電・蓄電池サービスです。補助金・制度に関する記述は、自治体・国の一次情報を確認したうえで掲載し、確認日を明記しています。
         </p>
