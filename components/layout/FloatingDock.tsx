@@ -114,6 +114,7 @@ export function FloatingDock({ infoDate }: { infoDate: string }) {
 
       {/* スマホ: 下部バー */}
       <nav
+        data-ga-location="floating_dock"
         aria-label="固定メニュー"
         aria-hidden={!shown}
         className={`fixed inset-x-0 bottom-0 z-30 grid bg-white shadow-[0_-6px_20px_-10px_rgba(11,31,58,0.35)] transition-transform duration-300 md:hidden ${gridCols} ${shown ? "translate-y-0" : "translate-y-full"}`}

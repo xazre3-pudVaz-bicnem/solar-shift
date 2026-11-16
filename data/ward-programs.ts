@@ -8,6 +8,9 @@
  * - 受付の状況・予算の残りは日々変わる。ページには確認日を必ず出し、最新は区の公式ページへ送る。
  * - 区の制度を更新するときは、公式ページを開いて確かめてから、このファイルと事実シートを一緒に直す。
  */
+import { siteConfig } from "../lib/site";
+import { worksInCity } from "./works";
+
 export type WardSlug = "adachi" | "sumida" | "edogawa";
 
 export interface WardSource {
@@ -73,6 +76,37 @@ export interface WardProgram {
   updatedAt: string;
   sources: WardSource[];
   faq: { q: string; a: string }[];
+  /** 業者としての案内（施工事例がある区だけ表示する。contractorFor） */
+  contractor?: WardContractor;
+}
+
+/**
+ * 業者として案内するページの中身（施工事例がある区だけで使う。contractorFor を参照）。
+ * 葛飾区のページ（/area/katsushika）と同じ狙い方：その区で太陽光・蓄電池を頼める業者を探している人に、
+ * 対応の範囲・進め方・その区の住まいの事情・確かめる点・施工事例を示す。
+ * 書くのは、区・都の公式ページで確かめたことと、運営者から確認した会社の情報だけ。区名だけを入れ替えた文章にしない。
+ */
+export interface WardContractor {
+  /** 施工事例（data/works.ts の city）と照らす区の名前 */
+  wardName: string;
+  /** タイトル（「｜SOLAR SHIFT」を付ける前） */
+  title: string;
+  /** 検索結果の説明文（全角80〜110字） */
+  description: string;
+  /** ページの冒頭（3行以内で、だれが・どこまで対応し・補助金はどうなっているかに答える） */
+  lead: string;
+  conclusion: string;
+  points: string[];
+  /** ご相談から設置までの進め方 */
+  flow: { title: string; meta: string; body: string; icon: "mail" | "search" | "calc" | "stamp" }[];
+  /** その区の住まい・地域の事情（出典つき） */
+  housing: { title: string; body: string; sourceName?: string; sourceUrl?: string }[];
+  /** 業者を選ぶとき・申請するときに確かめること（区・都の案内にもとづく） */
+  checkpoints: { title: string; body: string }[];
+  faq: { q: string; a: string }[];
+  sources: WardSource[];
+  /** 内容を最後に書き直した日 */
+  updatedAt: string;
 }
 
 /** 各区の公式ページを開いて確かめた日（画面の「確認日」と、構造化データの lastReviewed） */
@@ -277,10 +311,10 @@ export const wardPrograms: WardProgram[] = [
     slug: "edogawa",
     title: "江戸川区の太陽光・蓄電池補助金2026｜区の制度の現状",
     description:
-      "江戸川区の、太陽光発電・定置型蓄電池だけを対象にした補助は令和7年度で終了。令和8年度は、再エネ100％電力への切り替えに一律2万円、太陽光などの導入で2万円の上乗せ。区の公式ページで確認（2026年10月2日）。",
+      "江戸川区の、太陽光発電・定置型蓄電池だけを対象にした補助は令和7年度で終了。令和8年度は、再エネ100％電力への切り替えに一律2万円、太陽光などの導入で2万円の上乗せ。区の公式ページで確認（2026年11月16日）。",
     programName: "江戸川区脱炭素補助金",
     fiscalYear: "令和8年度",
-    pageUpdatedAt: "2026-09-24",
+    pageUpdatedAt: "2026-11-06",
     hasSolarBatterySubsidy: false,
     timingLabel: "太陽光・蓄電池だけの補助は終了",
     timing:
@@ -301,29 +335,32 @@ export const wardPrograms: WardProgram[] = [
       {
         equipment: "ポータブル蓄電池",
         amount: "一律1万円",
-        cap: "予定件数に達した時点で終了",
+        cap: "2026年11月30日に受付終了予定（予定件数に達した場合は、その時点で終了）",
       },
     ],
     schedule: [{ label: "受付", value: "予定件数に達した時点で終了（件数の残りは、区の公式ページに掲載）" }],
     conditions: ["区内に住所がある個人で、住民税の滞納がないこと"],
     combination: "江戸川区は、この補助金は国や東京都の補助制度と併用できる、と案内しています。",
-    cautions: ["補助の予定件数に達した時点で、受付は終わります。電気自動車等の補助は、申請が多く、2026年7月26日に受付を終えています。"],
+    cautions: [
+      "補助の予定件数に達した時点で、受付は終わります。電気自動車等の補助は、申請が多く、2026年7月26日に受付を終えています。",
+      "ポータブル蓄電池の補助は、2026年11月30日に申請の受付を終える予定です（区の公式ページ、2026年11月6日更新）。",
+    ],
     notes: [
       "江戸川区の住宅で太陽光発電・蓄電池を検討する場合、区の補助は「再エネ100％電力への切り替え」の上乗せだけになります。金額の大きい東京都の助成の条件を、先に確かめます。",
     ],
     contact: { name: "江戸川区 環境部 気候変動適応計画課" },
-    updatedAt: CONTENT_UPDATED,
+    updatedAt: "2026-11-16",
     sources: [
       {
         name: "江戸川区「江戸川区脱炭素補助金」",
         url: "https://www.city.edogawa.tokyo.jp/e086/toshikeikaku/kankyo/inochi/hojokin/index.html",
-        verifiedAt: VERIFIED,
+        verifiedAt: "2026-11-16",
       },
     ],
     faq: [
       {
         q: "江戸川区に、太陽光発電の補助金はありますか？",
-        a: "江戸川区の公式ページによると、太陽光発電と定置型蓄電池だけを対象にした区の補助は、令和7年度で終了しています。令和8年度は、再生可能エネルギー100％の電力へ切り替えたときの補助（一律2万円）があり、太陽光発電や定置型蓄電池を前後6か月以内に導入すると、2万円が上乗せされます（2026年10月2日に確認）。",
+        a: "江戸川区の公式ページによると、太陽光発電と定置型蓄電池だけを対象にした区の補助は、令和7年度で終了しています。令和8年度は、再生可能エネルギー100％の電力へ切り替えたときの補助（一律2万円）があり、太陽光発電や定置型蓄電池を前後6か月以内に導入すると、2万円が上乗せされます（2026年11月16日に確認）。",
       },
       {
         q: "江戸川区の住宅でも、東京都の助成は使えますか？",
@@ -334,9 +371,108 @@ export const wardPrograms: WardProgram[] = [
         a: "江戸川区は、江戸川区脱炭素補助金について、国や東京都の補助制度と併用できると案内しています。",
       },
     ],
+    contractor: {
+      wardName: "江戸川区",
+      title: "江戸川区の太陽光発電・蓄電池業者｜補助金2026と現地調査の相談",
+      description:
+        "江戸川区の太陽光発電・蓄電池業者をお探しの方へ。区の太陽光・蓄電池だけの補助は令和7年度で終了し、東京都の助成は検討できます。施工事例と、現地調査から設置までの流れ、水害への備えをまとめました。",
+      lead: `SOLAR SHIFT は、${siteConfig.company.address.city}${siteConfig.company.address.town}の${siteConfig.company.name}が運営する、太陽光発電・蓄電池の事業です。江戸川区は周辺対応エリアで、現地調査とお見積もりは無料です。区の太陽光・蓄電池だけの補助は令和7年度で終わりましたが、東京都の助成は検討できます。`,
+      conclusion:
+        "江戸川区で太陽光発電・蓄電池を検討している方に、SOLAR SHIFT は現地調査とお見積もりを無料で行っています。江戸川区の、太陽光と定置型蓄電池だけを対象にした区の補助は令和7年度で終了しました。東京都の助成は都内の住宅が対象で、区の「再エネ100％電力切替」の補助には、太陽光などを前後6か月以内に導入すると2万円の上乗せがあります。",
+      points: [
+        `対応：江戸川区は周辺対応エリア。拠点は${siteConfig.company.address.city}${siteConfig.company.address.town}`,
+        "区の補助：太陽光・定置型蓄電池だけの補助は令和7年度で終了。再エネ100％電力切替（一律2万円）に、導入の時期の条件つきで2万円の上乗せ",
+        "東京都の助成：都内の住宅が対象。蓄電池は、2026年10月1日以降の事前申込からSII登録機器に限る",
+        "江戸川区の施工事例を、このページで紹介しています",
+      ],
+      flow: [
+        { icon: "mail", title: "ご相談", meta: "無料", body: "フォーム・メール・お電話で、ご希望と住まいの状況を伺います。補助金のことだけのご相談もお受けしています。" },
+        { icon: "search", title: "現地調査", meta: "無料", body: "屋根の形・向き・影と分電盤を確かめ、ハザードマップで浸水の想定を見ながら、蓄電池を置く場所を検討します。" },
+        { icon: "calc", title: "お見積もりと、補助金の整理", meta: "契約の前", body: "機器本体と工事費を分けた見積もりと、東京都の助成の想定額、区の上乗せの条件をお伝えします。" },
+        { icon: "stamp", title: "東京都の事前申込と、工事", meta: "事前申込はWeb", body: "東京都の助成は、Webでの事前申込が必要です。工事のあとに、交付申請兼実績報告を出します。" },
+      ],
+      housing: [
+        {
+          title: "区の陸域の7割が、ゼロメートル地帯",
+          body: "江戸川区は、荒川や江戸川と東京湾に囲まれ、区の陸域の7割がゼロメートル地帯（満ち潮のときの水面より低い土地）だと案内しています。蓄電池やパワーコンディショナを置く場所と高さは、ハザードマップで浸水の想定を確かめてから決めます。",
+          sourceName: "江戸川区「江戸川区水害ハザードマップ概要版」",
+          sourceUrl: "https://www.city.edogawa.tokyo.jp/e007/bosaianzen/bosai/kanrenmap/hazardmap/5-1gaiyouban/index.html",
+        },
+        {
+          title: "水害ハザードマップは、2025年7月に改定",
+          body: "区は、東京都が新しい高潮浸水想定区域図などを公表したことを受けて水害ハザードマップを改定し、2025年7月31日から概要版を区内の全戸（約36万世帯）に配っています。現地調査では、ご自宅の浸水の想定を一緒に確かめます。",
+          sourceName: "江戸川区「江戸川区水害ハザードマップ概要版を31日から全戸配布」（2025年7月23日）",
+          sourceUrl: "https://www.city.edogawa.tokyo.jp/e004/kuseijoho/kohokocho/press/2025/07/0723-01.html",
+        },
+        {
+          title: "大規模な水害のときは、広域避難が原則",
+          body: "区は、超巨大台風の上陸や大雨が予測されるときは江東5区が共同で判断し、区民全員が原則として広域避難する、と案内しています。蓄電池は停電に備える設備で、避難の代わりにはなりません。停電のときに家で過ごすための備えとして検討します。",
+          sourceName: "江戸川区「江戸川区水害ハザードマップ概要版」",
+          sourceUrl: "https://www.city.edogawa.tokyo.jp/e007/bosaianzen/bosai/kanrenmap/hazardmap/5-1gaiyouban/index.html",
+        },
+        {
+          title: "影と屋根の形は、現地で確かめる",
+          body: "江戸川区には、約70万人・約37万世帯（令和8年11月1日現在）が暮らしています。隣の建物との距離や屋根の形・向きは1軒ごとに違うため、図面だけで決めず、現地で影の出方を確かめてから、パネルの配置と容量を決めます。",
+          sourceName: "江戸川区「江戸川区人口の現況（令和8年11月1日現在）」",
+          sourceUrl: "https://www.city.edogawa.tokyo.jp/documents/70191/20261101_jinko.pdf",
+        },
+      ],
+      checkpoints: [
+        {
+          title: "東京都の事前申込と実績報告の段取りを、説明できるか",
+          body: "東京都（クール・ネット東京）の太陽光・蓄電池の助成は、Webでの事前申込が必要で、工事のあとに交付申請兼実績報告を出します。この手順と日程を、契約の前に説明してもらいます。",
+        },
+        {
+          title: "蓄電池は、SIIに登録された機器か",
+          body: "2026年10月1日以降に東京都の蓄電池の助成へ事前申込をする場合、対象はSII（環境共創イニシアチブ）が登録している機器に限られます。型番で確かめられます。",
+        },
+        {
+          title: "支払いは、記録が残る方法で",
+          body: "令和8年度に事前申込を受け付けた東京都の申請では、交付申請兼実績報告のときに「金融機関発行の証明書等」が必要です。現金の受け渡しによる取引は、助成の対象外です。",
+        },
+        {
+          title: "区の上乗せと、電力を切り替える時期",
+          body: "江戸川区の「再エネ100％電力切替」の補助（一律2万円）は、太陽光システム・定置型蓄電池・高効率給湯器のいずれかを前後6か月以内に導入すると、2万円が上乗せされます。予定件数に達すると受付が終わるため、区の公式ページで状況を確かめます。",
+        },
+        {
+          title: "見積書の内訳と、保証の窓口",
+          body: "見積書で、機器本体と工事費が分かれているかを確かめます。機器の保証・工事の保証・だれが施工するかは会社や製品によって違うため、書面で確かめてください。SOLAR SHIFT の内容も、お見積もりの際にご確認いただけます。",
+        },
+      ],
+      faq: [
+        {
+          q: "江戸川区でも、現地調査に来てもらえますか？",
+          a: "はい。江戸川区は SOLAR SHIFT の周辺対応エリアです。現地調査とお見積もりは無料です。日程は、お問い合わせフォームかお電話でご相談ください。",
+        },
+        {
+          q: "江戸川区で太陽光の業者を選ぶとき、何を確かめればよいですか？",
+          a: "東京都の助成の事前申込と実績報告の段取りを説明できるか、蓄電池がSIIに登録された機器か、見積書で機器本体と工事費が分かれているか、保証の内容と窓口を書面で示せるかを確かめます。東京都の助成では、支払いを金融機関の記録が残る方法で行う必要があります。",
+        },
+        {
+          q: "江戸川区は水害が心配です。蓄電池は役に立ちますか？",
+          a: "蓄電池は、停電のときに、ためた電気を使うための設備です。江戸川区は、大規模な水害が予想されるときは区民全員が原則として広域避難する、と案内しています。蓄電池は避難の代わりにはなりません。設置する場合は、ハザードマップで浸水の想定を確かめ、置く場所と高さを現地で検討します。",
+        },
+      ],
+      sources: [
+        { name: "江戸川区「江戸川区水害ハザードマップ概要版」", url: "https://www.city.edogawa.tokyo.jp/e007/bosaianzen/bosai/kanrenmap/hazardmap/5-1gaiyouban/index.html", verifiedAt: "2026-11-16" },
+        { name: "江戸川区「江戸川区水害ハザードマップ概要版を31日から全戸配布」（2025年7月23日）", url: "https://www.city.edogawa.tokyo.jp/e004/kuseijoho/kohokocho/press/2025/07/0723-01.html", verifiedAt: "2026-11-16" },
+        { name: "江戸川区「江戸川区人口の現況（令和8年11月1日現在）」", url: "https://www.city.edogawa.tokyo.jp/documents/70191/20261101_jinko.pdf", verifiedAt: "2026-11-16" },
+      ],
+      updatedAt: "2026-11-16",
+    },
   },
 ];
 
 export function getWardProgram(slug: string): WardProgram | undefined {
   return wardPrograms.find((w) => w.slug === slug);
+}
+
+/**
+ * 業者としての案内を出す区の中身。中身（contractor）があり、かつその区の施工事例が公開されているときだけ返す。
+ * 施工事例が無い区は、区の補助金のページのまま（薄い業者ページを出さない）。
+ */
+export function contractorFor(slug: string): WardContractor | undefined {
+  const w = getWardProgram(slug);
+  if (!w?.contractor) return undefined;
+  return worksInCity(w.contractor.wardName).length > 0 ? w.contractor : undefined;
 }

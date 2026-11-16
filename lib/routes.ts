@@ -21,11 +21,11 @@ export interface StaticRoute {
 
 export const STATIC_ROUTES: StaticRoute[] = [
   { path: "/", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光発電・蓄電池｜補助金の整理から設置・導入後まで", updatedAt: "2026-10-07" },
-  { path: "/subsidy", priority: 0.9, changeFrequency: "weekly", ogTitle: "太陽光・蓄電池の補助金｜区・都・国の3つの制度と申請の順番", updatedAt: "2026-11-04" },
-  { path: "/subsidy/katsushika", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光・蓄電池補助金｜かつしかエコ助成金の金額・条件・申請", updatedAt: "2026-11-04" },
+  { path: "/subsidy", priority: 0.9, changeFrequency: "weekly", ogTitle: "太陽光・蓄電池の補助金はどれが使える？｜葛飾区・東京都・国の選び方", updatedAt: "2026-11-16" },
+  { path: "/subsidy/katsushika", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光・蓄電池補助金｜かつしかエコ助成金の金額・条件・申請", updatedAt: "2026-11-16" },
   { path: "/subsidy/tokyo", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の太陽光・蓄電池補助金｜クール・ネット東京の家庭向け助成", updatedAt: "2026-11-04" },
   { path: "/subsidy/national", priority: 0.7, changeFrequency: "weekly", ogTitle: "国の太陽光・蓄電池補助金｜DR補助金・CEV補助金・みらいエコ住宅の現状", updatedAt: "2026-11-04" },
-  { path: "/simulation", priority: 0.9, changeFrequency: "weekly", ogTitle: "補助金シミュレーション｜葛飾区・東京都の助成額を試算", updatedAt: "2026-10-26" },
+  { path: "/simulation", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の蓄電池・太陽光 補助金シミュレーション｜葛飾区の助成額も試算", updatedAt: "2026-11-16" },
   { path: "/solar", priority: 0.8, changeFrequency: "monthly", ogTitle: "住宅用太陽光発電｜仕組みと向いている家", updatedAt: "2026-10-05" },
   { path: "/battery", priority: 0.8, changeFrequency: "monthly", ogTitle: "家庭用蓄電池の選び方｜役割・容量の決め方・補助金", updatedAt: "2026-10-26" },
   { path: "/solar-battery", priority: 0.8, changeFrequency: "monthly", ogTitle: "太陽光発電＋蓄電池｜同時導入の利点と併設加算", updatedAt: "2026-10-05" },
@@ -45,7 +45,7 @@ export const STATIC_ROUTES: StaticRoute[] = [
   { path: "/blog", priority: 0.7, changeFrequency: "daily", ogTitle: "ブログ｜葛飾区の太陽光・蓄電池・補助金の最新情報" },
   { path: "/company", priority: 0.6, changeFrequency: "yearly", ogTitle: "運営会社｜株式会社サイプレス", updatedAt: "2026-10-06" },
   { path: "/contact", priority: 0.6, changeFrequency: "yearly", ogTitle: "お問い合わせ・無料相談｜現地調査・お見積もりは無料", updatedAt: "2026-10-07" },
-  { path: "/privacy", priority: 0.2, changeFrequency: "yearly", ogTitle: "プライバシーポリシー" },
+  { path: "/privacy", priority: 0.2, changeFrequency: "yearly", ogTitle: "プライバシーポリシー", updatedAt: "2026-11-16" },
   { path: "/editorial-policy", priority: 0.3, changeFrequency: "yearly", ogTitle: "記事・補助金情報の編集方針", updatedAt: "2026-11-04" },
   { path: "/sitemap", priority: 0.2, changeFrequency: "monthly", ogTitle: "サイトマップ" },
 ];

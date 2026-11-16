@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig, contactEmail } from "@/lib/site";
+import { supervisor, supervisorPublished, SUPERVISOR_PATH } from "@/data/supervisor";
 import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { KeyPoints } from "@/components/ui/KeyPoints";
@@ -48,7 +49,14 @@ export default function EditorialPolicyPage() {
         />
         <div className="prose-ss mt-10">
           <h2>1. 編集・運営</h2>
-          <p>当サイトの記事・ページは、{siteConfig.company.name}（{siteConfig.company.address.full}）が運営する {siteConfig.name} が作成・編集しています。各ページ・記事には「編集・運営：{siteConfig.editorial.supervisor}」と最終更新日を表示します。資格を持つ第三者による監修は行っていないため、「監修」とは表示しません。</p>
+          <p>当サイトの記事・ページは、{siteConfig.company.name}（{siteConfig.company.address.full}）が運営する {siteConfig.name} が作成・編集しています。各ページ・記事には「編集・運営：{siteConfig.editorial.supervisor}」と最終更新日を表示します。</p>
+          {supervisorPublished() ? (
+            <p>
+              補助金とガイドの記事は、<Link href={SUPERVISOR_PATH}>{supervisor.name}</Link>（{supervisor.jobTitle}）が監修しています。監修の範囲：{supervisor.scope}
+            </p>
+          ) : (
+            <p>資格を持つ第三者による監修は行っていないため、「監修」とは表示しません。</p>
+          )}
 
           <h2>2. 情報源の基準</h2>
           <ul>

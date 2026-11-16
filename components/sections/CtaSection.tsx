@@ -26,7 +26,7 @@ export function CtaSection({
 }) {
   const img = images.poseFist;
   return (
-    <section className="relative overflow-hidden bg-cream py-14 sm:py-20">
+    <section data-ga-location="cta" className="relative overflow-hidden bg-cream py-14 sm:py-20">
       <span className="absolute top-8 left-[8%] h-3 w-3 animate-twinkle rounded-full bg-orange-400" aria-hidden="true" />
       <span className="absolute right-[10%] bottom-10 h-4 w-4 animate-twinkle rounded-full bg-green-400 [animation-delay:1s]" aria-hidden="true" />
       <Container>

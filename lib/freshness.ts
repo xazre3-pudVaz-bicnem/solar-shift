@@ -9,6 +9,7 @@
  * Node のスクリプト（tsx）からも読むので、"@/…" の別名や fs は使わない。
  */
 import { allSubsidies } from "../data/subsidies";
+import { zehPrograms } from "../data/subsidies/zeh";
 import { fit } from "../data/fit";
 import { surcharge } from "../data/surcharge";
 import { wardPrograms } from "../data/ward-programs";
@@ -68,6 +69,11 @@ export function freshnessIssues(today = todayJst()): FreshnessIssue[] {
     if (today > s.validUntil) {
       out.push({ kind: "validUntil", label: `${s.areaLabel}「${s.programName}」${s.name}`, date: s.validUntil, days: daysBetween(s.validUntil, today), limit: 0 });
     }
+  }
+  // 家を新築するときの補助金（ZEH・高断熱住宅）
+  for (const z of zehPrograms) {
+    check("subsidy", `${z.level}「${z.name}」`, z.lastVerified);
+    if (today > z.validUntil) out.push({ kind: "validUntil", label: `${z.level}「${z.name}」`, date: z.validUntil, days: daysBetween(z.validUntil, today), limit: 0 });
   }
   for (const w of wardPrograms) check("ward", `${w.programName}（${w.slug}）`, w.sources[0].verifiedAt);
   check("fit", `FIT（${fit.fiscalYear}）`, fit.lastVerified);

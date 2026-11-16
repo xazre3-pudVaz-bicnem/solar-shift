@@ -55,7 +55,7 @@ export default function ContactPage() {
             <div className={BOX}>
               <h2 className={H2}>{siteConfig.contact.telDisplay ? "お電話・メールでのお問い合わせ" : "メールでのお問い合わせ"}</h2>
               {siteConfig.contact.telDisplay && (
-                <a href={`tel:${siteConfig.contact.tel}`} className="mt-4 flex min-h-14 items-center gap-3 rounded-full border-2 border-navy-900 bg-white px-5 py-2 text-navy-900 transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-cream">
+                <a href={`tel:${siteConfig.contact.tel}`} data-ga-location="contact_page" className="mt-4 flex min-h-14 items-center gap-3 rounded-full border-2 border-navy-900 bg-white px-5 py-2 text-navy-900 transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-cream">
                   <PhoneIcon className="h-5 w-5 shrink-0 text-orange-600" />
                   <span className="min-w-0 leading-none">
                     <span className="block text-[12px] font-bold text-ink-2">

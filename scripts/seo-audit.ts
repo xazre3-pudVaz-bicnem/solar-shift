@@ -204,7 +204,17 @@ function parse(file: string): Page {
   };
 }
 
+/** 404 として書き出したページ（公開前のページなど。.meta の status が 404）は、点検の対象にしない */
+function isPrerendered404(file: string): boolean {
+  try {
+    return JSON.parse(fs.readFileSync(file.replace(/.html$/, ".meta"), "utf8")).status === 404;
+  } catch {
+    return false;
+  }
+}
+
 const pages = walk(APP)
+  .filter((f) => !isPrerendered404(f))
   .map(parse)
   .filter((p) => !p.route.startsWith("/_") && !/\/(og|api)\//.test(p.route) && p.route !== "/_not-found")
   .sort((a, b) => a.route.localeCompare(b.route));

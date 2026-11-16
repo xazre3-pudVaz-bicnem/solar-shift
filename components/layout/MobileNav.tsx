@@ -51,7 +51,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
 
       {open && (
         <div id="mobile-nav" className="fixed inset-x-0 top-16 bottom-0 z-50 overflow-y-auto bg-cream">
-          <nav aria-label="モバイルナビゲーション" className="px-4 pt-4 pb-24 sm:px-6">
+          <nav aria-label="モバイルナビゲーション" data-ga-location="mobile_menu" className="px-4 pt-4 pb-24 sm:px-6">
             <div className="grid grid-cols-2 gap-2">
               <Link href="/simulation" onClick={close} className="flex h-12 items-center justify-center rounded-full bg-green-600 font-heading text-[15px] font-bold text-white shadow-card">
                 補助金を試算

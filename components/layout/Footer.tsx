@@ -15,7 +15,7 @@ export function Footer() {
   const email = contactEmail();
   const a = siteConfig.company.address;
   return (
-    <footer className="bg-navy-950 text-navy-100">
+    <footer data-ga-location="footer" className="bg-navy-950 text-navy-100">
       <div className="mx-auto max-w-[84rem] px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_3fr]">
           <div>

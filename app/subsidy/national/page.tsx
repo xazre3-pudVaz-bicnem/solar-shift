@@ -22,7 +22,7 @@ import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, articleSchema } from "@/lib/schema";
+import { graph, articleSchema, supervisorReviewSchemas } from "@/lib/schema";
 import { AuthorBox } from "@/components/blog/AuthorBox";
 import { images } from "@/data/images";
 import { StaffTip } from "@/components/ui/StaffTip";
@@ -200,7 +200,7 @@ export default function NationalSubsidyPage() {
         body="国の制度は公募状況が変わります。区と都の制度で計画を組み、国の公募が始まったら上乗せを検討する進め方をご提案します。相談・見積もりは無料です。"
       />
 
-      <JsonLd data={graph(articleSchema({ path: PATH, title: "国の太陽光・蓄電池関連補助制度の現状（2026年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate, section: "補助金", sources: nationalPrograms.map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
+      <JsonLd data={graph(...supervisorReviewSchemas({ path: PATH }), articleSchema({ path: PATH, title: "国の太陽光・蓄電池関連補助制度の現状（2026年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: siteConfig.subsidyInfoDate, section: "補助金", sources: nationalPrograms.map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
     </>
   );
 }

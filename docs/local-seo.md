@@ -32,7 +32,7 @@
 | `/area/katsushika` | 不採用。葛飾区の業者選び・地域の事情を深く説明するページで、「葛飾区 太陽光 業者」の受け持ち。GBP の行き先にすると、事業の入口が2つに割れる。TOP から1クリックで届くので、TOP を入口にして流す |
 | `/contact` | 予約・問い合わせの欄に入れる（ウェブサイトの欄には入れない） |
 
-GBP からの訪問を分けて数えたいときは、ウェブサイトの欄の URL に `?utm_source=google&utm_medium=organic&utm_campaign=gbp` を付けてもよい（このサイトの canonical はパラメータの無い URL を指すので、検索の評価は割れない）。ただし、いまサイトにはアクセス解析が入っていないため、付けても数えられない（`docs/seo-playbook.md` の「計測」）。
+GBP からの訪問を分けて数えたいときは、ウェブサイトの欄の URL に `?utm_source=google&utm_medium=organic&utm_campaign=gbp` を付けてもよい（このサイトの canonical はパラメータの無い URL を指すので、検索の評価は割れない）。GA4（2026-11-16 に導入）の集客のレポートで、`gbp` のキャンペーンとして数えられる（`docs/seo-playbook.md` の「計測」）。
 
 ## 3. GBP の設定（運営者が行う）
 

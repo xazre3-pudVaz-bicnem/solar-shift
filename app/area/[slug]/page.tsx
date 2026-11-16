@@ -6,10 +6,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { buildMetadata, formatDateJa } from "@/lib/seo";
+import { buildMetadata, formatDateJa, SITE_TITLE_SUFFIX } from "@/lib/seo";
 import { siteConfig, addressWithPostal, companyMapUrl, companyMapEmbedUrl } from "@/lib/site";
-import { areasWithPage, areaPageTitle, getArea, secondaryAreas } from "@/data/areas";
-import { getWardProgram } from "@/data/ward-programs";
+import { areasWithPage, areaPageTitle, areaPageLabel, getArea, secondaryAreas } from "@/data/areas";
+import { getWardProgram, contractorFor } from "@/data/ward-programs";
 import { NeighborAreaPage } from "@/components/area/NeighborAreaPage";
 import { PublicSolarFigure } from "@/components/area/PublicSolarFigure";
 import { getSubsidy, subsidySources } from "@/data/subsidies";
@@ -70,6 +70,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const area = getArea(slug);
   const ward = getWardProgram(slug);
   if (area && ward) {
+    const cx = contractorFor(area.slug);
+    if (cx) {
+      return buildMetadata({
+        title: `${cx.title}${SITE_TITLE_SUFFIX}`,
+        rawTitle: true,
+        description: cx.description,
+        path: `/area/${area.slug}`,
+        keywords: [`${area.name} 太陽光 業者`, `${area.name} 太陽光 設置業者`, `${area.name} 蓄電池 業者`, `${area.name} 太陽光 補助金`],
+        modifiedTime: wardPageUpdatedAt(area.slug, cx.updatedAt > ward.updatedAt ? cx.updatedAt : ward.updatedAt),
+      });
+    }
     return buildMetadata({
       title: ward.title,
       description: ward.description,
@@ -227,7 +238,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
                       {
                         term: "電話",
                         description: (
-                          <a href={`tel:${siteConfig.contact.tel}`} className={`inline-flex min-h-11 items-center font-en text-[18px] ${TEXT_LINK}`}>
+                          <a href={`tel:${siteConfig.contact.tel}`} data-ga-location="area_page" className={`inline-flex min-h-11 items-center font-en text-[18px] ${TEXT_LINK}`}>
                             {siteConfig.contact.telDisplay}
                           </a>
                         ),
@@ -246,6 +257,17 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
                 大切にしていること
               </Link>
               をご覧ください。{cityWorks.length > 0 ? `${area.name}で導入されたお客様の事例は、このページの「施工事例」にまとめています。` : "施工事例は、施工が完了し、掲載の許可をいただいたものから公開します。"}
+            </p>
+            <p className="mt-2 text-base leading-[1.8] text-ink-2">
+              周辺の区の案内：
+              {secondaryAreas.map((a, i) => (
+                <span key={a.slug}>
+                  {i > 0 && "、"}
+                  <Link href={`/area/${a.slug}`} className={`inline-block py-1 ${TEXT_LINK}`}>
+                    {areaPageLabel(a)}
+                  </Link>
+                </span>
+              ))}
             </p>
             <TrustFacts className="mt-6" />
             {embedUrl && <MapEmbed src={embedUrl} address={addressWithPostal()} title={`${c.name}の所在地`} mapUrl={companyMapUrl()} className="mt-8" />}

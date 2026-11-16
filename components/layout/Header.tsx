@@ -13,7 +13,7 @@ import { siteConfig } from "@/lib/site";
  */
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 bg-white shadow-[0_2px_14px_-8px_rgba(11,31,58,0.35)]">
+    <header data-ga-location="header" className="sticky top-0 z-40 bg-white shadow-[0_2px_14px_-8px_rgba(11,31,58,0.35)]">
       <div className="mx-auto flex h-16 max-w-[84rem] items-center justify-between px-4 sm:px-6 lg:h-[72px] lg:px-8">
         <Link href="/" className="flex min-h-11 items-center gap-3">
           <Image src="/logo.png" alt="" width={44} height={44} loading="eager" className="h-10 w-10 object-contain lg:h-11 lg:w-11" />

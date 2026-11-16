@@ -21,7 +21,7 @@ import { FaqSection } from "@/components/sections/FaqSection";
 import { CtaSection } from "@/components/sections/CtaSection";
 import { LinkButton, ArrowIcon } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { graph, articleSchema } from "@/lib/schema";
+import { graph, articleSchema, supervisorReviewSchemas } from "@/lib/schema";
 import { RelatedArticles } from "@/components/blog/RelatedArticles";
 import { getPostsForPillar } from "@/lib/blog";
 import { AuthorBox } from "@/components/blog/AuthorBox";
@@ -202,7 +202,7 @@ export default function TokyoSubsidyPage() {
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <LinkButton href="/subsidy/katsushika" variant="secondary">葛飾区の補助金を見る <ArrowIcon /></LinkButton>
-            <LinkButton href="/simulation" variant="ghost">区と都を分けて試算する <ArrowIcon /></LinkButton>
+            <LinkButton href="/simulation" variant="ghost">東京都の蓄電池・太陽光の補助金を試算する <ArrowIcon /></LinkButton>
           </div>
         </section>
 
@@ -251,7 +251,7 @@ export default function TokyoSubsidyPage() {
         body="東京都の助成は機器の登録要件と事前申込のタイミングが重要です。葛飾区の制度とあわせて、申請スケジュールを組み立てます。相談・見積もりは無料です。"
       />
 
-      <JsonLd data={graph(articleSchema({ path: PATH, title: "東京都の太陽光・蓄電池補助金（令和8年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: UPDATED, section: "補助金", sources: [tokyoSolarProgram, tokyoBatteryProgram].map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
+      <JsonLd data={graph(...supervisorReviewSchemas({ path: PATH, lastReviewed: S.lastVerified }), articleSchema({ path: PATH, title: "東京都の太陽光・蓄電池補助金（令和8年度）", description: metadata.description as string, datePublished: "2026-10-01", dateModified: UPDATED, section: "補助金", sources: [tokyoSolarProgram, tokyoBatteryProgram].map((p) => ({ name: p.sourceName, url: p.sourceUrl })) }))} />
     </>
   );
 }
