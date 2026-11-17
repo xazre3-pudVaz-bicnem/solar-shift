@@ -45,7 +45,7 @@ npm run indexnow -- --all --dry-run  # IndexNow で送る URL を表示するだ
 | `GITHUB_TOKEN` / `GITHUB_REPO` / `GITHUB_BRANCH` | △ | Cron で生成した記事をコミットする |
 | `RESEND_API_KEY` | △ | お問い合わせフォームのメール送信（Resend）。これだけ入れれば送れる |
 | `CONTACT_EMAIL_TO` / `CONTACT_EMAIL_FROM` | | 送信先と送信元を変えたいときだけ。既定は、送信先が `lib/site.ts` の連絡先メール、送信元が `SOLAR SHIFT <form@solarshift.jp>`（noreply は Resend の点検で信頼を下げると指摘されるので使わない） |
-| `NEXT_PUBLIC_GA_ID` | | GA4 の測定 ID（`G-` で始まる）。Vercel の **Production だけ**に入れる。本番の URL が決まっているビルドだけタグを出す（`lib/seo.ts` の `gaMeasurementId`）。電話のタップ（`contact_tel`）とフォームの送信完了（`generate_lead`）を送る（`components/analytics/ContactEvents.tsx`・`lib/analytics.ts`）。gtag.js は、最初の操作か読み込みの完了から4秒後に読む（`lib/ga-snippet.ts`。表示の速さを落とさないため） |
+| `NEXT_PUBLIC_GA_ID` | | GA4 の測定 ID（`G-` で始まる）。Vercel の **Production だけ**に入れる。本番の URL が決まっているビルドだけタグを出す（`lib/seo.ts` の `gaMeasurementId`）。電話のタップ（`contact_tel`）とフォームの送信完了（`generate_lead`）を送る（`components/analytics/ContactEvents.tsx`・`lib/analytics.ts`）。gtag.js は、最初の操作か読み込みの完了から8秒後に読む（`lib/ga-snippet.ts`。表示の速さを落とさないため） |
 | `GOOGLE_SITE_VERIFICATION` | | Search Console の所有権確認（meta タグの content 値） |
 | `BING_SITE_VERIFICATION` | | Bing Webmaster Tools の所有権確認 |
 
