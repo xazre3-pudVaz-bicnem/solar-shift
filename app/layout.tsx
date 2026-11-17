@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // 欧文フォントは最初の描画に使うので先読みする（ロゴの「SOLAR SHIFT」と大きな数字）
   preload("/fonts/montserrat-latin.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   // GA4：本番だけ（lib/seo.ts の gaMeasurementId）。電話のタップとフォームの送信完了を、キーイベントとして送る（lib/analytics.ts）。
-  // gtag.js は、最初の操作か読み込みの完了から4秒後に読む（表示の速さを落とさないため。lib/ga-snippet.ts）
+  // gtag.js は、最初の操作か読み込みの完了から8秒後に読む（表示の速さを落とさないため。lib/ga-snippet.ts）
   const gaId = gaMeasurementId();
   return (
     <html lang="ja" data-scroll-behavior="smooth">
