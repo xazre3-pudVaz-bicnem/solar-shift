@@ -3,6 +3,8 @@
  *
  * - タグを読み込むかどうかは app/layout.tsx が決める（lib/seo.ts の gaMeasurementId）。
  *   タグが無いとき（プレビュー・手元）は window.gtag が無いので、何もしない。
+ * - window.gtag は lib/ga-snippet.ts が最初に用意する。外部の gtag.js がまだ読み込まれていなくても、
+ *   ここで送った命令は dataLayer に溜まり、読み込まれたときに送られる。
  * - 送るのは、イベントの名前と、選択肢の値・押された場所だけ。
  *   お名前・電話番号・メールアドレス・住所・相談内容など、入力された内容は送らない。
  * - GA4 側のキーイベント（contact_tel・contact_line・generate_lead）は、管理画面で登録済み。
