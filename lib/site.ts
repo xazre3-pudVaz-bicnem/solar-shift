@@ -77,8 +77,11 @@ export const siteConfig = {
     /** コーポレートサイトに掲載されている代表メールアドレス */
     email: "info@cypress-all.co.jp",
     corporateUrl: "https://www.cypress-all.co.jp/",
-    /** 法人番号・許認可など未確認のものは null（画面に出さない） */
-    corporateNumber: null as string | null,
+    /**
+     * 法人番号（国税庁 法人番号公表サイトで 2026-11-18 に確認）。null なら画面にも構造化データにも出さない。
+     * 登記上の本店所在地は、上の address（SOLAR SHIFT の拠点）と違う。どちらを出すかは運営者に確認中なので、address は変えない
+     */
+    corporateNumber: "2011801047879" as string | null,
     businessDescription:
       "Webマーケティング支援、MEO対策、SEO対策、AIO対策、ホームページ制作、SNS運用、AI活用支援、太陽光発電・蓄電池事業（SOLAR SHIFT）",
   },

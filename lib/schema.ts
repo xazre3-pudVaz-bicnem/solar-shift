@@ -105,6 +105,8 @@ export function organizationSchema(): JsonLd {
     telephone: contactTelIntl(),
     founder: { "@type": "Person", name: siteConfig.company.representative, jobTitle: siteConfig.company.representativeTitle },
     foundingDate: "2026-05-13",
+    // 法人番号（国税庁）。日本の法人の税の識別番号でもあるので taxID に入れる（null なら compact が落とす）
+    taxID: siteConfig.company.corporateNumber,
     address: postalAddress(),
     areaServed: areaServed(),
     knowsAbout: KNOWS_ABOUT,

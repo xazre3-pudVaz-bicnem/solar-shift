@@ -79,6 +79,8 @@ export const sources = {
   metiSurcharge2026: src("meti-surcharge-2026", "national", "経済産業省「再生可能エネルギーのFIT制度・FIP制度における2026年度以降の買取価格等と2026年度の賦課金単価を設定します」（2026年3月19日）", "https://www.meti.go.jp/press/2025/03/20260319004/20260319004.html", "2026-11-04"),
   enechoSurcharge: src("enecho-surcharge", "national", "資源エネルギー庁「なっとく！再生可能エネルギー 制度の概要（再生可能エネルギー発電促進賦課金とは）」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/surcharge.html", "2026-10-05"),
   enechoBillBreakdown: src("enecho-bill-breakdown", "national", "資源エネルギー庁「月々の電気料金の内訳」", "https://www.enecho.meti.go.jp/category/electricity_and_gas/electric/fee/stracture/spec.html", "2026-10-05"),
+  // 年度ごとの買取価格の一覧（初期投資支援スキームの始まり＝2025年度下期の認定も載っている）。自動の取得を拒否するので、ブラウザで開いて確かめる
+  enechoFitPrices: src("enecho-fit-prices", "national", "資源エネルギー庁「なっとく！再生可能エネルギー 買取価格・期間等」", "https://www.enecho.meti.go.jp/category/saving_and_new/saiene/kaitori/fit_kakaku.html", "2026-11-18"),
   ntaSellingIncome: src("nta-selling-income", "national", "国税庁 質疑応答事例（所得税）「自宅に設置した太陽光発電設備による余剰電力の売却収入」", "https://www.nta.go.jp/law/shitsugi/shotoku/02/44.htm", "2026-10-05"),
   ntaSellingConsumptionTax: src("nta-selling-consumption-tax", "national", "国税庁 質疑応答事例（消費税）「会社員が自宅に設置した太陽光発電設備による余剰電力の売却」", "https://www.nta.go.jp/law/shitsugi/shohi/02/42.htm", "2026-10-05"),
   ntaSalaryEarnerFiling: src("nta-1900", "national", "国税庁 タックスアンサー No.1900「給与所得者で確定申告が必要な人」", "https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1900.htm", "2026-10-05"),
