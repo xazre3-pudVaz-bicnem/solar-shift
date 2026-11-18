@@ -47,7 +47,7 @@ export function GET() {
     `このサイトの補助金・制度の情報は、葛飾区・東京都・国の公式情報を${date}時点で確認したものです。制度は変更・終了することがあります。引用するときは、確認日と各制度の公式サイトをあわせて示してください。`,
     ``,
     `## 運営`,
-    `- 運営会社: ${c.name}（${c.representativeTitle} ${c.representative}、設立 ${c.founded}）`,
+    `- 運営会社: ${c.name}（${c.representativeTitle} ${c.representative}、設立 ${c.founded}${c.corporateNumber ? `、法人番号 ${c.corporateNumber}` : ""}）`,
     `- 所在地: ${addressWithPostal()}`,
     `- 主要対応エリア: ${siteConfig.primaryArea.prefecture}${siteConfig.primaryArea.name}（周辺: 足立区・江戸川区・墨田区）`,
     `- 連絡先: お問い合わせフォーム ${url("/contact")}${siteConfig.contact.telDisplay ? `／電話 ${siteConfig.contact.telDisplay}` : ""}${contactEmail() ? `／メール ${contactEmail()}` : ""}`,

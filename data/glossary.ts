@@ -144,8 +144,9 @@ export const glossary: GlossaryTerm[] = [
     term: "初期投資支援スキーム",
     reading: "しょきとうししえんすきーむ",
     group: "selling",
-    definition: `FITの買取価格を、最初の4年間は高く、5年目からは低くする仕組みです。${fit.fiscalYear}の住宅用では、${fitEarly.yenPerKwh}円/kWhから${fitLate.yenPerKwh}円/kWhに下がります。`,
+    definition: `FITの買取価格を、最初の4年間は高く、5年目からは低くする仕組みです。${fit.schemeStart.label}以降にFITの認定を受ける住宅用から適用されています。${fit.fiscalYear}の住宅用では、${fitEarly.yenPerKwh}円/kWhから${fitLate.yenPerKwh}円/kWhに下がります。`,
     link: { href: "/blog/fit-24yen-initial-investment-scheme", label: "FIT価格24円の仕組み" },
+    source: sources.enechoFitPrices,
   },
   {
     id: "post-fit",
