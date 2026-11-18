@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 /**
  * 数字のカウントアップ。
  * - サーバーでは最終値をそのまま出力する（検索エンジン・JSなしの環境には正しい数字が見える）。
- * - マウント時に画面外にあるものだけ 0 に戻し、画面に入ったら最終値まで数える。
+ * - 画面外にあるものは、画面のすぐ手前まで来たときに 0 に戻し、画面に入ったら最終値まで数える。
  *   最初から画面内にある数字は動かさない（ちらつき防止）。
  * - 桁数ぶんの幅を先に確保するので、数えている間にまわりの文字が動かない（CLS を出さない）。
  */
@@ -40,6 +40,18 @@ export function CountUp({
     let armed = false;
     let done = false;
 
+    // 0 に戻すのは、画面のすぐ手前（240px）まで来たときだけ。それまでは最終値のまま置いておく
+    // （JS を実行して読む検索エンジンやクローラーが「0」を記録しないように）
+    const prep = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !done) {
+          write(fmt(0));
+          prep.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px 240px 0px" },
+    );
+
     const io = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
@@ -51,12 +63,13 @@ export function CountUp({
             io.disconnect();
             return;
           }
-          write(fmt(0));
+          prep.observe(el);
           return;
         }
         if (!entry.isIntersecting || done) return;
         done = true;
         io.disconnect();
+        prep.disconnect();
         const start = performance.now();
         const tick = (t: number) => {
           const p = Math.min(1, (t - start) / duration);
@@ -73,6 +86,7 @@ export function CountUp({
 
     return () => {
       io.disconnect();
+      prep.disconnect();
       cancelAnimationFrame(raf);
       write(fmt(value));
     };

@@ -30,7 +30,7 @@ const FIT_NOTE = { name: fit.sourceName, url: fit.sourceUrl, verifiedAt: fit.las
 
 export const metadata: Metadata = buildMetadata({
   title: "太陽光発電は何年で元が取れる？回収年数の計算の考え方と試算",
-  description: `太陽光発電の回収年数は「実質の負担額÷1年あたりの効果額」で計算します。${fit.fiscalYear}のFIT単価と、国の委員会の想定値をもとに、見積書の数字を入れて試算できます。確かめたい前提も整理しました。`,
+  description: `太陽光発電は何年で元が取れるか。回収年数は「実質の負担額÷1年あたりの効果額」で計算します。${fit.fiscalYear}のFIT単価と、国の委員会の想定値をもとに、見積書の数字を入れて試算できます。確かめたい前提も整理しました。`,
   path: entry.path,
   keywords: ["太陽光発電 元が取れる", "太陽光 元を取る 何年", "太陽光 回収年数 計算", "太陽光発電 回収 シミュレーション"],
   type: "article",

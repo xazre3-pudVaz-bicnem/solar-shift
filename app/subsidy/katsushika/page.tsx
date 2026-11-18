@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { buildMetadata, formatDateJa } from "@/lib/seo";
+import { buildMetadata, formatDateJa, absoluteUrl } from "@/lib/seo";
 import { katsushikaProgram, tokyoSolarProgram, tokyoBatteryProgram, getSubsidy } from "@/data/subsidies";
 import { combination } from "@/data/subsidies/combination";
 import {
@@ -758,6 +758,8 @@ export default function KatsushikaSubsidyPage() {
             datePublished: "2026-10-01",
             dateModified: UPDATED,
             keywords: ["葛飾区 太陽光 補助金", "葛飾区 蓄電池 補助金", "かつしかエコ助成金"],
+            // この記事が説明しているのは、区の助成制度（下の FinancialIncentive と同じ @id）
+            about: P.menus.map((m) => `${absoluteUrl(PATH) ?? ""}#${m.id}`).filter((id) => id.startsWith("http")),
           }),
           ...P.menus.map((m) => financialIncentiveSchema(m, PATH)),
         )}

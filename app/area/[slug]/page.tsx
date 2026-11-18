@@ -62,7 +62,7 @@ export function generateStaticParams() {
 }
 
 function descriptionOf(name: string) {
-  return `${name}で太陽光発電・蓄電池の業者をお探しの方へ。SOLAR SHIFT は${siteConfig.company.address.city}${siteConfig.company.address.town}の${siteConfig.company.name}が運営し、区内全域に対応しています。対応地域、相談から施工までの進め方、業者を選ぶときに確かめたい点をまとめました。`;
+  return `${name}で太陽光発電・蓄電池の設置業者をお探しの方へ。SOLAR SHIFT は${siteConfig.company.address.city}${siteConfig.company.address.town}の${siteConfig.company.name}が運営し、区内全域に対応しています。対応地域、相談から施工までの進め方、業者を選ぶときに確かめたい点をまとめました。`;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -169,7 +169,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
 
   const toc = [
     { id: "about", label: "SOLAR SHIFT について" },
-    { id: "checkpoints", label: "業者を選ぶときに確かめること" },
+    { id: "checkpoints", label: "設置業者を選ぶときに確かめること" },
     ...(cityWorks.length > 0 ? [{ id: "works", label: `${area.name}の施工事例` }] : []),
     { id: "towns", label: `${area.name}内の対応エリア` },
     { id: "flow", label: "ご相談から設置まで" },
@@ -276,7 +276,7 @@ export default async function AreaDetailPage({ params }: { params: Promise<{ slu
           {/* ───────── 業者選び */}
           <section id="checkpoints" aria-labelledby="checkpoints-h" className="cv-block scroll-mt-24">
             <h2 id="checkpoints-h" className={H2} {...reveal()}>
-              業者を選ぶときに、確かめてほしい{checkpoints.length}つのこと
+              設置業者を選ぶときに、確かめてほしい{checkpoints.length}つのこと
             </h2>
             <p className={LEAD}>
               SOLAR SHIFT に限らず、どの業者に頼むときにも役に立つ確認点です。{area.name}の案内と手引きにある内容をもとにしています。

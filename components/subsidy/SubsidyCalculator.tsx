@@ -64,8 +64,11 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
             className="h-12 w-full rounded-xl border-2 border-line-2 bg-white px-3 text-[16px] font-bold text-navy-900"
           >
             <option value="katsushika">東京都葛飾区</option>
+            <option value="tokyo-other">東京都（葛飾区以外）</option>
           </select>
-          <p className="mt-1 text-[12px] text-ink-3">他の地域は順次追加予定です。</p>
+          <p className="mt-1 text-[12px] text-ink-3">
+            {input.area === "katsushika" ? "葛飾区の助成と、東京都の助成を別々に試算します。" : "東京都の助成だけを試算します。区市町村の補助金は、自治体ごとに違います。"}
+          </p>
         </Field>
 
         <Field step={2} label="住宅区分">
@@ -93,12 +96,15 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
         </Field>
 
         {input.batteryKwh > 0 && (
-          <Field label="蓄電池の助成対象経費（税抜・任意）" hint="葛飾区は対象経費の1/4で計算します。未入力なら上限額を表示します。">
+          <Field
+            label="蓄電池の助成対象経費（税抜・任意）"
+            hint={input.area === "katsushika" ? "葛飾区は対象経費の1/4で計算します。東京都は経費が上限です。未入力なら上限額を表示します。" : "東京都の助成は、経費（税抜）が上限です。"}
+          >
             <CostInput value={batteryCost} onChange={setBatteryCost} placeholder="例：1500000" label="蓄電池の助成対象経費" />
           </Field>
         )}
 
-        <Field step={5} label="V2H・HEMS">
+        <Field step={5} label="V2H・HEMS" hint={input.area === "tokyo-other" ? "このシミュレーターは、東京都の制度では太陽光と蓄電池だけを試算します。" : undefined}>
           <div className="space-y-3">
             <Toggle checked={input.v2h} onChange={(v) => set("v2h", v)} label="V2Hを導入する" />
             <Toggle checked={input.hems} onChange={(v) => set("hems", v)} label="HEMSを導入する" />
@@ -137,7 +143,19 @@ export function SubsidyCalculator({ infoDate }: { infoDate: string }) {
         <SubsidyBars result={result} caption={hasCapOnly ? "※ 経費を入力していない項目（葛飾区の蓄電池・V2H）は上限額で計算しています。" : undefined} />
 
         <p className="rounded-2xl border-l-8 border-orange-500 bg-orange-50 px-4 py-3 text-[14px] leading-[1.8] text-ink">
-          葛飾区と東京都の金額は<strong>別々に表示し、合算していません</strong>。区の助成は国や都の制度と併用できますが、補助金の合計は助成対象経費が上限です。見積もりの金額によって、受け取れる合計は変わります。
+          {input.area === "katsushika" ? (
+            <>
+              葛飾区と東京都の金額は<strong>別々に表示し、合算していません</strong>。区の助成は国や都の制度と併用できますが、補助金の合計は助成対象経費が上限です。見積もりの金額によって、受け取れる合計は変わります。
+            </>
+          ) : (
+            <>
+              <strong>東京都の助成だけ</strong>を表示しています。お住まいの区市町村の補助金は、自治体ごとに金額も申請の時期も違います。周辺の区は
+              <Link href="/area/adachi" className="mx-1 text-navy-600 underline underline-offset-4">足立区</Link>・
+              <Link href="/area/sumida" className="mx-1 text-navy-600 underline underline-offset-4">墨田区</Link>・
+              <Link href="/area/edogawa" className="mx-1 text-navy-600 underline underline-offset-4">江戸川区</Link>
+              のページで案内しています。
+            </>
+          )}
         </p>
 
         {result.areas.map((a, ai) => (

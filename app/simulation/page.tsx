@@ -35,7 +35,7 @@ export default function SimulationPage() {
     { name: "ホーム", href: "/" },
     { name: "補助金シミュレーター", href: PATH },
   ];
-  const faqItems = faqsByIds(["subsidy-combination", "subsidy-pre-consultation", "subsidy-tokyo-battery-sii", "subsidy-guarantee"]);
+  const faqItems = faqsByIds(["simulation-tokyo-other", "subsidy-combination", "subsidy-pre-consultation", "subsidy-tokyo-battery-sii", "subsidy-guarantee"]);
   // 計算の例を扱った記事を先に出す
   const posts = getPostsForPillar(["katsushika-subsidy", "tokyo-subsidy"], 3, { path: PATH, prefer: ["solar-5kw-subsidy-how-much", "katsushika-solar-battery-together-subsidy"] });
 
@@ -105,12 +105,12 @@ export default function SimulationPage() {
 
       <JsonLd
         data={graph(
-          webPageSchema({ path: PATH, mainEntity: "app", name: "太陽光・蓄電池の補助金シミュレーション", description: metadata.description as string, lastReviewed: siteConfig.subsidyInfoDate, dateModified: routeUpdatedAt(PATH) }),
+          webPageSchema({ path: PATH, mainEntity: "app", name: "東京都の蓄電池・太陽光 補助金シミュレーション", description: metadata.description as string, lastReviewed: siteConfig.subsidyInfoDate, dateModified: routeUpdatedAt(PATH) }),
           webApplicationSchema({
             path: PATH,
-            name: "太陽光・蓄電池 補助金シミュレーター",
+            name: "東京都の蓄電池・太陽光 補助金シミュレーター",
             description: metadata.description as string,
-            features: ["葛飾区（かつしかエコ助成金）の想定助成額の試算", "東京都（クール・ネット東京）の想定助成額の試算", "制度ごとの計算式・上限・注意点の表示", "国の制度の受付状況の表示"],
+            features: ["東京都（クール・ネット東京）の太陽光・蓄電池の想定助成額の試算（都内のどの区市町村でも）", "葛飾区（かつしかエコ助成金）の想定助成額の試算", "制度ごとの計算式・上限・注意点の表示（区と都は合算しない）", "国の制度の受付状況の表示"],
           }),
         )}
       />

@@ -162,7 +162,7 @@ export function NeighborAreaPage({ area, program: w }: { area: Area; program: Wa
         { id: "program", label: `${area.name}の補助金の要点` },
         { id: "tokyo", label: "東京都の助成" },
         { id: "housing", label: `${area.name}の住まいで気をつけること` },
-        { id: "checkpoints", label: "業者を選ぶとき・申請するときに確かめること" },
+        { id: "checkpoints", label: "設置業者を選ぶとき・申請するときに確かめること" },
         { id: "compare", label: "葛飾区・周辺の区との違い" },
         { id: "faq", label: "よくある質問" },
       ]
@@ -492,7 +492,7 @@ export function NeighborAreaPage({ area, program: w }: { area: Area; program: Wa
               {/* ───────── 業者として：確かめること */}
               <section id="checkpoints" aria-labelledby="checkpoints-h" className="cv-block scroll-mt-24">
                 <h2 id="checkpoints-h" className={H2} {...reveal()}>
-                  業者を選ぶとき・申請するときに、確かめてほしい{cx.checkpoints.length}つのこと
+                  設置業者を選ぶとき・申請するときに、確かめてほしい{cx.checkpoints.length}つのこと
                 </h2>
                 <p className={LEAD}>SOLAR SHIFT に限らず、どの業者に頼むときにも役に立つ確認点です。東京都と{area.name}の公式の案内にもとづいています。</p>
                 <ol className="mt-6 max-w-3xl divide-y divide-dashed divide-line overflow-hidden rounded-3xl bg-white shadow-card">

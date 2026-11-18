@@ -41,7 +41,7 @@ const B = tokyoBatteryProgram;
 export const metadata: Metadata = buildMetadata({
   title: "東京都の太陽光・蓄電池補助金2026｜15万円/kW・10万円/kWhの条件",
   description:
-    `東京都（クール・ネット東京）の令和8年度 家庭向け太陽光・蓄電池助成。既存3.75kW以下15万円/kW上限45万円、新築3.6kW以下12万円/kW、蓄電池10万円/kWh、2026年10月からのSII登録要件。${formatDateJa(S.lastVerified)}時点。`,
+    `東京都の太陽光・蓄電池の補助金（クール・ネット東京の令和8年度 家庭向け助成）。既存3.75kW以下15万円/kW上限45万円、新築3.6kW以下12万円/kW、蓄電池10万円/kWh、2026年10月からのSII登録要件。${formatDateJa(S.lastVerified)}時点。`,
   path: PATH,
   keywords: ["東京都 太陽光 補助金", "東京 太陽光 補助金", "東京都 蓄電池 補助金", "クール・ネット東京 太陽光", "東京都 太陽光 助成 2026"],
   type: "article",

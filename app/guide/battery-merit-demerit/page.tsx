@@ -29,7 +29,7 @@ const unit = surchargeYen(surcharge.yenPerKwh);
 
 export const metadata: Metadata = buildMetadata({
   title: entry.title,
-  description: `家庭用蓄電池はいらない？昼の電気を夜に回せる・停電に備えられるメリットと、費用・容量の劣化・置き場所のデメリットを、SIIの登録基準や国・東京都・葛飾区の資料で整理。向いている家の目安と、使える補助金もまとめました。`,
+  description: `家庭用蓄電池のメリット・デメリットと、いらない家の目安。昼の電気を夜に回せる・停電に備えられるメリットと、費用・容量の劣化・置き場所のデメリットを、SIIの登録基準や国・東京都・葛飾区の資料で整理。向いている家の目安と、使える補助金もまとめました。`,
   path: entry.path,
   keywords: ["蓄電池 メリット デメリット", "蓄電池 いらない", "蓄電池 後悔", "家庭用蓄電池 必要か", "蓄電池 補助金 葛飾区"],
   type: "article",

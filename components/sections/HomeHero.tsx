@@ -128,12 +128,12 @@ export function HomeHero({ facts, infoDate }: { facts: HeroFact[]; infoDate: str
                 <br />
                 補助金つかえる？
               </span>
-              <span className="invisible col-start-1 row-start-1" aria-hidden="true">
+              <span className="col-start-1 row-start-1" aria-hidden="true">
                 蓄電池も、
                 <br />
                 いっしょがいい？
               </span>
-              <span className="invisible col-start-1 row-start-1" aria-hidden="true">
+              <span className="col-start-1 row-start-1" aria-hidden="true">
                 申請は、
                 <br />
                 いつまでに？

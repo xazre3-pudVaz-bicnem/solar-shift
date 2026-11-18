@@ -264,7 +264,7 @@ export default function HomePage() {
             </ul>
           </div>
 
-          <div className="mt-16 sm:mt-20">
+          <div className="cv-auto mt-16 sm:mt-20">
             <SectionHeading
               align="center"
               color="green"
