@@ -16,7 +16,7 @@ import { graph, webPageSchema } from "@/lib/schema";
 import { images } from "@/data/images";
 
 const PATH = "/company";
-const DESC = `SOLAR SHIFT（ソーラーシフト）の運営会社情報。${siteConfig.company.name}（${siteConfig.company.address.full}、${siteConfig.company.representativeTitle} ${siteConfig.company.representative}、設立${siteConfig.company.founded}）。葛飾区の太陽光発電・蓄電池事業。`;
+const DESC = `${siteConfig.company.name}は、葛飾区で太陽光発電・蓄電池の事業 SOLAR SHIFT（ソーラーシフト）を運営しています。運営会社の情報（${siteConfig.company.address.full}、${siteConfig.company.representativeTitle} ${siteConfig.company.representative}、設立${siteConfig.company.founded}）。`;
 
 export const metadata: Metadata = buildMetadata({
   // 会社名で探す人に、何の事業かが伝わるよう、タイトルに「太陽光発電・蓄電池」を入れる

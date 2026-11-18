@@ -124,6 +124,14 @@ export const faqs: FaqItem[] = [
     link: { href: "/subsidy/national", label: "国の補助制度を見る" },
   },
   {
+    id: "simulation-tokyo-other",
+    category: "subsidy",
+    scope: "service",
+    q: "葛飾区以外の都内に住んでいても、シミュレーターは使えますか？",
+    a: "使えます。住所エリアで「東京都（葛飾区以外）」を選ぶと、東京都（クール・ネット東京）の太陽光・蓄電池の助成だけを試算します。東京都の家庭向けの助成は、都内の住宅が対象です。区市町村の補助金は自治体ごとに金額も申請の時期も違うため、お住まいの区市町村の公式ページでご確認ください。",
+    link: { href: "/simulation", label: "補助金シミュレーターで試算する" },
+  },
+  {
     id: "subsidy-guarantee",
     category: "subsidy",
     scope: "service",

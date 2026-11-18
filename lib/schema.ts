@@ -245,6 +245,8 @@ export function articleSchema(input: {
   sources?: SchemaSource[];
   /** 記事の舞台になっている地域（施工事例の市区など）。例：「東京都葛飾区」 */
   location?: string;
+  /** 記事が説明している実体の @id（補助金のページなら、その助成制度の FinancialIncentive）。無ければ SOLAR SHIFT（LocalBusiness） */
+  about?: string[];
 }): JsonLd {
   const url = absoluteUrl(input.path);
   return compact({
@@ -267,7 +269,7 @@ export function articleSchema(input: {
     author: { "@type": "Organization", "@id": ORG_ID, name: siteConfig.company.name },
     publisher: { "@id": ORG_ID },
     isPartOf: { "@id": WEBSITE_ID },
-    about: { "@id": LOCALBUSINESS_ID },
+    about: input.about && input.about.length > 0 ? input.about.map((id) => ({ "@id": id })) : { "@id": LOCALBUSINESS_ID },
   });
 }
 

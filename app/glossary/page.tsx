@@ -25,7 +25,7 @@ import { routeUpdatedAt } from "@/lib/routes";
  */
 const PATH = "/glossary";
 const TITLE = "太陽光・蓄電池・補助金の用語集｜見積書と区の案内に出てくることば";
-const DESC = `かつしかエコ助成金の事前協議・併設加算、FIT・卒FIT、パワーコンディショナ、自立運転など、太陽光発電と蓄電池の見積書・申請書類に出てくる言葉${glossary.length}語を、公式資料をもとにやさしく解説します。`;
+const DESC = `太陽光・蓄電池・補助金の用語集。かつしかエコ助成金の事前協議・併設加算、FIT・卒FIT、パワーコンディショナ、自立運転など、太陽光発電と蓄電池の見積書・申請書類に出てくる言葉${glossary.length}語を、公式資料をもとにやさしく解説します。`;
 const ORDER: GlossaryGroup[] = ["subsidy", "selling", "equipment", "contract"];
 const ICONS: Record<GlossaryGroup, (typeof images)[keyof typeof images]> = {
   subsidy: images.iconGHandHouseYen,

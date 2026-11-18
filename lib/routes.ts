@@ -25,7 +25,7 @@ export const STATIC_ROUTES: StaticRoute[] = [
   { path: "/subsidy/katsushika", priority: 1.0, changeFrequency: "weekly", ogTitle: "葛飾区の太陽光・蓄電池補助金｜かつしかエコ助成金の金額・条件・申請", updatedAt: "2026-11-16" },
   { path: "/subsidy/tokyo", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の太陽光・蓄電池補助金｜クール・ネット東京の家庭向け助成", updatedAt: "2026-11-04" },
   { path: "/subsidy/national", priority: 0.7, changeFrequency: "weekly", ogTitle: "国の太陽光・蓄電池補助金｜DR補助金・CEV補助金・みらいエコ住宅の現状", updatedAt: "2026-11-04" },
-  { path: "/simulation", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の蓄電池・太陽光 補助金シミュレーション｜葛飾区の助成額も試算", updatedAt: "2026-11-16" },
+  { path: "/simulation", priority: 0.9, changeFrequency: "weekly", ogTitle: "東京都の蓄電池・太陽光 補助金シミュレーション｜葛飾区の助成額も試算", updatedAt: "2026-11-18" },
   { path: "/solar", priority: 0.8, changeFrequency: "monthly", ogTitle: "住宅用太陽光発電｜仕組みと向いている家", updatedAt: "2026-10-05" },
   { path: "/battery", priority: 0.8, changeFrequency: "monthly", ogTitle: "家庭用蓄電池の選び方｜役割・容量の決め方・補助金", updatedAt: "2026-10-26" },
   { path: "/solar-battery", priority: 0.8, changeFrequency: "monthly", ogTitle: "太陽光発電＋蓄電池｜同時導入の利点と併設加算", updatedAt: "2026-10-05" },

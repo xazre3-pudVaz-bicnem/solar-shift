@@ -321,10 +321,23 @@ main {
     border-radius: 3px;
   }
 
-  /* 画面外セクションの描画を後回しにしてモバイルの TBT を下げる（背景つき・全幅のセクション用） */
+  /*
+    画面外セクションの描画を後回しにしてモバイルの TBT を下げる（背景つき・全幅のセクション用）。
+    仮の高さ（contain-intrinsic-size）は、実際より少し大きめにしておく。
+    小さいと、描画を後回しにしている間は中身が区画の外へはみ出した位置にあることになり、
+    検査ツール（axe / Lighthouse）が次の区画やフッターと重なっていると誤認して、コントラスト不足などを誤って報告する
+    （利用者の見た目には影響しない。区画は画面に入る前に本当の高さで描画される）。
+    値は 2026-11-18 に全ページの区画を実測して決めた（スマホ幅 412px・PC 幅 1350px で、およそ9割の区画が収まる高さ）。
+    一度描画された区画は、auto により本当の高さを覚える。
+  */
   .cv-auto {
     content-visibility: auto;
-    contain-intrinsic-size: auto 700px;
+    contain-intrinsic-size: auto 1200px;
+  }
+  @media (min-width: 1024px) {
+    .cv-auto {
+      contain-intrinsic-size: auto 800px;
+    }
   }
 
   /*
@@ -336,10 +349,23 @@ main {
     ページ内リンクで飛ぶときのずれは components/layout/RevealObserver.tsx が直している。
   */
   @supports (overflow-clip-margin: 1px) {
+    /* 仮の高さの決め方は、上の .cv-auto と同じ（実測で、およそ9割の区画が収まる高さ） */
     .cv-block {
       content-visibility: auto;
-      contain-intrinsic-size: auto 600px;
+      contain-intrinsic-size: auto 1200px;
       overflow-clip-margin: 3rem;
+    }
+    /* 表のある区画は高くなりやすい */
+    .cv-block:has(table) {
+      contain-intrinsic-size: auto 1500px;
+    }
+    @media (min-width: 1024px) {
+      .cv-block {
+        contain-intrinsic-size: auto 800px;
+      }
+      .cv-block:has(table) {
+        contain-intrinsic-size: auto 1100px;
+      }
     }
     /*
       とても長い区画（制度の詳細カードが並ぶ区画など）は、仮の高さを実際に近づける。
@@ -453,28 +479,27 @@ main {
   .bubble-swap > :nth-child(3) { animation: bubble-c 12s ease-in-out 2 both; }
   /*
     吹き出しの文は、上へ流れて入れ替わる（透明度は変えない。枠の外に出た文は、親の overflow: hidden で隠れる）。
-    出番でないあいだは visibility: hidden にして、読み上げにも検査にも出さない。
+    動かすのは transform だけにする。visibility を動かすと、表示中ずっとメインスレッドで描画処理が回り続け、
+    スマホの表示の速さ（TBT）が落ちた（2026-11-18 に計測）。出番でない文は枠の外にあって見えず、読み上げからは aria-hidden で外している。
+    枠の上へ出た文を下へ戻すところは step-end で一瞬で移す（途中の位置を1フレームも描かない）。
   */
   @keyframes bubble-a {
-    0%, 30% { visibility: visible; transform: translateY(0); }
-    34% { visibility: visible; transform: translateY(-130%); }
-    34.01%, 95.99% { visibility: hidden; transform: translateY(130%); }
-    96% { visibility: visible; transform: translateY(130%); }
-    100% { visibility: visible; transform: translateY(0); }
+    0%, 30% { transform: translateY(0); }
+    34% { transform: translateY(-130%); animation-timing-function: step-end; }
+    34.01%, 96% { transform: translateY(130%); }
+    100% { transform: translateY(0); }
   }
   @keyframes bubble-b {
-    0%, 33.99% { visibility: hidden; transform: translateY(130%); }
-    34% { visibility: visible; transform: translateY(130%); }
-    38%, 63% { visibility: visible; transform: translateY(0); }
-    67% { visibility: visible; transform: translateY(-130%); }
-    67.01%, 100% { visibility: hidden; transform: translateY(130%); }
+    0%, 34% { transform: translateY(130%); }
+    38%, 63% { transform: translateY(0); }
+    67% { transform: translateY(-130%); animation-timing-function: step-end; }
+    67.01%, 100% { transform: translateY(130%); }
   }
   @keyframes bubble-c {
-    0%, 66.99% { visibility: hidden; transform: translateY(130%); }
-    67% { visibility: visible; transform: translateY(130%); }
-    71%, 96% { visibility: visible; transform: translateY(0); }
-    99.99% { visibility: visible; transform: translateY(-130%); }
-    100% { visibility: hidden; transform: translateY(130%); }
+    0%, 67% { transform: translateY(130%); }
+    71%, 96% { transform: translateY(0); }
+    99.99% { transform: translateY(-130%); animation-timing-function: step-end; }
+    100% { transform: translateY(130%); }
   }
 
   /* 蛍光ペンを左から引く（最初の画面の見出し用・1回だけ） */
@@ -548,6 +573,19 @@ html[data-reveal-on] [data-reveal]:not([data-revealed]) .marker { background-siz
 [data-anim]:not([data-inview])::before,
 [data-anim]:not([data-inview])::after {
   animation: none;
+}
+
+/*
+  装飾アニメーション（ふわふわ・回転・きらきら・吹き出しの入れ替え・流れる点線）は、
+  読み込みが落ち着いてから動かす（RevealObserver が load の3秒後に html[data-anim-ready] を付ける）。
+  動いているアニメーションが1つでもあると、Chrome は毎フレーム、メインスレッドで描画処理を回し続ける。
+  最初の表示と操作の受け付けの時間帯に、その処理を重ねない（2026-11-18 に計測して決めた）。
+  JS が動かない環境では、止まったまま表示する（内容は変わらない）。登場の短い動き（enter-*）は対象外。
+*/
+html:not([data-anim-ready]) :is([class*="animate-"], .shine, .flow-x, .flow-y, .bubble-swap > *),
+html:not([data-anim-ready]) :is(.shine, .flow-x, .flow-y)::before,
+html:not([data-anim-ready]) :is(.shine, .flow-x, .flow-y)::after {
+  animation-play-state: paused;
 }
 
 /* overflow: clip が使えない古いブラウザでは、横からの登場を「下から」に置き換えて横スクロールを出さない */

@@ -80,6 +80,18 @@ export function RevealObserver() {
     };
     scan();
 
+    // ── 装飾アニメーションは、読み込みが落ち着いてから動かす（globals.css の html[data-anim-ready]）
+    let animTimer = 0;
+    const armAnim = () => {
+      animTimer = window.setTimeout(() => {
+        root.dataset.animReady = "1";
+      }, 3000);
+    };
+    if (!root.dataset.animReady) {
+      if (document.readyState === "complete") armAnim();
+      else window.addEventListener("load", armAnim, { once: true });
+    }
+
     // ── ページ内リンク：行き先より手前（と、行き先を含む）区画を先に描画させる
     const showBefore = (target: Element) => {
       document.querySelectorAll<HTMLElement>(".cv-auto, .cv-block").forEach((el) => {
@@ -138,6 +150,8 @@ export function RevealObserver() {
 
     return () => {
       cancelAnimationFrame(raf);
+      window.clearTimeout(animTimer);
+      window.removeEventListener("load", armAnim);
       alignTimers.forEach((t) => window.clearTimeout(t));
       USER_INPUTS.forEach((type) => window.removeEventListener(type, onUserInput));
       document.fonts?.removeEventListener?.("loadingdone", realign);

@@ -16,7 +16,8 @@ import { allSubsidies } from "@/data/subsidies";
  */
 
 export interface SimulationInput {
-  area: "katsushika";
+  /** katsushika … 葛飾区と東京都を別々に試算／tokyo-other … 葛飾区以外の都内（東京都の助成だけを試算） */
+  area: "katsushika" | "tokyo-other";
   housing: HousingType;
   solarKw: number;
   batteryKwh: number;
@@ -173,10 +174,14 @@ function isApplicable(s: Subsidy, input: SimulationInput): { ok: boolean; reason
 
 export function simulate(rawInput: SimulationInput): SimulationResult {
   const input: SimulationInput = { ...rawInput, solarKw: roundKw(rawInput.solarKw) };
-  const areasOrder: { area: SubsidyArea; label: string }[] = [
-    { area: "katsushika", label: "葛飾区" },
-    { area: "tokyo", label: "東京都" },
-  ];
+  // 葛飾区以外の都内では、区の制度は自治体ごとに違うので、東京都の助成だけを試算する
+  const areasOrder: { area: SubsidyArea; label: string }[] =
+    input.area === "tokyo-other"
+      ? [{ area: "tokyo", label: "東京都" }]
+      : [
+          { area: "katsushika", label: "葛飾区" },
+          { area: "tokyo", label: "東京都" },
+        ];
 
   const areas: AreaResult[] = areasOrder.map(({ area, label }) => {
     const subs = allSubsidies.filter((s) => s.area === area && s.rule);

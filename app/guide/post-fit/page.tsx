@@ -19,7 +19,7 @@ const FIT_SOURCE = {
 export const metadata: Metadata = buildMetadata({
   title: "卒FIT後はどうする？売電継続・蓄電池・V2Hの選択肢",
   description:
-    "FIT期間（住宅用10年）が終わると、買取単価は各小売電気事業者が独自に設定する価格に変わります。売電継続・蓄電池・V2H・エコキュートの昼間沸き上げという4つの選択肢を、電気の使い方別に整理します。",
+    "卒FIT後はどうする？FIT期間（住宅用10年）が終わると、買取単価は各小売電気事業者が独自に設定する価格に変わります。売電継続・蓄電池・V2H・エコキュートの昼間沸き上げという4つの選択肢を、電気の使い方別に整理します。",
   path: entry.path,
   keywords: ["卒FIT どうする", "卒FIT 蓄電池", "卒FIT 売電 継続", "FIT 終了後 選択肢"],
   type: "article",

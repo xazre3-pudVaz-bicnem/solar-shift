@@ -7,8 +7,9 @@ import { guides } from "@/data/guides";
 import { faqs } from "@/data/faq";
 import { fit } from "@/data/fit";
 import { getAllPosts } from "@/lib/blog";
-import { areas } from "@/data/areas";
+import { areas, areaPageLabel } from "@/data/areas";
 import { wardPrograms } from "@/data/ward-programs";
+import { zehPrograms } from "@/data/subsidies/zeh";
 
 export const dynamic = "force-static";
 
@@ -60,9 +61,14 @@ export function GET() {
     `## 周辺の区の補助金（各区の公式ページで確認）`,
     `区の補助金は、区ごとに金額も申請の時期も違います。葛飾区の制度の説明は、ほかの区には当てはまりません。`,
     ...wardPrograms.map((w) => {
-      const name = areas.find((a) => a.slug === w.slug)?.name ?? "";
-      return `- [${name}の太陽光・蓄電池の補助金](${url(`/area/${w.slug}`)}): ${w.conclusion}（${formatDateJa(w.sources[0].verifiedAt)}確認。出典: ${w.sources[0].url}）`;
+      const area = areas.find((a) => a.slug === w.slug);
+      const label = area ? areaPageLabel(area) : w.slug;
+      return `- [${label}](${url(`/area/${w.slug}`)}): ${w.conclusion}（${formatDateJa(w.sources[0].verifiedAt)}確認。出典: ${w.sources[0].url}）`;
     }),
+    ``,
+    `## 家を新築するときの補助金（ZEH・高断熱住宅。葛飾区で使えるもの）`,
+    `区・東京都・国の制度は別々です。金額は合算しません。詳しくは ${url("/subsidy/katsushika")}#zeh`,
+    ...zehPrograms.map((z) => `- ${z.level}「${z.name}」: 対象＝${z.target}。${z.amounts.join("／")}。${z.howToApply.join("／")}（${formatDateJa(z.lastVerified)}確認。出典: ${z.sources.map((s) => s.url).join(" ")}）`),
     ``,
     `## FIT（固定価格買取制度）`,
     `- ${fit.fiscalYear}・住宅用（10kW未満）: ${fit.residential.steps.map((s) => `${s.label} ${s.yenPerKwh}円/kWh`).join("、")}（調達期間${fit.residential.termYears}年）。出典: ${fit.sourceUrl}`,
@@ -71,9 +77,9 @@ export function GET() {
     `- [葛飾区の太陽光・蓄電池補助金](${url("/subsidy/katsushika")}): かつしかエコ助成金の金額・条件・事前協議・申請の流れ`,
     `- [東京都の太陽光・蓄電池補助金](${url("/subsidy/tokyo")}): クール・ネット東京の家庭向け助成の単価・上限・SII登録要件`,
     `- [国の補助制度](${url("/subsidy/national")}): DR補助金・CEV補助金・みらいエコ住宅の受付状況`,
-    `- [補助金の総合ページ](${url("/subsidy")}): 区・都・国の3層の整理`,
-    `- [補助金シミュレーター](${url("/simulation")}): 条件を選んで区・都それぞれの想定助成額を試算`,
-    `- [葛飾区の太陽光・蓄電池業者](${url("/area/katsushika")}): 区内の対応エリア、業者を選ぶときの確認点、相談の進め方、住宅事情と水害リスク`,
+    `- [補助金はどれが使える？](${url("/subsidy")}): 住まいと工事の条件から、葛飾区・東京都・国のどの制度が使えるかを振り分け`,
+    `- [東京都の蓄電池・太陽光 補助金シミュレーション](${url("/simulation")}): 条件を選んで、東京都と葛飾区それぞれの想定助成額を試算（合算しない）`,
+    `- [葛飾区の太陽光・蓄電池業者](${url("/area/katsushika")}): 区内の対応エリア、設置業者を選ぶときの確認点、相談の進め方、住宅事情と水害リスク`,
     `- [対応エリア](${url("/area")}): 葛飾区と周辺の区の位置関係、区ごとの補助金と申請の順番の早見表`,
     `- [太陽光発電](${url("/solar")}) / [家庭用蓄電池](${url("/battery")}) / [太陽光＋蓄電池](${url("/solar-battery")}) / [V2H](${url("/v2h")}) / [HEMS](${url("/hems")})`,
     `- [導入・施工の流れ](${url("/flow")}): 相談から申請・工事・運転開始まで`,
